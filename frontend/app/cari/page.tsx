@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import CariClient from "./cariClient";
+import CariClient from "./CariClient";
 
 export default function Page() {
   return (
