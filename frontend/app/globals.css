@@ -1,0 +1,88 @@
+/* app/globals.css */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #266c87;
+  --primary-dark: #1a4f63;
+  --primary-light: #3a8aaa;
+  --teal-1: #86AFAA;
+  --teal-2: #5F8F8A;
+  --teal-3: #3F6F6A;
+  --olive-1: #A4AA7A;
+  --sand-2: #C6AD8A;
+  --deep: #0F2830;
+  --ivory: #F4F7F7;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: #F4F7F7;
+  color: #1C3038;
+  overflow-x: hidden;
+}
+
+/* Dark mode */
+.dark body { background: #0F2830; color: #EEF4F6; }
+
+@layer components {
+  .section-label {
+    @apply flex items-center gap-3 text-[11px] font-medium tracking-[0.18em] uppercase text-primary;
+  }
+  .section-label::before {
+    content: '';
+    @apply inline-block w-8 h-px bg-primary flex-shrink-0;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 bg-primary text-white px-8 py-3.5 text-[13px] font-medium tracking-widest uppercase rounded-sm transition-all hover:bg-primary-light hover:-translate-y-px;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 text-[13px] font-normal text-ink-light transition-colors hover:text-ink;
+  }
+  .btn-outline {
+    @apply inline-flex items-center gap-2 border border-primary/20 text-primary px-6 py-3 text-[13px] font-medium tracking-wider uppercase rounded-sm transition-all hover:bg-primary hover:text-white;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:border-primary/40;
+  }
+
+  .input-field {
+    @apply w-full bg-warm-white border border-primary/10 rounded-sm px-4 py-3.5 text-[15px] font-light text-ink placeholder:text-ink-ghost outline-none focus:border-primary/40 transition-colors;
+  }
+
+  .glass {
+    @apply backdrop-blur-md bg-white/80 dark:bg-deep/80 border border-white/20;
+  }
+
+  .prose-manara {
+    @apply text-[17px] font-light leading-relaxed text-ink-mid;
+  }
+  .prose-manara h2 { @apply font-serif text-3xl font-light text-deep mt-12 mb-4; }
+  .prose-manara h3 { @apply font-serif text-2xl font-light text-deep mt-8 mb-3; }
+  .prose-manara p { @apply mb-5; }
+  .prose-manara blockquote { @apply border-l-2 border-primary pl-5 font-serif text-xl italic text-primary my-8; }
+  .prose-manara a { @apply text-primary underline underline-offset-2; }
+}
+
+/* Scroll bar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #266c8730; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #266c87; }
+
+/* Page transition */
+.page-enter { opacity: 0; transform: translateY(12px); }
+.page-enter-active { opacity: 1; transform: translateY(0); transition: all 0.4s cubic-bezier(0.16,1,0.3,1); }
+
+/* Rich text editor */
+.ql-container { font-family: 'DM Sans', sans-serif !important; font-size: 16px !important; border: none !important; }
+.ql-toolbar { border: none !important; border-bottom: 1px solid rgba(38,108,135,0.15) !important; background: #F8FAFA; }

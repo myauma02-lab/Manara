@@ -1,0 +1,277 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── USERS / ADMIN ──────────────────────────────────────────────
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String
+  role          Role      @default(CONTRIBUTOR)
+  avatar        String?
+  bio           String?
+  isActive      Boolean   @default(true)
+  refreshToken  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  articles      Article[]
+  researchPapers ResearchPaper[]
+
+  @@map("users")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+  CONTRIBUTOR
+}
+
+// ─── FOUNDERS / MEMBERS ─────────────────────────────────────────
+model Founder {
+  id          String   @id @default(uuid())
+  name        String
+  role        String
+  bio         String?
+  photo       String?
+  photoPublicId String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  socialLinks Json?    // { instagram, twitter, linkedin }
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("founders")
+}
+
+// ─── ARTICLES ───────────────────────────────────────────────────
+model Article {
+  id            String          @id @default(uuid())
+  title         String
+  slug          String          @unique
+  excerpt       String?
+  content       String          @db.Text
+  coverImage    String?
+  coverPublicId String?
+  status        ContentStatus   @default(DRAFT)
+  isFeatured    Boolean         @default(false)
+  publishedAt   DateTime?
+  readTime      Int?            // minutes
+  viewCount     Int             @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  authorId      String
+  author        User            @relation(fields: [authorId], references: [id])
+  categoryId    String?
+  category      Category?       @relation(fields: [categoryId], references: [id])
+  tags          ArticleTag[]
+  mediaType     MediaType       @default(JOURNAL)
+
+  @@map("articles")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  color       String?
+  createdAt   DateTime  @default(now())
+
+  articles    Article[]
+  researchPapers ResearchPaper[]
+
+  @@map("categories")
+}
+
+model Tag {
+  id       String       @id @default(uuid())
+  name     String       @unique
+  slug     String       @unique
+  articles ArticleTag[]
+
+  @@map("tags")
+}
+
+model ArticleTag {
+  articleId String
+  tagId     String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+  @@map("article_tags")
+}
+
+enum ContentStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MediaType {
+  JOURNAL
+  VIDEO
+  PODCAST
+  NEWSLETTER
+  FORUM
+  PAPER
+}
+
+// ─── PROJECTS / PROGRAMS ────────────────────────────────────────
+model Project {
+  id            String        @id @default(uuid())
+  title         String
+  slug          String        @unique
+  description   String        @db.Text
+  coverImage    String?
+  coverPublicId String?
+  status        ProjectStatus @default(UPCOMING)
+  category      String?
+  tags          String[]
+  startDate     DateTime?
+  endDate       DateTime?
+  isFeatured    Boolean       @default(false)
+  order         Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  UPCOMING
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+// ─── RESEARCH PAPERS ────────────────────────────────────────────
+model ResearchPaper {
+  id            String        @id @default(uuid())
+  title         String
+  slug          String        @unique
+  abstract      String        @db.Text
+  authors       String[]
+  pdfUrl        String?
+  pdfPublicId   String?
+  coverImage    String?
+  volume        String?
+  issue         String?
+  year          Int?
+  doi           String?
+  keywords      String[]
+  downloadCount Int           @default(0)
+  status        ContentStatus @default(DRAFT)
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  uploadedById  String
+  uploadedBy    User          @relation(fields: [uploadedById], references: [id])
+  categoryId    String?
+  category      Category?     @relation(fields: [categoryId], references: [id])
+
+  @@map("research_papers")
+}
+
+// ─── NEWSLETTER ─────────────────────────────────────────────────
+model NewsletterSubscriber {
+  id          String              @id @default(uuid())
+  email       String              @unique
+  name        String?
+  status      SubscriberStatus    @default(ACTIVE)
+  confirmedAt DateTime?
+  createdAt   DateTime            @default(now())
+
+  @@map("newsletter_subscribers")
+}
+
+enum SubscriberStatus {
+  PENDING
+  ACTIVE
+  UNSUBSCRIBED
+}
+
+// ─── MANAPEOPLE RECRUITMENT ─────────────────────────────────────
+model Recruitment {
+  id              String            @id @default(uuid())
+  batchName       String
+  description     String?
+  isOpen          Boolean           @default(true)
+  openDate        DateTime?
+  closeDate       DateTime?
+  positions       Json              // array of position objects
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  applications    Application[]
+
+  @@map("recruitments")
+}
+
+model Application {
+  id              String            @id @default(uuid())
+  recruitmentId   String
+  recruitment     Recruitment       @relation(fields: [recruitmentId], references: [id])
+  fullName        String
+  email           String
+  phone           String?
+  position        String
+  motivation      String            @db.Text
+  cvUrl           String?
+  portfolioUrl    String?
+  portfolioLink   String?
+  status          ApplicationStatus @default(PENDING)
+  adminNotes      String?
+  reviewedAt      DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@map("applications")
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWING
+  SHORTLISTED
+  ACCEPTED
+  REJECTED
+}
+
+// ─── SITE SETTINGS ──────────────────────────────────────────────
+model SiteSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+// ─── MEDIA / IMAGES ─────────────────────────────────────────────
+model MediaFile {
+  id          String   @id @default(uuid())
+  filename    String
+  url         String
+  publicId    String
+  mimeType    String
+  size        Int
+  width       Int?
+  height      Int?
+  alt         String?
+  folder      String?
+  createdAt   DateTime @default(now())
+
+  @@map("media_files")
+}
