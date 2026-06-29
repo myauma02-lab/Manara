@@ -52,7 +52,7 @@ router.get("/", authenticate, requireAdmin, async (_req, res) => {
     });
     res.json({
       success: true,
-      data: messages.map(m => ({ id: m.key, ...(m.value as any) })),
+      data: messages.map((m: any) => ({ id: m.key, ...(m.value as any) })),
     });
   } catch {
     res.status(500).json({ message: "Server error" });

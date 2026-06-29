@@ -7,7 +7,7 @@ const router = Router();
 
 router.get('/', async (_req, res) => {
   const settings = await prisma.siteSetting.findMany();
-  const map = Object.fromEntries(settings.map(s => [s.key, s.value]));
+  const map = Object.fromEntries(settings.map((s: any) => [s.key, s.value]));
   res.json({ success: true, data: map });
 });
 
