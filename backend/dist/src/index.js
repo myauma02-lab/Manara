@@ -29,18 +29,27 @@ app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 // ─── Security ───────────────────────────────────────────────────
 app.use((0, helmet_1.default)());
-app.use((0, cors_1.default)({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+app.use(cors({
+    origin: [
+        'http://localhost:3000',
+        'https://manara-jet.vercel.app'
+    ],
     credentials: true,
 }));
+app.options('*', cors({
+    origin: [
+        'http://localhost:3000',
+        'https://manara-jet.vercel.app'
+    ],
+    credentials: true,
+}));
+app.set('trust proxy', 1);
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => {
-    return req.ip;
-  }
+  keyGenerator: (req) => req.ip,
 }));
 // ─── Middleware ──────────────────────────────────────────────────
 app.use((0, morgan_1.default)('combined'));
