@@ -12,6 +12,8 @@ const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
 dotenv_1.default.config();
+console.log("DATABASE_URL exists:", !!process.env.DATABASE_URL);
+console.log("DATABASE_URL prefix:", process.env.DATABASE_URL?.substring(0, 20));
 const auth_1 = __importDefault(require("./routes/auth"));
 const articles_1 = __importDefault(require("./routes/articles"));
 const projects_1 = __importDefault(require("./routes/projects"));
@@ -25,31 +27,22 @@ const categories_1 = __importDefault(require("./routes/categories"));
 const users_1 = __importDefault(require("./routes/users"));
 const errorHandler_1 = require("./middleware/errorHandler");
 const app = (0, express_1.default)();
-app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 // ─── Security ───────────────────────────────────────────────────
 app.use((0, helmet_1.default)());
-app.use(cors({
+app.use((0, cors_1.default)({
     origin: [
-        'http://localhost:3000',
-        'https://manara-jet.vercel.app'
+        "http://localhost:3000",
+        "https://manara-n72q1osg2-yhauma-s-projects.vercel.app",
+        "https://manara-jet.vercel.app"
     ],
     credentials: true,
 }));
-app.options('*', cors({
-    origin: [
-        'http://localhost:3000',
-        'https://manara-jet.vercel.app'
-    ],
-    credentials: true,
-}));
-app.set('trust proxy', 1);
-app.use(rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 200,
-  standardHeaders: true,
-  legacyHeaders: false,
-  keyGenerator: (req) => req.ip,
+app.use((0, express_rate_limit_1.default)({
+    windowMs: 15 * 60 * 1000,
+    max: 200,
+    standardHeaders: true,
+    legacyHeaders: false,
 }));
 // ─── Middleware ──────────────────────────────────────────────────
 app.use((0, morgan_1.default)('combined'));
