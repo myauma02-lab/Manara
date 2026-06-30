@@ -4,8 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-# Install SEMUA dependency termasuk devDependencies
-RUN npm ci
+RUN npm install
 
 COPY . .
 
@@ -15,4 +14,4 @@ RUN npx prisma generate
 
 EXPOSE 5000
 
-CMD ["npm", "start"]
+CMD ["npm","start"]
