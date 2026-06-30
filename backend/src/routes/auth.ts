@@ -34,9 +34,16 @@ router.post('/login',
         token: accessToken,
         user: { id: user.id, name: user.name, email: user.email, role: user.role, avatar: user.avatar },
       });
-    } catch (err) {
-      res.status(500).json({ message: 'Server error' });
-    }
+    } 
+    catch (err) {
+  console.error("===== LOGIN ERROR =====");
+  console.error(err);
+
+  res.status(500).json({
+    message: "Server error",
+    error: err instanceof Error ? err.message : String(err),
+  });
+}
   }
 );
 
