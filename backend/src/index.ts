@@ -9,6 +9,9 @@ import path from 'path';
 
 dotenv.config();
 
+console.log("DATABASE_URL exists:", !!process.env.DATABASE_URL);
+console.log("DATABASE_URL prefix:", process.env.DATABASE_URL?.substring(0, 20));
+
 import authRoutes from './routes/auth';
 import articleRoutes from './routes/articles';
 import projectRoutes from './routes/projects';
