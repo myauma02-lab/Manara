@@ -1,4 +1,5 @@
 // src/index.ts
+console.log("STEP 1");
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -9,6 +10,7 @@ import path from 'path';
 
 dotenv.config();
 
+console.log("STEP 2");
 console.log("DATABASE_URL exists:", !!process.env.DATABASE_URL);
 console.log("DATABASE_URL prefix:", process.env.DATABASE_URL?.substring(0, 20));
 
@@ -26,9 +28,13 @@ import userRoutes from "./routes/users";
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
+app.set("trust proxy", 1);
+app.options("*", cors());
+console.log("STEP 3");
 const PORT = process.env.PORT || 5000;
 
 // ─── Security ───────────────────────────────────────────────────
+console.log("STEP 4");
 app.use(helmet());
 app.use(cors({
     origin: [
@@ -75,7 +81,9 @@ app.get('/api/health', (_req, res) => {
 // ─── Error Handler ───────────────────────────────────────────────
 app.use(errorHandler);
 
+console.log("STEP 5");
 app.listen(PORT, () => {
+  console.log("STEP 6");
   console.log(`\n🏛️  Manara API running on http://localhost:${PORT}`);
   console.log(`📖  Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
