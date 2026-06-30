@@ -31,12 +31,12 @@ services:
       - "5000:5000"
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/manara_db?schema=public
+      DATABASE_URL: postgresql://postgres:akshUwzUptRWaGsjrXKBJWuJnJKxvblo@postgres.railway.internal:5432/railway
       JWT_SECRET: ${JWT_SECRET}
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      FRONTEND_URL: https://manara-jet.vercel.app
     depends_on:
       postgres:
         condition: service_healthy
@@ -49,7 +49,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:5000/api}
+        NEXT_PUBLIC_API_URL: https://manara-backend.up.railway.app
     container_name: manara_web
     restart: unless-stopped
     ports:
