@@ -1,11 +1,11 @@
 "use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 import { useSettings } from "@/hooks/useSettings";
 
 export default function HeroSection() {
+    const { settings } = useSettings();
 
-const { settings } = useSettings();
   return (
     <section style={{
       minHeight: '100vh', display: 'flex', flexDirection: 'column',
@@ -19,17 +19,17 @@ const { settings } = useSettings();
       }} />
       <div style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', margin: '0 auto', padding: '0 40px', width: '100%' }}>
         <p style={{ fontSize: '10px', fontWeight: 500, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(58,138,170,0.8)', marginBottom: '8px' }}>
-          {settings.hero_tagline || "Shaping Ideas for the Public Sphere"}
+          {settings.site_tagline || "Shaping Ideas for the Public Sphere"}
         </p>
         <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(134,175,170,0.7)', marginBottom: '32px' }}>
-          {settings.hero_subheading || "Est. 2024 · Manara Collective"}
+          {"Est. 2026 · Manara "}
         </p>
         <h1 style={{
           fontFamily: 'Georgia, serif', fontWeight: 300,
           fontSize: 'clamp(52px, 7.5vw, 96px)', lineHeight: 1,
           color: '#EEF4F6', marginBottom: '40px', letterSpacing: '-0.02em',
         }}>
-          {settings.hero_title || (
+          {settings.hero_headline || (
     <>
       Di mana gagasan<br />
       menemukan <em style={{ color: "#86AFAA" }}>cahayanya.</em>
@@ -37,7 +37,7 @@ const { settings } = useSettings();
   )}
         </h1>
         <p style={{ fontSize: '16px', fontWeight: 300, color: 'rgba(134,175,170,0.5)', maxWidth: '460px', lineHeight: 1.8, marginBottom: '56px' }}>
-           {settings.hero_subtitle ||
+           {settings.hero_subheadline ||
     "Ruang intelektual, kreatif, dan berpengetahuan — dibangun oleh dan untuk generasi yang berpikir dengan kedalaman."}
         </p>
         <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
