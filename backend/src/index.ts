@@ -36,15 +36,23 @@ const PORT = process.env.PORT || 5000;
 // ─── Security ───────────────────────────────────────────────────
 console.log("STEP 4");
 app.use(helmet());
+
 app.use(cors({
-    origin: [
-        "http://localhost:3000",
-        "https://manara.my.id",
-        "https://www.manara.my.id",
-        "https://manara-n72q1osg2-yhauma-s-projects.vercel.app",
-        "https://manara-jet.vercel.app"
-    ],
-    credentials: true,
+  origin: [
+    "http://localhost:3000",
+    "https://manara-n72q1osg2-yhauma-s-projects.vercel.app",
+    "https://manara-jet.vercel.app",
+    "https://www.manara.my.id",
+    "https://manara.my.id"
+  ],
+  credentials: true,
+}));
+
+app.options("*", cors());
+
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
 }));
 const allowedOrigins = [
   "http://localhost:3000",
