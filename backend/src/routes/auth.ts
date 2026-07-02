@@ -168,62 +168,86 @@ router.put("/profile", authenticate, async (req: AuthRequest, res) => {
 /* ============================================================
    CHANGE PASSWORD
 ============================================================ */
-
-router.put(
-  "/password",
+router.post("/change-password",
   authenticate,
-  body("currentPassword").notEmpty(),
-  body("newPassword").isLength({ min: 8 }),
+  body("currentPassword").notEmpty().withMessage("Password lama wajib diisi"),
+  body("newPassword").isLength({ min: 8 }).withMessage("Password baru minimal 8 karakter"),
+  body("confirmPassword").notEmpty().withMessage("Konfirmasi password wajib diisi"),
   validate,
-  async (req: AuthRequest, res) => {
+  async (req: any, res: any) => {
     try {
-      const { currentPassword, newPassword } = req.body;
+      const { currentPassword, newPassword, confirmPassword } = req.body;
+      const userId = req.user.id;
 
-      const user = await prisma.user.findUnique({
-        where: {
-          id: req.user!.id,
-        },
-      });
-
-      if (!user) {
-        return res.status(404).json({
-          message: "User tidak ditemukan",
-        });
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({ message: "Password baru dan konfirmasi tidak cocok" });
       }
 
-      const valid = await bcrypt.compare(
-        currentPassword,
-        user.password
-      );
+      // Ambil user dengan password
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
 
-      if (!valid) {
-        return res.status(400).json({
-          message: "Password lama tidak sesuai",
-        });
+      // Verifikasi password lama
+      const isValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isValid) {
+        return res.status(400).json({ message: "Password lama tidak benar" });
+      }
+
+      // Pastikan password baru berbeda
+      const isSame = await bcrypt.compare(newPassword, user.password);
+      if (isSame) {
+        return res.status(400).json({ message: "Password baru tidak boleh sama dengan password lama" });
+      }
+
+      // Hash & simpan password baru
+      const hashed = await bcrypt.hash(newPassword, 12);
+      await prisma.user.update({
+        where: { id: userId },
+        data: { password: hashed },
+      });
+
+      res.json({ success: true, message: "Password berhasil diubah" });
+    } catch {
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
+
+// POST /api/auth/reset-password/:userId — Super Admin reset password user lain
+router.post("/reset-password/:userId",
+  authenticate,
+  body("newPassword").isLength({ min: 8 }).withMessage("Password minimal 8 karakter"),
+  validate,
+  async (req: any, res: any) => {
+    try {
+      // Hanya Super Admin & Admin yang boleh
+      if (!["SUPER_ADMIN", "ADMIN"].includes(req.user.role)) {
+        return res.status(403).json({ message: "Tidak memiliki akses" });
+      }
+
+      const { newPassword } = req.body;
+      const targetUser = await prisma.user.findUnique({
+        where: { id: req.params.userId },
+      });
+
+      if (!targetUser) {
+        return res.status(404).json({ message: "User tidak ditemukan" });
+      }
+
+      // Admin tidak bisa reset password Super Admin lain
+      if (targetUser.role === "SUPER_ADMIN" && req.user.role !== "SUPER_ADMIN") {
+        return res.status(403).json({ message: "Tidak dapat mereset password Super Admin" });
       }
 
       const hashed = await bcrypt.hash(newPassword, 12);
-
       await prisma.user.update({
-        where: {
-          id: user.id,
-        },
-        data: {
-          password: hashed,
-        },
+        where: { id: req.params.userId },
+        data: { password: hashed },
       });
 
-      return res.json({
-        success: true,
-        message: "Password berhasil diubah",
-      });
-    } catch (err: any) {
-      console.error(err);
-
-      return res.status(500).json({
-        message: "Server error",
-        error: err?.message,
-      });
+      res.json({ success: true, message: `Password ${targetUser.name} berhasil direset` });
+    } catch {
+      res.status(500).json({ message: "Server error" });
     }
   }
 );
