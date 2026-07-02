@@ -42,7 +42,7 @@ export default function AdminUsersPage() {
   const headers = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
 
   const load = () => {
-    fetch(`${API_URL}/api/users`, { headers })
+    fetch(`${API_URL}/users`, { headers })
       .then(r => r.json())
       .then(d => setUsers(d.data || []))
       .catch(() => {})
