@@ -59,7 +59,7 @@ export default function AdminUsersPage() {
     setSaving(true);
     setError("");
     try {
-      const res = await fetch(`${API_URL}/api/users`, {
+      const res = await fetch(`${API_URL}/users`, {
         method: "POST",
         headers,
         body: JSON.stringify(form),
@@ -78,7 +78,7 @@ export default function AdminUsersPage() {
 
   const handleToggleActive = async (id: string, isActive: boolean) => {
     try {
-      await fetch(`${API_URL}/api/users/${id}`, {
+      await fetch(`${API_URL}/users/${id}`, {
         method: "PUT",
         headers,
         body: JSON.stringify({ isActive: !isActive }),
@@ -89,7 +89,7 @@ export default function AdminUsersPage() {
 
   const handleChangeRole = async (id: string, role: string) => {
     try {
-      await fetch(`${API_URL}/api/users/${id}`, {
+      await fetch(`${API_URL}/users/${id}`, {
         method: "PUT",
         headers,
         body: JSON.stringify({ role }),
