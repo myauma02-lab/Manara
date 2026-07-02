@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // src/index.ts
+console.log("STEP 1");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
@@ -12,6 +13,7 @@ const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
 dotenv_1.default.config();
+console.log("STEP 2");
 console.log("DATABASE_URL exists:", !!process.env.DATABASE_URL);
 console.log("DATABASE_URL prefix:", process.env.DATABASE_URL?.substring(0, 20));
 const auth_1 = __importDefault(require("./routes/auth"));
@@ -27,15 +29,42 @@ const categories_1 = __importDefault(require("./routes/categories"));
 const users_1 = __importDefault(require("./routes/users"));
 const errorHandler_1 = require("./middleware/errorHandler");
 const app = (0, express_1.default)();
+app.set("trust proxy", 1);
+app.options("*", (0, cors_1.default)());
+console.log("STEP 3");
 const PORT = process.env.PORT || 5000;
 // ─── Security ───────────────────────────────────────────────────
+console.log("STEP 4");
 app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)({
     origin: [
         "http://localhost:3000",
         "https://manara-n72q1osg2-yhauma-s-projects.vercel.app",
-        "https://manara-jet.vercel.app"
+        "https://manara-jet.vercel.app",
+        "https://www.manara.my.id",
+        "https://manara.my.id"
     ],
+    credentials: true,
+}));
+app.options("*", (0, cors_1.default)());
+app.use((0, express_rate_limit_1.default)({
+    windowMs: 15 * 60 * 1000,
+    max: 200,
+}));
+const allowedOrigins = [
+    "http://localhost:3000",
+    process.env.FRONTEND_URL,
+].filter(Boolean);
+app.use((0, cors_1.default)({
+    origin(origin, callback) {
+        // mengizinkan request tanpa Origin (Postman, curl, health check)
+        if (!origin)
+            return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error(`Origin ${origin} tidak diizinkan oleh CORS`));
+    },
     credentials: true,
 }));
 app.use((0, express_rate_limit_1.default)({
@@ -69,7 +98,9 @@ app.get('/api/health', (_req, res) => {
 });
 // ─── Error Handler ───────────────────────────────────────────────
 app.use(errorHandler_1.errorHandler);
+console.log("STEP 5");
 app.listen(PORT, () => {
+    console.log("STEP 6");
     console.log(`\n🏛️  Manara API running on http://localhost:${PORT}`);
     console.log(`📖  Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
