@@ -52,21 +52,29 @@ app.use((0, express_rate_limit_1.default)({
     max: 200,
 }));
 const allowedOrigins = [
-    "http://localhost:3000",
-    process.env.FRONTEND_URL,
-].filter(Boolean);
-app.use((0, cors_1.default)({
+  "http://localhost:3000",
+  "https://manara.my.id",
+  "https://www.manara.my.id",
+  "https://manara-jet.vercel.app",
+  "https://manara-n72q1osg2-yhauma-s-projects.vercel.app",
+];
+
+app.use(
+  cors({
     origin(origin, callback) {
-        // mengizinkan request tanpa Origin (Postman, curl, health check)
-        if (!origin)
-            return callback(null, true);
-        if (allowedOrigins.includes(origin)) {
-            return callback(null, true);
-        }
-        return callback(new Error(`Origin ${origin} tidak diizinkan oleh CORS`));
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.log("Blocked Origin:", origin);
+
+      callback(new Error(`Origin ${origin} tidak diizinkan oleh CORS`));
     },
     credentials: true,
-}));
+  })
+);
 app.use((0, express_rate_limit_1.default)({
     windowMs: 15 * 60 * 1000,
     max: 200,
