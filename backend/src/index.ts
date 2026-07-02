@@ -39,10 +39,30 @@ app.use(helmet());
 app.use(cors({
     origin: [
         "http://localhost:3000",
+        "https://manara.my.id",
+        "https://www.manara.my.id",
         "https://manara-n72q1osg2-yhauma-s-projects.vercel.app",
         "https://manara-jet.vercel.app"
     ],
     credentials: true,
+}));
+const allowedOrigins = [
+  "http://localhost:3000",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+app.use(cors({
+  origin(origin, callback) {
+    // mengizinkan request tanpa Origin (Postman, curl, health check)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`Origin ${origin} tidak diizinkan oleh CORS`));
+  },
+  credentials: true,
 }));
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
