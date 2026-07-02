@@ -52,7 +52,7 @@ export default function NewResearchPage() {
       if (coverFile) fd.append("cover", coverFile);
 
       const token = localStorage.getItem("manara_token");
-      const res = await fetch(`${API_URL}/api/research`, {
+      const res = await fetch(`${API_URL}/research`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: fd,

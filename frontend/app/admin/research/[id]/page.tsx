@@ -23,7 +23,7 @@ export default function EditResearchPage() {
   });
 
   useEffect(() => {
-    fetch(`${API_URL}/api/research`, {
+    fetch(`${API_URL}/research`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("manara_token")}` }
     })
       .then(r => r.json())

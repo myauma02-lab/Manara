@@ -9,7 +9,7 @@ export default function AdminResearchPage() {
   const [loading, setLoading] = useState(true);
 
   const load = () => {
-    fetch(`${API_URL}/api/research`, {
+    fetch(`${API_URL}/research`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("manara_token")}` }
     })
       .then(r => r.json())
