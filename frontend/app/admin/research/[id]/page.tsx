@@ -1,4 +1,5 @@
 "use client";
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { researchApi } from "@/lib/api";
@@ -22,7 +23,7 @@ export default function EditResearchPage() {
   });
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/research", {
+    fetch(`${API_URL}/api/research`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("manara_token")}` }
     })
       .then(r => r.json())

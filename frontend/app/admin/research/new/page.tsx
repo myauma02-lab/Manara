@@ -1,4 +1,5 @@
 "use client";
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -51,7 +52,7 @@ export default function NewResearchPage() {
       if (coverFile) fd.append("cover", coverFile);
 
       const token = localStorage.getItem("manara_token");
-      const res = await fetch("http://localhost:5000/api/research", {
+      const res = await fetch(`${API_URL}/api/research`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: fd,

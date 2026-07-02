@@ -1,4 +1,5 @@
 ﻿"use client";
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 import { useEffect, useState } from "react";
 import { newsletterApi } from "@/lib/api";
 import { format } from "date-fns";
@@ -10,7 +11,7 @@ export default function AdminNewsletterPage() {
 
   useEffect(() => {
     newsletterApi.subscribe({ email: "" });
-    fetch("http://localhost:5000/api/newsletter/subscribers", {
+    fetch(`${API_URL}/api/newsletter/subscribers`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("manara_token")}` }
     }).then(r => r.json()).then(d => setSubscribers(d.data || [])).catch(() => {}).finally(() => setLoading(false));
   }, []);

@@ -1,4 +1,5 @@
 "use client";
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
 
@@ -41,7 +42,7 @@ export default function AdminUsersPage() {
   const headers = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
 
   const load = () => {
-    fetch("http://localhost:5000/api/users", { headers })
+    fetch(`${API_URL}/api/users`, { headers })
       .then(r => r.json())
       .then(d => setUsers(d.data || []))
       .catch(() => {})
@@ -58,7 +59,7 @@ export default function AdminUsersPage() {
     setSaving(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:5000/api/users", {
+      const res = await fetch(`${API_URL}/api/users`, {
         method: "POST",
         headers,
         body: JSON.stringify(form),
@@ -77,7 +78,7 @@ export default function AdminUsersPage() {
 
   const handleToggleActive = async (id: string, isActive: boolean) => {
     try {
-      await fetch(`http://localhost:5000/api/users/${id}`, {
+      await fetch(`${API_URL}/api/users/${id}`, {
         method: "PUT",
         headers,
         body: JSON.stringify({ isActive: !isActive }),
@@ -88,7 +89,7 @@ export default function AdminUsersPage() {
 
   const handleChangeRole = async (id: string, role: string) => {
     try {
-      await fetch(`http://localhost:5000/api/users/${id}`, {
+      await fetch(`${API_URL}/api/users/${id}`, {
         method: "PUT",
         headers,
         body: JSON.stringify({ role }),

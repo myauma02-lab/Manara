@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 interface MediaFile {
   id: string; filename: string; url: string;
   mimeType: string; size: number; width?: number;
@@ -24,9 +24,11 @@ export default function AdminMediaPage() {
 
   const load = useCallback(() => {
     setLoading(true);
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
     const url = folder
-      ? `http://localhost:5000/api/media?folder=${folder}`
-      : "http://localhost:5000/api/media";
+      ? `${API_URL}/media?folder=${folder}`
+      : `${API_URL}/media`;
     fetch(url, { headers })
       .then(r => r.json())
       .then(d => setFiles(d.data || []))
@@ -44,7 +46,9 @@ export default function AdminMediaPage() {
         const fd = new FormData();
         fd.append("file", file);
         fd.append("folder", folder || "library");
-        await fetch("http://localhost:5000/api/media/upload", {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+await fetch(`${API_URL}/media/upload`, {
           method: "POST",
           headers,
           body: fd,
@@ -57,7 +61,7 @@ export default function AdminMediaPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      await fetch(`http://localhost:5000/api/media/${id}`, { method: "DELETE", headers });
+      await fetch(`${API_URL}/api/media/${id}`, { method: "DELETE", headers });
       setFiles(prev => prev.filter(f => f.id !== id));
       setSelected(null);
       setDeleteConfirm(null);

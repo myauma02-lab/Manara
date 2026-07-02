@@ -1,4 +1,5 @@
 "use client";
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { articlesApi } from "@/lib/api";
@@ -14,7 +15,7 @@ export default function KategoriPage() {
 
   useEffect(() => {
     // Load kategori info
-    fetch(`http://localhost:5000/api/categories/${slug}`)
+    fetch(`${API_URL}/api/categories/${slug}`)
       .then(r => r.json())
       .then(d => setCategory(d.data))
       .catch(() => {});
