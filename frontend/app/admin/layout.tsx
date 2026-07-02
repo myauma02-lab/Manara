@@ -116,6 +116,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </p>
           </div>
         </div>
+        <Link
+  href="/admin/profile"
+  style={{
+    display: "block",
+    textAlign: "center",
+    fontSize: "11px",
+    color: "rgba(134,175,170,0.35)",
+    border: "1px solid rgba(38,108,135,0.1)",
+    borderRadius: "2px",
+    padding: "6px",
+    textDecoration: "none",
+    marginBottom: "6px",
+  }}
+>
+  Ganti Password
+</Link>
         <div style={{ display: "flex", gap: "8px" }}>
           <Link href="/" target="_blank" style={{ flex: 1, display: "block", textAlign: "center", fontSize: "11px", color: "rgba(134,175,170,0.35)", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "2px", padding: "6px", textDecoration: "none", transition: "color 0.15s" }}>
             Lihat Web

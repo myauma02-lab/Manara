@@ -2,6 +2,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
+import { authApi } from "@/lib/api";
 
 interface User {
   id: string;
@@ -36,7 +37,12 @@ export default function AdminUsersPage() {
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "", email: "", password: "", role: "EDITOR",
-  });
+  })
+  const [resetTarget, setResetTarget] = useState<User | null>(null);
+  const [resetForm, setResetForm] = useState({ newPassword: "", confirmPassword: "" });
+  const [resetting, setResetting] = useState(false);
+  const [resetError, setResetError] = useState("");
+  const [resetSuccess, setResetSuccess] = useState("");;
 
   const token = typeof window !== "undefined" ? localStorage.getItem("manara_token") : "";
   const headers = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
@@ -86,6 +92,29 @@ export default function AdminUsersPage() {
       setUsers(prev => prev.map(u => u.id === id ? { ...u, isActive: !isActive } : u));
     } catch { alert("Gagal mengubah status"); }
   };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setResetError("");
+  setResetSuccess("");
+  if (resetForm.newPassword !== resetForm.confirmPassword) {
+    setResetError("Password tidak cocok"); return;
+  }
+  if (resetForm.newPassword.length < 8) {
+    setResetError("Minimal 8 karakter"); return;
+  }
+  setResetting(true);
+  try {
+    await authApi.resetPassword(resetTarget!.id, resetForm.newPassword);
+    setResetSuccess(`Password ${resetTarget!.name} berhasil direset`);
+    setResetForm({ newPassword: "", confirmPassword: "" });
+    setTimeout(() => { setResetTarget(null); setResetSuccess(""); }, 2500);
+  } catch (err: any) {
+    setResetError(err.response?.data?.message || "Gagal mereset password");
+  } finally {
+    setResetting(false);
+  }
+};
 
   const handleChangeRole = async (id: string, role: string) => {
     try {
@@ -267,12 +296,25 @@ export default function AdminUsersPage() {
                     {isSuperAdmin && (
                       <td style={{ padding: "14px 20px" }}>
                         {!isMe && (
-                          <button
-                            onClick={() => handleToggleActive(u.id, u.isActive)}
-                            style={{ fontSize: "12px", color: u.isActive ? "#f87171" : "#3F6F6A", background: "none", border: "none", cursor: "pointer", fontWeight: 500, padding: 0 }}
-                          >
-                            {u.isActive ? "Nonaktifkan" : "Aktifkan"}
-                          </button>
+                          <>
+                            <button
+                              onClick={() => handleToggleActive(u.id, u.isActive)}
+                              style={{ fontSize: "12px", color: u.isActive ? "#f87171" : "#3F6F6A", background: "none", border: "none", cursor: "pointer", fontWeight: 500, padding: 0 }}
+                            >
+                              {u.isActive ? "Nonaktifkan" : "Aktifkan"}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setResetTarget(u);
+                                setResetForm({ newPassword: "", confirmPassword: "" });
+                                setResetError("");
+                                setResetSuccess("");
+                              }}
+                              style={{ fontSize: "12px", color: "#266c87", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                            >
+                              Reset Password
+                            </button>
+                          </>
                         )}
                       </td>
                     )}
