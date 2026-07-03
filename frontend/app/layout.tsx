@@ -3,6 +3,7 @@ import "./globals.css";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 
 export const metadata: Metadata = {
+  
   title: {
     default: "Manara — Shaping Ideas for the Public Sphere",
     template: "%s | Manara",
@@ -19,6 +20,11 @@ export const metadata: Metadata = {
     description: "Ruang intelektual, kreatif, dan berpengetahuan untuk generasi yang berpikir mendalam.",
   },
   robots: { index: true, follow: true },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1, // Prevent zoom yang bikin layout rusak di Android
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -32,3 +38,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+
