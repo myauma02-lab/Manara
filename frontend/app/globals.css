@@ -1,8 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
-
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
 
 /* app/globals.css */
 /* ─── Mobile Reset ─────────────────────────────────── */
@@ -13,14 +12,6 @@
 html {
   overflow-x: hidden;
   scroll-behavior: smooth;
-}
-
-body {
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
 }
 
 /* Fix white space di Android */
@@ -46,15 +37,15 @@ section, div, main, header, footer, nav {
   --ivory: #F4F7F7;
 }
 
-* { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
-
 body {
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   background: #F4F7F7;
   color: #1C3038;
   overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* Dark mode */
