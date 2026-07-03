@@ -1,227 +1,246 @@
-// src/services/emailService.ts
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+// Buat transporter — akan null kalau SMTP belum dikonfigurasi
+const createTransporter = () => {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return null;
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST || "smtp.gmail.com",
+    port: parseInt(process.env.SMTP_PORT || "587"),
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+};
 
-const FROM = process.env.EMAIL_FROM || "Manara <hello@manara.id>";
-const ADMIN_EMAIL = process.env.SMTP_USER || "hello@manara.id";
+const FROM = process.env.EMAIL_FROM || "Manara <manararesearch@gmail.com>";
+const ADMIN = process.env.ADMIN_EMAIL || process.env.SMTP_USER || "manararesearch@gmail.com";
 
-// Template dasar
-const baseTemplate = (title: string, content: string) => `
+// Base HTML template
+const template = (title: string, content: string) => `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <style>
-    body { font-family: 'Georgia', serif; background: #F4F7F7; margin: 0; padding: 40px 20px; color: #1C3038; }
-    .container { max-width: 560px; margin: 0 auto; background: #fff; border-radius: 4px; overflow: hidden; border: 1px solid rgba(38,108,135,0.1); }
-    .header { background: #0F2830; padding: 32px 40px; }
-    .header h1 { font-family: Georgia, serif; font-size: 24px; font-weight: 300; color: #EEF4F6; margin: 0; letter-spacing: 0.04em; }
-    .header p { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(134,175,170,0.5); margin: 6px 0 0; }
-    .body { padding: 36px 40px; }
-    .body p { font-size: 15px; font-weight: 300; line-height: 1.8; color: #3A5560; margin: 0 0 16px; }
-    .info-box { background: rgba(38,108,135,0.04); border: 1px solid rgba(38,108,135,0.1); border-radius: 2px; padding: 20px 24px; margin: 20px 0; }
-    .info-box .label { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #B8CDD2; margin-bottom: 4px; }
-    .info-box .value { font-size: 15px; color: #0F2830; font-weight: 400; }
-    .btn { display: inline-block; background: #266c87; color: #fff; padding: 12px 28px; border-radius: 2px; text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 8px; }
-    .footer { padding: 20px 40px; border-top: 1px solid rgba(38,108,135,0.08); }
-    .footer p { font-size: 12px; color: rgba(134,175,170,0.4); margin: 0; font-style: italic; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>Manara</h1>
-      <p>${title}</p>
+<body style="margin:0;padding:40px 20px;background:#F4F7F7;font-family:Georgia,serif;color:#1C3038;">
+  <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:4px;overflow:hidden;border:1px solid rgba(38,108,135,0.1);">
+    
+    <div style="background:#0F2830;padding:28px 36px;">
+      <p style="font-family:Georgia,serif;font-size:22px;font-weight:300;color:#EEF4F6;margin:0;letter-spacing:0.04em;">Manara</p>
+      <p style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(134,175,170,0.5);margin:6px 0 0;">
+        ${title}
+      </p>
     </div>
-    <div class="body">${content}</div>
-    <div class="footer">
-      <p>"Shaping Ideas for the Public Sphere"</p>
+
+    <div style="padding:32px 36px;">
+      ${content}
+    </div>
+
+    <div style="padding:20px 36px;border-top:1px solid rgba(38,108,135,0.08);background:rgba(38,108,135,0.02);">
+      <p style="font-size:12px;color:rgba(134,175,170,0.4);margin:0;font-style:italic;">
+        "Shaping Ideas for the Public Sphere" — manara.my.id
+      </p>
     </div>
   </div>
 </body>
-</html>
-`;
+</html>`;
 
-// Kirim notifikasi pesan kontak ke admin
+const infoBox = (label: string, value: string) => `
+<div style="background:rgba(38,108,135,0.04);border:1px solid rgba(38,108,135,0.1);border-radius:2px;padding:14px 18px;margin-bottom:12px;">
+  <p style="font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#B8CDD2;margin:0 0 4px;">${label}</p>
+  <p style="font-size:15px;color:#0F2830;margin:0;">${value}</p>
+</div>`;
+
+const btn = (text: string, href: string) => `
+<a href="${href}" style="display:inline-block;background:#266c87;color:#fff;padding:12px 28px;border-radius:2px;text-decoration:none;font-size:13px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;margin-top:8px;">
+  ${text}
+</a>`;
+
+// ── Kirim email (safe — tidak crash kalau SMTP belum setup) ──
+const send = async (to: string, subject: string, html: string) => {
+  const transporter = createTransporter();
+  if (!transporter) {
+    console.log(`[Email Skip] SMTP belum dikonfigurasi. To: ${to} | Subject: ${subject}`);
+    return;
+  }
+  try {
+    await transporter.sendMail({ from: FROM, to, subject, html });
+    console.log(`[Email Sent] To: ${to} | Subject: ${subject}`);
+  } catch (err) {
+    console.error(`[Email Error] To: ${to} | Subject: ${subject}`, err);
+  }
+};
+
+// ── 1. Notifikasi pesan kontak ke admin ──
 export const sendContactNotification = async (data: {
   name: string; email: string; purpose: string; message: string;
 }) => {
-  if (!process.env.SMTP_USER) return; // Skip jika SMTP belum dikonfigurasi
-
   const content = `
-    <p>Ada pesan baru masuk dari form kontak website Manara.</p>
-    <div class="info-box">
-      <div class="label">Nama</div>
-      <div class="value">${data.name}</div>
-    </div>
-    <div class="info-box">
-      <div class="label">Email</div>
-      <div class="value">${data.email}</div>
-    </div>
-    <div class="info-box">
-      <div class="label">Tujuan</div>
-      <div class="value">${data.purpose || "Umum"}</div>
-    </div>
-    <div class="info-box">
-      <div class="label">Pesan</div>
-      <div class="value">${data.message}</div>
-    </div>
-    <a href="mailto:${data.email}" class="btn">Balas Email</a>
-  `;
-
-  await transporter.sendMail({
-    from: FROM,
-    to: ADMIN_EMAIL,
-    subject: `[Manara] Pesan baru dari ${data.name}`,
-    html: baseTemplate("Pesan Kontak Masuk", content),
-  });
-};
-
-// Kirim notifikasi lamaran ke admin
-export const sendApplicationNotification = async (data: {
-  fullName: string; email: string; position: string; batchName: string;
-}) => {
-  if (!process.env.SMTP_USER) return;
-
-  const content = `
-    <p>Ada lamaran baru masuk untuk program Manapeople.</p>
-    <div class="info-box">
-      <div class="label">Nama Pelamar</div>
-      <div class="value">${data.fullName}</div>
-    </div>
-    <div class="info-box">
-      <div class="label">Email</div>
-      <div class="value">${data.email}</div>
-    </div>
-    <div class="info-box">
-      <div class="label">Posisi</div>
-      <div class="value">${data.position}</div>
-    </div>
-    <div class="info-box">
-      <div class="label">Batch</div>
-      <div class="value">${data.batchName}</div>
-    </div>
-    <a href="${process.env.FRONTEND_URL}/admin/recruitment" class="btn">Lihat Lamaran</a>
-  `;
-
-  await transporter.sendMail({
-    from: FROM,
-    to: ADMIN_EMAIL,
-    subject: `[Manara] Lamaran baru — ${data.fullName} · ${data.position}`,
-    html: baseTemplate("Lamaran Manapeople Baru", content),
-  });
-};
-
-// Kirim konfirmasi ke pelamar
-export const sendApplicationConfirmation = async (data: {
-  fullName: string; email: string; position: string; appId: string;
-}) => {
-  if (!process.env.SMTP_USER) return;
-
-  const content = `
-    <p>Halo <strong>${data.fullName}</strong>,</p>
-    <p>Terima kasih telah mengirimkan lamaran untuk posisi <strong>${data.position}</strong> di Manara. Kami telah menerima lamaranmu dan akan meninjauanya segera.</p>
-    <div class="info-box">
-      <div class="label">ID Lamaranmu</div>
-      <div class="value" style="font-family: monospace;">${data.appId}</div>
-    </div>
-    <p>Simpan ID ini untuk memantau status lamaranmu. Kami akan menghubungimu melalui email ini jika ada pembaruan.</p>
-    <p style="margin-top: 24px; font-size: 14px; color: #7A9AA5;">
-      Dengan semangat intelektual,<br/>
-      <strong style="color: #0F2830;">Tim Manara</strong>
+    <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
+      Ada pesan baru masuk dari form kontak website Manara.
     </p>
+    ${infoBox("Dari", data.name)}
+    ${infoBox("Email", data.email)}
+    ${infoBox("Tujuan", data.purpose || "Umum")}
+    ${infoBox("Pesan", data.message)}
+    ${btn("Balas Email", `mailto:${data.email}`)}
   `;
-
-  await transporter.sendMail({
-    from: FROM,
-    to: data.email,
-    subject: `[Manara] Lamaranmu telah diterima — ${data.position}`,
-    html: baseTemplate("Konfirmasi Lamaran", content),
-  });
+  await send(ADMIN, `[Manara] Pesan baru dari ${data.name}`, template("Pesan Kontak Masuk", content));
 };
 
-// Kirim konfirmasi newsletter
+// ── 2. Konfirmasi ke pengirim kontak ──
+export const sendContactConfirmation = async (data: {
+  name: string; email: string;
+}) => {
+  const content = `
+    <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
+      Halo <strong style="color:#0F2830;">${data.name}</strong>,
+    </p>
+    <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
+      Pesan kamu telah kami terima. Tim Manara akan merespons dalam 1–3 hari kerja.
+    </p>
+    ${btn("Kunjungi Manara", "https://manara.my.id")}
+  `;
+  await send(data.email, "[Manara] Pesan kamu telah kami terima", template("Konfirmasi Pesan", content));
+};
+
+// ── 3. Konfirmasi newsletter ke subscriber ──
 export const sendNewsletterConfirmation = async (data: {
   email: string; name?: string;
 }) => {
-  if (!process.env.SMTP_USER) return;
-
+  const greeting = data.name ? `Halo <strong style="color:#0F2830;">${data.name}</strong>` : "Halo";
   const content = `
-    <p>Halo${data.name ? ` <strong>${data.name}</strong>` : ""},</p>
-    <p>Kamu telah berlangganan <strong>Surat Manara</strong> — newsletter mingguan berisi gagasan, wawasan, dan kurasi konten terbaik dari Manara.</p>
-    <p>Yang bisa kamu harapkan:</p>
-    <div class="info-box">
-      <div class="value">✦ Gagasan dan perspektif dari tim editorial Manara</div>
-    </div>
-    <div class="info-box">
-      <div class="value">◎ Ringkasan artikel & riset terbaru</div>
-    </div>
-    <div class="info-box">
-      <div class="value">○ Info program, forum, dan acara Manara</div>
-    </div>
-    <p style="margin-top: 24px; font-size: 14px; color: #7A9AA5;">
-      Dengan semangat intelektual,<br/>
-      <strong style="color: #0F2830;">Tim Manara</strong>
+    <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
+      ${greeting}, terima kasih telah berlangganan <strong>Surat Manara</strong>.
     </p>
+    <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
+      Kamu akan menerima newsletter mingguan berisi gagasan, analisis, dan kurasi konten terbaik dari tim Manara.
+    </p>
+    <div style="background:#0F2830;border-radius:4px;padding:24px;margin:20px 0;">
+      <p style="font-family:Georgia,serif;font-size:18px;font-weight:300;font-style:italic;color:rgba(238,244,246,0.8);margin:0;">
+        "Kami tidak mengangkat suara untuk didengar — kami mendalamkannya."
+      </p>
+    </div>
+    ${btn("Baca Artikel Terbaru", "https://manara.my.id/artikel")}
   `;
-
-  await transporter.sendMail({
-    from: FROM,
-    to: data.email,
-    subject: "[Manara] Selamat datang di Surat Manara",
-    html: baseTemplate("Langganan Newsletter", content),
-  });
+  await send(data.email, "[Manara] Selamat datang di Surat Manara", template("Langganan Newsletter", content));
 };
 
-// Kirim notif status lamaran berubah
+// ── 4. Notifikasi lamaran ke admin ──
+export const sendApplicationNotification = async (data: {
+  fullName: string; email: string; position: string; batchName: string; appId: string;
+}) => {
+  const content = `
+    <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
+      Ada lamaran baru masuk untuk program Manapeople.
+    </p>
+    ${infoBox("Nama Pelamar", data.fullName)}
+    ${infoBox("Email", data.email)}
+    ${infoBox("Posisi", data.position)}
+    ${infoBox("Batch", data.batchName)}
+    ${infoBox("ID Lamaran", data.appId)}
+    ${btn("Tinjau di Dashboard", `https://manara.my.id/admin/recruitment`)}
+  `;
+  await send(
+    ADMIN,
+    `[Manara] Lamaran baru — ${data.fullName} · ${data.position}`,
+    template("Lamaran Manapeople Baru", content)
+  );
+};
+
+// ── 5. Konfirmasi ke pelamar ──
+export const sendApplicationConfirmation = async (data: {
+  fullName: string; email: string; position: string; appId: string;
+}) => {
+  const content = `
+    <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
+      Halo <strong style="color:#0F2830;">${data.fullName}</strong>,
+    </p>
+    <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
+      Lamaran kamu untuk posisi <strong style="color:#0F2830;">${data.position}</strong> telah kami terima. 
+      Tim Manara akan meninjau lamaranmu dan menghubungimu melalui email ini.
+    </p>
+    ${infoBox("ID Lamaran", data.appId)}
+    <p style="font-size:13px;color:#7A9AA5;margin:16px 0 20px;line-height:1.7;">
+      Simpan ID ini sebagai referensi. Proses seleksi biasanya memakan waktu 7–14 hari.
+    </p>
+    ${btn("Tentang Manara", "https://manara.my.id/tentang")}
+  `;
+  await send(
+    data.email,
+    `[Manara] Lamaranmu telah diterima — ${data.position}`,
+    template("Konfirmasi Lamaran Manapeople", content)
+  );
+};
+
+// ── 6. Update status lamaran ke pelamar ──
 export const sendStatusUpdateEmail = async (data: {
   fullName: string; email: string; position: string;
   status: string; adminNotes?: string;
 }) => {
-  if (!process.env.SMTP_USER) return;
-
-  const statusMap: Record<string, { label: string; message: string }> = {
-    REVIEWING: { label: "Sedang Ditinjau", message: "Lamaranmu sedang dalam proses peninjauan oleh tim Manara." },
-    SHORTLISTED: { label: "Masuk Shortlist", message: "Selamat! Lamaranmu masuk ke dalam daftar kandidat yang kami pertimbangkan lebih lanjut." },
-    ACCEPTED: { label: "Diterima", message: "Selamat! Kami dengan senang hati menerima kamu sebagai bagian dari Manara. Tim kami akan segera menghubungimu untuk langkah selanjutnya." },
-    REJECTED: { label: "Tidak Lolos Seleksi", message: "Terima kasih atas minat dan waktu yang telah kamu berikan. Setelah melalui proses seleksi yang ketat, kami belum bisa menerima lamaranmu pada batch ini." },
+  const statusMap: Record<string, { label: string; pesan: string; color: string }> = {
+    REVIEWING: {
+      label: "Sedang Ditinjau",
+      pesan: "Lamaranmu sedang dalam proses peninjauan oleh tim seleksi Manara.",
+      color: "#266c87",
+    },
+    SHORTLISTED: {
+      label: "Masuk Shortlist",
+      pesan: "Selamat! Lamaranmu masuk ke tahap selanjutnya. Tim Manara akan segera menghubungimu untuk informasi lebih lanjut.",
+      color: "#3F6F6A",
+    },
+    ACCEPTED: {
+      label: "Diterima",
+      pesan: "Selamat bergabung di Manara! Kamu resmi menjadi bagian dari kolektif kami. Tim akan segera menghubungimu untuk onboarding.",
+      color: "#3F6F6A",
+    },
+    REJECTED: {
+      label: "Belum Bisa Bergabung",
+      pesan: "Terima kasih atas minat dan waktu yang kamu berikan. Setelah proses seleksi yang ketat, kami belum dapat menerima lamaranmu pada batch ini. Jangan menyerah — kami membuka batch baru secara berkala.",
+      color: "#7A9AA5",
+    },
   };
 
-  const statusInfo = statusMap[data.status];
-  if (!statusInfo) return;
+  const info = statusMap[data.status];
+  if (!info) return;
 
   const content = `
-    <p>Halo <strong>${data.fullName}</strong>,</p>
-    <p>Ada pembaruan status untuk lamaranmu sebagai <strong>${data.position}</strong> di Manara.</p>
-    <div class="info-box">
-      <div class="label">Status Terbaru</div>
-      <div class="value" style="color: #266c87; font-weight: 500;">${statusInfo.label}</div>
-    </div>
-    <p>${statusInfo.message}</p>
-    ${data.adminNotes ? `
-    <div class="info-box">
-      <div class="label">Catatan dari Tim Manara</div>
-      <div class="value">${data.adminNotes}</div>
-    </div>` : ""}
-    <p style="margin-top: 24px; font-size: 14px; color: #7A9AA5;">
-      Dengan semangat intelektual,<br/>
-      <strong style="color: #0F2830;">Tim Manara</strong>
+    <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
+      Halo <strong style="color:#0F2830;">${data.fullName}</strong>,
     </p>
+    <div style="border-left:3px solid ${info.color};padding:16px 20px;background:rgba(38,108,135,0.04);margin-bottom:20px;">
+      <p style="font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#B8CDD2;margin:0 0 6px;">Status Lamaranmu</p>
+      <p style="font-size:20px;font-weight:500;color:${info.color};margin:0;">${info.label}</p>
+    </div>
+    ${infoBox("Posisi", data.position)}
+    <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
+      ${info.pesan}
+    </p>
+    ${data.adminNotes ? infoBox("Catatan dari Tim Manara", data.adminNotes) : ""}
+    ${btn("Kunjungi Manara", "https://manara.my.id")}
   `;
 
-  await transporter.sendMail({
-    from: FROM,
-    to: data.email,
-    subject: `[Manara] Update lamaran — ${statusInfo.label}`,
-    html: baseTemplate("Pembaruan Status Lamaran", content),
-  });
+  await send(
+    data.email,
+    `[Manara] Update lamaran — ${info.label}`,
+    template("Pembaruan Status Lamaran", content)
+  );
+};
+
+// ── 7. Notifikasi subscriber baru ke admin ──
+export const sendNewSubscriberNotification = async (data: {
+  email: string; name?: string;
+}) => {
+  const content = `
+    <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
+      Ada subscriber baru untuk Surat Manara.
+    </p>
+    ${infoBox("Email", data.email)}
+    ${data.name ? infoBox("Nama", data.name) : ""}
+    ${btn("Lihat Semua Subscriber", "https://manara.my.id/admin/newsletter")}
+  `;
+  await send(ADMIN, `[Manara] Subscriber baru — ${data.email}`, template("Subscriber Newsletter Baru", content));
 };

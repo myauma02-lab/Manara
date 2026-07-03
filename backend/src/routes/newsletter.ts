@@ -4,7 +4,8 @@ import { body } from "express-validator";
 import { prisma } from "../utils/prisma";
 import { authenticate, requireAdmin } from "../middleware/auth";
 import { validate } from "../middleware/validate";
-import { sendNewsletterConfirmation } from "../services/emailService";
+import { sendNewsletterConfirmation, sendNewSubscriberNotification } from "../services/emailService";
+
 
 const router = Router();
 
@@ -33,6 +34,7 @@ router.post("/subscribe",
 
       // Email konfirmasi (non-blocking)
       sendNewsletterConfirmation({ email, name }).catch(() => {});
+      sendNewSubscriberNotification({ email, name }).catch(() => {}); 
 
       res.status(201).json({
         success: true,

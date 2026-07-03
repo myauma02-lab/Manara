@@ -4,7 +4,7 @@ import { body } from "express-validator";
 import { prisma } from "../utils/prisma";
 import { validate } from "../middleware/validate";
 import { authenticate, requireAdmin } from "../middleware/auth";
-import { sendContactNotification } from "../services/emailService";
+import { sendContactConfirmation, sendContactNotification } from "../services/emailService";
 
 const router = Router();
 
@@ -33,7 +33,7 @@ router.post("/",
 
       // Kirim email notifikasi ke admin (non-blocking)
       sendContactNotification({ name, email, purpose, message }).catch(() => {});
-
+      sendContactConfirmation({ name, email }).catch(() => {});
       res.status(201).json({
         success: true,
         message: "Pesan berhasil dikirim! Kami akan segera menghubungimu.",
