@@ -66,28 +66,7 @@ body {
   .prose-manara {
     @apply text-[17px] font-light leading-relaxed text-ink-mid;
   }
-  .prose-manara h2 { @apply font-serif text-3xl font-light text-deep mt-12 mb-4; }
-  .prose-manara h3 { @apply font-serif text-2xl font-light text-deep mt-8 mb-3; }
-  .prose-manara p { @apply mb-5; }
-  .prose-manara blockquote { @apply border-l-2 border-primary pl-5 font-serif text-xl italic text-primary my-8; }
-  .prose-manara a { @apply text-primary underline underline-offset-2; }
-}
-
-/* Scroll bar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #266c8730; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #266c87; }
-
-/* Page transition */
-.page-enter { opacity: 0; transform: translateY(12px); }
-.page-enter-active { opacity: 1; transform: translateY(0); transition: all 0.4s cubic-bezier(0.16,1,0.3,1); }
-
-/* Rich text editor */
-.ql-container { font-family: 'DM Sans', sans-serif !important; font-size: 16px !important; border: none !important; }
-.ql-toolbar { border: none !important; border-bottom: 1px solid rgba(38,108,135,0.15) !important; background: #F8FAFA; }
-
-/* ─── Prose Artikel ────────────────────────────────── */
+  /* ─── Prose Artikel ────────────────────────────────── */
 .prose {
   font-size: 17px;
   font-weight: 300;
@@ -251,3 +230,18 @@ body {
   margin: 0.08em 0.12em 0 0;
   color: #266c87;
 }
+}
+
+/* Scroll bar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #266c8730; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #266c87; }
+
+/* Page transition */
+.page-enter { opacity: 0; transform: translateY(12px); }
+.page-enter-active { opacity: 1; transform: translateY(0); transition: all 0.4s cubic-bezier(0.16,1,0.3,1); }
+
+/* Rich text editor */
+.ql-container { font-family: 'DM Sans', sans-serif !important; font-size: 16px !important; border: none !important; }
+.ql-toolbar { border: none !important; border-bottom: 1px solid rgba(38,108,135,0.15) !important; background: #F8FAFA; }
