@@ -53,9 +53,12 @@ router.post("/apply",
       // Email ke admin + konfirmasi ke pelamar (non-blocking)
       if (recruitment) {
         sendApplicationNotification({
-          fullName, email, position,
-          batchName: recruitment.batchName,
-        }).catch(() => {});
+       fullName,
+        email,
+        position,
+        batchName: recruitment.batchName,
+        appId: application.id,
+}).catch(() => {});
       }
 
       sendApplicationConfirmation({
