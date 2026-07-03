@@ -17,7 +17,7 @@ export default function HeroSection() {
         position: 'absolute', inset: 0,
         background: 'radial-gradient(ellipse 70% 60% at 15% 85%, rgba(38,108,135,0.22) 0%, transparent 55%)',
       }} />
-      <div style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', margin: '0 auto', padding: '0 40px', width: '100%' }}>
+      <div style={{position: 'relative', zIndex: 2, width: '100%', margin: '0 auto', padding: '0 16px',}}>
         <p style={{ fontSize: '10px', fontWeight: 500, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(58,138,170,0.8)', marginBottom: '8px' }}>
           {settings.site_tagline || "Shaping Ideas for the Public Sphere"}
         </p>

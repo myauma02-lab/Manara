@@ -1,7 +1,7 @@
 export default function AboutSection() {
   return (
     <section id="about" style={{ padding: '120px 40px', background: '#F8FAFA' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{position: 'relative', zIndex: 2, width: '100%', margin: '0 auto', padding: '0 16px',}}>
         <p style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#266c87', marginBottom: '24px' }}>
           Tentang Manara
         </p>

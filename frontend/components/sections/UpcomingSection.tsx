@@ -2,7 +2,7 @@ import Link from 'next/link';
 export default function UpcomingSection() {
   return (
     <section id="upcoming" style={{ padding: '120px 40px', background: '#F4F7F7' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{position: 'relative', zIndex: 2, width: '100%', margin: '0 auto', padding: '0 16px',}}>
         <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '48px', fontWeight: 300, color: '#0F2830', marginBottom: '24px' }}>
           <em style={{ color: '#266c87' }}>Manapeople</em> — Bergabunglah bersama kami.
         </h2>

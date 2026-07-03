@@ -9,6 +9,8 @@ interface Stats {
   subscribers: number; pendingApplications: number;
 }
 
+
+
 export default function AdminDashboard() {
   const { user } = useAuthStore();
   const [stats, setStats] = useState<Stats | null>(null);

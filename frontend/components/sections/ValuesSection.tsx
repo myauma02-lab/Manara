@@ -7,7 +7,7 @@ export default function ValuesSection() {
   ];
   return (
     <section id="values" style={{ padding: '120px 40px', background: '#F4F7F7' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{position: 'relative', zIndex: 2, width: '100%', margin: '0 auto', padding: '0 16px',}}>
         <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '48px', fontWeight: 300, color: '#0F2830', marginBottom: '48px' }}>Prinsip yang menuntun kami.</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
           {values.map(v => (
