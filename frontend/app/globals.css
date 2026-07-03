@@ -28,9 +28,9 @@ section, div, main, header, footer, nav {
 }
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 :root {
   --primary: #266c87;
@@ -61,37 +61,128 @@ body {
 
 @layer components {
   .section-label {
-    @apply flex items-center gap-3 text-[11px] font-medium tracking-[0.18em] uppercase text-primary;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* gap-3 */
+    font-size: 11px;
+    font-weight: 500; /* font-medium */
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--primary);
   }
   .section-label::before {
     content: '';
-    @apply inline-block w-8 h-px bg-primary flex-shrink-0;
+    display: inline-block;
+    width: 2rem; /* w-8 */
+    height: 1px; /* h-px */
+    background: var(--primary); /* bg-primary */
+    flex-shrink: 0;
   }
 
   .btn-primary {
-    @apply inline-flex items-center gap-2 bg-primary text-white px-8 py-3.5 text-[13px] font-medium tracking-widest uppercase rounded-sm transition-all hover:bg-primary-light hover:-translate-y-px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem; /* gap-2 */
+    background: var(--primary);
+    color: #ffffff;
+    padding-left: 2rem; /* px-8 */
+    padding-right: 2rem; /* px-8 */
+    padding-top: 0.875rem; /* py-3.5 */
+    padding-bottom: 0.875rem; /* py-3.5 */
+    font-size: 13px;
+    font-weight: 500; /* font-medium */
+    letter-spacing: 0.12em; /* tracking-widest */
+    text-transform: uppercase;
+    border-radius: 0.125rem; /* rounded-sm */
+    transition: all 0.2s ease;
+  }
+  .btn-primary:hover {
+    background: var(--primary-light);
+    transform: translateY(-1px); /* hover:-translate-y-px */
   }
   .btn-ghost {
-    @apply inline-flex items-center gap-2 text-[13px] font-normal text-ink-light transition-colors hover:text-ink;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem; /* gap-2 */
+    font-size: 13px;
+    font-weight: 400; /* font-normal */
+    color: var(--ink-light);
+    transition: color 0.2s ease;
+  }
+  .btn-ghost:hover {
+    color: var(--ink);
   }
   .btn-outline {
-    @apply inline-flex items-center gap-2 border border-primary/20 text-primary px-6 py-3 text-[13px] font-medium tracking-wider uppercase rounded-sm transition-all hover:bg-primary hover:text-white;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem; /* gap-2 */
+    border: 1px solid rgba(15,40,48,0.08);
+    color: var(--primary);
+    padding-left: 1.5rem; /* px-6 */
+    padding-right: 1.5rem; /* px-6 */
+    padding-top: 0.75rem; /* py-3 */
+    padding-bottom: 0.75rem; /* py-3 */
+    font-size: 13px;
+    font-weight: 500; /* font-medium */
+    letter-spacing: 0.06em; /* tracking-wider */
+    text-transform: uppercase;
+    border-radius: 0.125rem; /* rounded-sm */
+    transition: all 0.2s ease;
+  }
+  .btn-outline:hover {
+    background: var(--primary);
+    color: #ffffff;
   }
 
   .card-hover {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:border-primary/40;
+    transition: all 0.3s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-0.25rem); /* -translate-y-1 */
+    border-color: rgba(17,94,222,0.4);
   }
 
   .input-field {
-    @apply w-full bg-warm-white border border-primary/10 rounded-sm px-4 py-3.5 text-[15px] font-light text-ink placeholder:text-ink-ghost outline-none focus:border-primary/40 transition-colors;
+    width: 100%;
+    background-color: var(--bg-warm-white, #ffffff);
+    border: 1px solid rgba(15,40,48,0.08);
+    border-radius: 0.125rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.875rem;
+    padding-bottom: 0.875rem;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--ink, #0f2830);
+    outline: none;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .input-field::placeholder {
+    color: var(--ink-ghost, #9aa8ad);
+  }
+
+  .input-field:focus {
+    border-color: rgba(15,40,48,0.25);
   }
 
   .glass {
-    @apply backdrop-blur-md bg-white/80 dark:bg-deep/80 border border-white/20;
+    /* Replaced Tailwind @apply with equivalent CSS for plain globals.css */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background-color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .dark .glass {
+    background-color: rgba(15,40,48,0.8);
+  }
   }
 
   .prose-manara {
-    @apply text-[17px] font-light leading-relaxed text-ink-mid;
+    font-size: 17px;
+    font-weight: 300;
+    line-height: 1.625;
+    color: #3A5560;
   }
   /* ─── Prose Artikel ────────────────────────────────── */
 .prose {
@@ -256,7 +347,6 @@ body {
   line-height: 0.75;
   margin: 0.08em 0.12em 0 0;
   color: #266c87;
-}
 }
 
 /* Scroll bar */
