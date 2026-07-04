@@ -4,11 +4,6 @@ import { projectsApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
-import { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
-
-export const metadata: Metadata = {
-  title: "Research | Layanan Manara",
-};
 
 const STATUS_CONFIG: any = {
   UPCOMING: { label: "Akan Datang", color: "#266c87", bg: "rgba(38,108,135,0.1)" },

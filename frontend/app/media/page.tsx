@@ -13,10 +13,6 @@ const CHANNELS = [
   { type: "Research Publication", title: "Manara Papers", desc: "Makalah kebijakan, working paper, dan laporan lapangan. Menjembatani riset akademis dengan pemahaman publik.", href: "/riset", cta: "Lihat Paper", grad: "linear-gradient(135deg,#0F2830,#3F6F6A)", badge: null },
 ];
 
-export const metadata: Metadata = {
-  title: "Media | Layanan Manara",
-};
-
 export default function MediaPage() {
   return (
     <main>

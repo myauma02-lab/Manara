@@ -4,12 +4,6 @@ import { publicationsApi, categoriesApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
-import Image from "next/image";
-import { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
-
-export const metadata: Metadata = {
-  title: "Artikel | Layanan Manara",
-};
 
 export default function ArtikelPage() {
   const [articles, setArticles] = useState<any[]>([]);
