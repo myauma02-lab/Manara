@@ -6,12 +6,21 @@ import { uploadImage } from "../middleware/upload";
 const router = Router();
 
 // GET /api/founders
-router.get("/", async (_req, res) => {
+// Tambah endpoint GET by slug
+router.get("/:slug", async (req, res) => {
   try {
-    const founders = await prisma.founder.findMany({
-      orderBy: { order: "asc" },
+    // Coba cari by slug dulu, kalau tidak ketemu coba by id
+    const founder = await prisma.founder.findFirst({
+      where: {
+        OR: [
+          { slug: req.params.slug },
+          { id: req.params.slug },
+        ],
+      },
     });
-    res.json({ success: true, data: founders });
+
+    if (!founder) return res.status(404).json({ message: "Founder tidak ditemukan" });
+    res.json({ success: true, data: founder });
   } catch {
     res.status(500).json({ message: "Server error" });
   }

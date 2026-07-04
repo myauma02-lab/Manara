@@ -25,6 +25,8 @@ model User {
   articles      Article[]
   researchPapers ResearchPaper[]
 
+  publications  Publication[]
+
   @@map("users")
 }
 
@@ -39,13 +41,18 @@ enum Role {
 model Founder {
   id          String   @id @default(uuid())
   name        String
+  slug      String?  @unique
   role        String
-  bio         String?
+  bio         String? @db.Text
   photo       String?
   photoPublicId String?
   order       Int      @default(0)
   isActive    Boolean  @default(true)
+
+  researchInterests String[]
+  institution       String?
   socialLinks Json?    // { instagram, twitter, linkedin }
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -90,6 +97,8 @@ model Category {
   articles    Article[]
   researchPapers ResearchPaper[]
 
+  publications  Publication[]
+
   @@map("categories")
 }
 
@@ -98,6 +107,7 @@ model Tag {
   name     String       @unique
   slug     String       @unique
   articles ArticleTag[]
+  publications  PublicationTag[]
 
   @@map("tags")
 }
@@ -274,4 +284,89 @@ model MediaFile {
   createdAt   DateTime @default(now())
 
   @@map("media_files")
+}
+
+// ─── ENUM BARU ───────────────────────────────────────────
+
+enum PublicationType {
+  ARTICLE
+  PAPER
+  JOURNAL
+}
+
+enum ArticleSubtype {
+  OPINION
+  ESSAY
+  ANALYSIS
+  COMMENTARY
+  OTHER
+}
+
+enum PaperSubtype {
+  POLICY_PAPER
+  WORKING_PAPER
+  POLICY_BRIEF
+  WHITE_PAPER
+  RESEARCH_NOTE
+}
+
+// ─── MODEL PUBLICATION (menggantikan articles + research) ─
+
+model Publication {
+  id          String          @id @default(cuid())
+  type        PublicationType
+  slug        String          @unique
+
+  // Field umum
+  title       String
+  excerpt     String?         @db.Text
+  content     String?         @db.Text
+  abstract    String?         @db.Text
+  coverImage  String?
+  status      ContentStatus   @default(DRAFT)
+  isFeatured  Boolean         @default(false)
+  viewCount   Int             @default(0)
+  publishedAt DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  // Relasi
+  authorId    String
+  author      User            @relation(fields: [authorId], references: [id])
+  categoryId  String?
+  category    Category?       @relation(fields: [categoryId], references: [id])
+  tags        PublicationTag[]
+
+  // Field ARTICLE
+  articleSubtype  ArticleSubtype?
+
+  // Field PAPER & JOURNAL (shared)
+  paperSubtype    PaperSubtype?
+  authors         String[]
+  keywords        String[]
+  pdfUrl          String?
+  downloadCount   Int             @default(0)
+  institutions    String[]
+
+  // Field JOURNAL only
+  volume      Int?
+  issue       Int?
+  year        Int?
+  doi         String?
+  reviewers   String[]
+  citations   String[]
+  issn        String?
+
+  @@map("publications")
+}
+
+model PublicationTag {
+  id            String      @id @default(cuid())
+  publicationId String
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  tagId         String
+  tag           Tag         @relation(fields: [tagId], references: [id])
+
+  @@unique([publicationId, tagId])
+  @@map("publication_tags")
 }

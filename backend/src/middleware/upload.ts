@@ -70,3 +70,52 @@ export const uploadCV = multer({
     else cb(new Error('Hanya PDF/DOC yang diizinkan'));
   },
 });
+
+// ─────────────────────────────────────────────
+// Upload Publication (Cover + PDF)
+// ─────────────────────────────────────────────
+
+const publicationStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (_req, file) => {
+    const isPdf = file.mimetype === "application/pdf";
+
+    return {
+      folder: isPdf ? "manara/publications/pdf" : "manara/publications/cover",
+      resource_type: isPdf ? "raw" : "image",
+      allowed_formats: isPdf
+        ? ["pdf"]
+        : ["jpg", "jpeg", "png", "webp", "gif"],
+      transformation: isPdf
+        ? undefined
+        : [{ quality: "auto", fetch_format: "auto" }],
+      public_id: `${Date.now()}-${file.originalname.split(".")[0]}`,
+    };
+  },
+});
+
+export const uploadPublication = multer({
+  storage: publicationStorage,
+  limits: {
+    fileSize: 20 * 1024 * 1024,
+  },
+  fileFilter: (_req, file, cb) => {
+    const allowed = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+      "application/pdf",
+    ];
+
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(
+        new Error(
+          "Hanya gambar (JPG, PNG, WEBP, GIF) atau PDF yang diperbolehkan."
+        )
+      );
+    }
+  },
+});
