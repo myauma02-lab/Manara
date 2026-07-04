@@ -1,8 +1,8 @@
-﻿"use client";
+// Copy seluruh isi app/media/page.tsx ke sini Done
+"use client";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
-import { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
 
 const CHANNELS = [
   { type: "Long-Form Publication", title: "Manara Journal", desc: "Jurnal panjang berkala. Esai, investigasi, dan analisis kritis tentang masyarakat, budaya, dan anak muda Indonesia.", href: "/artikel", cta: "Baca Artikel", grad: "linear-gradient(135deg,#0F2830,#266c87)", badge: "Unggulan" },
@@ -12,10 +12,6 @@ const CHANNELS = [
   { type: "Live Forum Series", title: "Dialog", desc: "Diskusi langsung dan forum publik berkala yang membawa gagasan Manara ke ruang nyata.", href: "#", cta: "Segera Hadir", grad: "linear-gradient(135deg,#266c87,#86AFAA)", badge: null },
   { type: "Research Publication", title: "Manara Papers", desc: "Makalah kebijakan, working paper, dan laporan lapangan. Menjembatani riset akademis dengan pemahaman publik.", href: "/riset", cta: "Lihat Paper", grad: "linear-gradient(135deg,#0F2830,#3F6F6A)", badge: null },
 ];
-
-export const metadata: Metadata = {
-  title: "Media | Layanan Manara",
-};
 
 export default function MediaPage() {
   return (
@@ -68,3 +64,7 @@ export default function MediaPage() {
     </main>
   );
 }
+
+// Ganti semua href "/media/xxx" menjadi "/layanan/media/xxx"
+// Update metadata:
+// title: "Media | Layanan Manara"

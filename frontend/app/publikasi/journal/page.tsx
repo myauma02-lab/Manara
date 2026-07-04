@@ -1,9 +1,14 @@
-﻿"use client";
+"use client";
 import { useEffect, useState } from "react";
 import { publicationsApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
+import { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
+
+export const metadata: Metadata = {
+  title: "Manara Journal | Publikasi",
+};
 
 export default function RisetPage() {
   const [papers, setPapers] = useState<any[]>([]);
@@ -60,7 +65,7 @@ export default function RisetPage() {
 ) : (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: "24px" }}>
               {filtered.map(p => (
-                <Link key={p.id} href={`/publikasi/paper/${p.slug}`} style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", overflow: "hidden", textDecoration: "none", display: "flex", flexDirection: "column", transition: "border-color 0.2s" }}>
+                <Link key={p.id} href={`//publikasi/journal/${p.slug}`} style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", overflow: "hidden", textDecoration: "none", display: "flex", flexDirection: "column", transition: "border-color 0.2s" }}>
                   <div style={{ padding: "32px", flex: 1 }}>
                     <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
                       {p.year && <span style={{ fontSize: "11px", fontWeight: 500, color: "#266c87", border: "1px solid rgba(38,108,135,0.2)", padding: "3px 10px", borderRadius: "2px" }}>{p.year}</span>}

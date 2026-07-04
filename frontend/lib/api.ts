@@ -38,17 +38,10 @@ resetPassword: (userId: string, newPassword: string) =>
   api.post(`/auth/reset-password/${userId}`, { newPassword }),
 };
 
-export const articlesApi = {
-  list: (params?: any) => api.get("/articles", { params }),
-  detail: (slug: string) => api.get(`/articles/${slug}`),
-  adminList: () => api.get("/articles/admin/all"),
-  create: (data: FormData) => api.post("/articles", data),
-  update: (id: string, data: FormData) => api.put(`/articles/${id}`, data),
-  delete: (id: string) => api.delete(`/articles/${id}`),
-};
-
+// ── Founder API update ──
 export const foundersApi = {
   list: () => api.get("/founders"),
+  detail: (slug: string) => api.get(`/founders/${slug}`),
   create: (data: FormData) => api.post("/founders", data),
   update: (id: string, data: FormData) => api.put(`/founders/${id}`, data),
   delete: (id: string) => api.delete(`/founders/${id}`),
@@ -60,15 +53,6 @@ export const projectsApi = {
   create: (data: FormData) => api.post("/projects", data),
   update: (id: string, data: FormData) => api.put(`/projects/${id}`, data),
   delete: (id: string) => api.delete(`/projects/${id}`),
-};
-
-export const researchApi = {
-  list: (params?: any) => api.get("/research", { params }),
-  detail: (slug: string) => api.get(`/research/${slug}`),
-  download: (slug: string) => api.get(`/research/${slug}/download`),
-  create: (data: FormData) => api.post("/research", data),
-  update: (id: string, data: any) => api.put(`/research/${id}`, data),
-  delete: (id: string) => api.delete(`/research/${id}`),
 };
 
 export const newsletterApi = {
@@ -103,4 +87,41 @@ export const categoriesApi = {
   create: (data: any) => api.post("/categories", data),
   update: (id: string, data: any) => api.put(`/categories/${id}`, data),
   delete: (id: string) => api.delete(`/categories/${id}`),
+};
+
+// ── Publications API (menggantikan articlesApi + researchApi) ──
+export const publicationsApi = {
+  // Public
+  list: (params?: {
+    type?: "ARTICLE" | "PAPER" | "JOURNAL";
+    status?: string;
+    category?: string;
+    search?: string;
+    featured?: boolean;
+    limit?: number;
+    page?: number;
+  }) => api.get("/publications", { params }),
+
+  detail: (slug: string) =>
+    api.get(`/publications/${slug}`),
+
+  download: (slug: string) =>
+    api.get(`/publications/${slug}/download`),
+
+  // Admin
+  adminList: (params?: {
+    type?: string;
+    search?: string;
+    limit?: number;
+    page?: number;
+  }) => api.get("/publications/admin/all", { params }),
+
+  create: (data: FormData) =>
+    api.post("/publications", data),
+
+  update: (id: string, data: FormData) =>
+    api.put(`/publications/${id}`, data),
+
+  delete: (id: string) =>
+    api.delete(`/publications/${id}`),
 };

@@ -58,7 +58,7 @@ export default function RisetDetailPage() {
       <div style={{ paddingTop: "100px", paddingBottom: "120px", background: "#F4F7F7", minHeight: "100vh" }}>
         <div style={{ maxWidth: "800px", margin: "0 auto", padding: "0 24px" }}>
 
-          <Link href="/publikasi/paper" style={{ display: "block", fontSize: "12px", color: "#B8CDD2", textDecoration: "none", marginBottom: "40px", marginTop: "20px" }}>
+          <Link href="/publikasi/journal" style={{ display: "block", fontSize: "12px", color: "#B8CDD2", textDecoration: "none", marginBottom: "40px", marginTop: "20px" }}>
             Kembali ke Riset
           </Link>
 

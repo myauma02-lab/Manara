@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@next/font": "^14.2.5",
+    "next/font": "^14.2.5",
     "@types/quill": "^2.0.14",
     "axios": "^1.7.2",
     "clsx": "^2.1.1",

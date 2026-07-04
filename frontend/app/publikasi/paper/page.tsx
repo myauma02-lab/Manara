@@ -1,9 +1,14 @@
-﻿"use client";
+"use client";
 import { useEffect, useState } from "react";
 import { publicationsApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
+import { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
+
+export const metadata: Metadata = {
+  title: "Manara Paper | Publikasi",
+};
 
 export default function RisetPage() {
   const [papers, setPapers] = useState<any[]>([]);

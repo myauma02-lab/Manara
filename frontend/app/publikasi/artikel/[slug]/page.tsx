@@ -59,7 +59,7 @@ export default function ArtikelDetailPage() {
       <Navbar />
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: "80px", background: "#F4F7F7" }}>
         <p style={{ fontFamily: "Georgia,serif", fontSize: "28px", fontWeight: 300, color: "#7A9AA5", marginBottom: "16px" }}>Artikel tidak ditemukan.</p>
-        <Link href="/artikel" style={{ color: "#266c87", fontSize: "14px", textDecoration: "none" }}>← Kembali ke Artikel</Link>
+        <Link href="/publikasi/artikel" style={{ color: "#266c87", fontSize: "14px", textDecoration: "none" }}>← Kembali ke Artikel</Link>
       </div>
       <Footer />
     </main>
@@ -89,7 +89,7 @@ export default function ArtikelDetailPage() {
 
           {/* Breadcrumb */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "28px 0 24px", flexWrap: "wrap" }}>
-            <Link href="/artikel" style={{ fontSize: "12px", color: "#B8CDD2", textDecoration: "none" }}>Artikel</Link>
+            <Link href="/publikasi/artikel" style={{ fontSize: "12px", color: "#B8CDD2", textDecoration: "none" }}>Artikel</Link>
             {article.category && (
               <>
                 <span style={{ color: "#B8CDD2", fontSize: "12px" }}>→</span>
@@ -168,7 +168,7 @@ export default function ArtikelDetailPage() {
           {/* Share + back */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "40px", paddingTop: "32px", borderTop: "1px solid rgba(38,108,135,0.1)", flexWrap: "wrap", gap: "16px" }}>
             <ShareButtons title={article.title} />
-            <Link href="/artikel" style={{ fontSize: "13px", color: "#B8CDD2", textDecoration: "none" }}>
+            <Link href="/publikasi/artikel" style={{ fontSize: "13px", color: "#B8CDD2", textDecoration: "none" }}>
               ← Semua Artikel
             </Link>
           </div>
@@ -200,7 +200,7 @@ export default function ArtikelDetailPage() {
               </p>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "20px" }}>
                 {related.map(r => (
-                  <Link key={r.id} href={`/artikel/${r.slug}`} style={{ textDecoration: "none" }}>
+                  <Link key={r.id} href={`/publikasi/artikel/${r.slug}`} style={{ textDecoration: "none" }}>
                     <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", overflow: "hidden", transition: "border-color 0.2s", height: "100%" }}>
                       <div style={{ aspectRatio: "16/9", background: r.coverImage ? `url(${r.coverImage}) center/cover` : "linear-gradient(135deg,#0F2830,#266c87)" }} />
                       <div style={{ padding: "18px" }}>

@@ -6,7 +6,6 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 
-
 const CHANNEL_CONFIG: Record<string, {
   title: string; type: string; mediaType: string;
   desc: string; color: string; grad: string;

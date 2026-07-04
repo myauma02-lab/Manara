@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useEffect, useState, useCallback } from "react";
 import { publicationsApi, categoriesApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
@@ -8,7 +8,7 @@ import Image from "next/image";
 import { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
 
 export const metadata: Metadata = {
-  title: "Artikel | Layanan Manara",
+  title: "Artikel | Publikasi",
 };
 
 export default function ArtikelPage() {
@@ -17,19 +17,19 @@ export default function ArtikelPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("");
-  const [activeType, setActiveType] = useState("");
+  const [activeType, setActiveType] = useState<"" | "JOURNAL" | "PAPER" | "ARTICLE">("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
 
-  const MEDIA_TYPES = ["JOURNAL", "VIDEO", "PODCAST", "NEWSLETTER", "PAPER"];
+  const MEDIA_TYPES: Array<"JOURNAL" | "PAPER" | "ARTICLE"> = ["JOURNAL", "PAPER", "ARTICLE"];
 
   const load = useCallback(() => {
     setLoading(true);
     publicationsApi.list({
       search: search || undefined,
       category: activeCategory || undefined,
-      type: (activeType || "ARTICLE") as "JOURNAL" | "PAPER" | "ARTICLE",
+      type: activeType === "" ? "ARTICLE" : activeType,
       limit: 9,
       page,
     })
@@ -70,7 +70,7 @@ export default function ArtikelPage() {
           {/* Header */}
           <div style={{ marginBottom: "48px" }}>
             <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#266c87", marginBottom: "16px" }}>
-              Artikel & Jurnal
+              Artikel Manara
             </p>
             <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "24px", flexWrap: "wrap" }}>
               <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(32px,5vw,56px)", fontWeight: 300, color: "#0F2830", lineHeight: 1.1, margin: 0 }}>
@@ -225,7 +225,7 @@ export default function ArtikelPage() {
           {!loading && rest.length > 0 && (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(clamp(260px,30vw,340px),1fr))", gap: "20px", marginBottom: "48px" }}>
               {rest.map(a => (
-                <Link key={a.id} href={`/artikel/${a.slug}`} style={{ textDecoration: "none", display: "flex" }}>
+                <Link key={a.id} href={`/publikasi/artikel/${a.slug}`} style={{ textDecoration: "none", display: "flex" }}>
                   <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", overflow: "hidden", display: "flex", flexDirection: "column", width: "100%", transition: "border-color 0.2s, transform 0.2s" }}>
                     {/* Cover */}
                     <div style={{ aspectRatio: "16/9", background: a.coverImage ? `url(${a.coverImage}) center/cover` : "linear-gradient(135deg,#0F2830,#266c87)", position: "relative", overflow: "hidden" }}>
