@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../utils/prisma";
 import { authenticate, requireAdmin } from "../middleware/auth";
-import { uploadCV as upload } from "../middleware/upload";
+import { upload } from "../middleware/upload";
 
 const router = Router();
 
