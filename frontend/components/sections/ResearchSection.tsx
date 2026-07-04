@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { researchApi } from "@/lib/api";
+import { publicationsApi } from "@/lib/api";
 import Link from "next/link";
 
 export default function ResearchSection() {
@@ -9,7 +9,7 @@ export default function ResearchSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    researchApi.list({ limit: 5 })
+    publicationsApi.list({ limit: 5, type: "PAPER" })
       .then(r => {
         const data = r.data.data || [];
         setFeatured(data[0] || null);
