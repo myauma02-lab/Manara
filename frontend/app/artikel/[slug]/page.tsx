@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { publicationsApi } from "@/lib/api";
 import Link from "next/link";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import dynamic from "next/dynamic";
+const Navbar = dynamic(() => import("@/components/layout/Navbar"), { ssr: false });
+const Footer = dynamic(() => import("@/components/layout/Footer"), { ssr: false });
 import ReadingProgress from "@/components/shared/ReadingProgress";
 import ShareButtons from "@/components/shared/ShareButtons";
 
