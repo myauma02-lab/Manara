@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../utils/prisma";
 import { authenticate, requireAdmin } from "../middleware/auth";
-import { upload } from "../middleware/upload";
+import { uploadImage } from "../middleware/upload";
 
 const router = Router();
 
@@ -20,7 +20,7 @@ router.get("/", async (_req, res) => {
 // POST /api/founders — tambah founder baru
 router.post("/",
   authenticate, requireAdmin,
-  upload.single("photo"),
+  uploadImage("founders").single("photo"),
   async (req: any, res) => {
     try {
       const { name, role, bio, order } = req.body;
@@ -43,7 +43,7 @@ router.post("/",
 // PUT /api/founders/:id — edit founder
 router.put("/:id",
   authenticate, requireAdmin,
-  upload.single("photo"),
+  uploadImage("founders").single("photo"),
   async (req: any, res) => {
     try {
       const { name, role, bio, order } = req.body;
