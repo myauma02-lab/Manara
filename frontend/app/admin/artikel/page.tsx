@@ -1,6 +1,6 @@
 ﻿"use client";
 import { useEffect, useState } from "react";
-import { articlesApi } from "@/lib/api";
+import { publicationsApi } from "@/lib/api";
 import Link from "next/link";
 
 export default function AdminArtikelPage() {
@@ -8,7 +8,7 @@ export default function AdminArtikelPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    articlesApi.adminList()
+    publicationsApi.adminList()
       .then(r => setArticles(r.data.data))
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -16,7 +16,7 @@ export default function AdminArtikelPage() {
 
   const handleDelete = async (id: string, title: string) => {
     if (!confirm(`Hapus artikel "${title}"?`)) return;
-    await articlesApi.delete(id);
+    await publicationsApi.delete(id);
     setArticles(prev => prev.filter(a => a.id !== id));
   };
 

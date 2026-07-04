@@ -1,7 +1,7 @@
 ﻿"use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { articlesApi, categoriesApi } from "@/lib/api";
+import { publicationsApi, categoriesApi } from "@/lib/api";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import WordCount from "@/components/admin/WordCount";
@@ -117,7 +117,7 @@ export default function NewArtikelPage() {
       if (form.categoryId) fd.append("categoryId", form.categoryId);
       if (coverFile) fd.append("cover", coverFile);
 
-      await articlesApi.create(fd);
+      await publicationsApi.create(fd);
       // Hapus draft setelah berhasil simpan
       localStorage.removeItem(AUTOSAVE_KEY);
       alert(status === "PUBLISHED" ? "✓ Artikel dipublikasikan!" : "✓ Draft disimpan!");

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { articlesApi, categoriesApi } from "@/lib/api";
+import { publicationsApi, categoriesApi } from "@/lib/api";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import WordCount from "@/components/admin/WordCount";
@@ -41,7 +41,7 @@ export default function EditArtikelPage() {
   // Load artikel & kategori
   useEffect(() => {
     Promise.all([
-      articlesApi.adminList(),
+      publicationsApi.adminList(),
       categoriesApi.list(),
     ]).then(([artRes, catRes]) => {
       const found = artRes.data.data?.find((a: any) => a.id === id);
@@ -91,7 +91,7 @@ export default function EditArtikelPage() {
       fd.append("isFeatured", String(form.isFeatured));
       if (form.categoryId) fd.append("categoryId", form.categoryId);
       if (coverFile) fd.append("cover", coverFile);
-      await articlesApi.update(String(id), fd);
+      await publicationsApi.update(String(id), fd);
       alert(status === "PUBLISHED" ? "✓ Artikel dipublikasikan!" : "✓ Perubahan disimpan!");
       router.push("/admin/artikel");
     } catch (err: any) {

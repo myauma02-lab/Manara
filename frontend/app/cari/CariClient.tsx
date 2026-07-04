@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { articlesApi, researchApi, projectsApi } from "@/lib/api";
+import { publicationsApi, projectsApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
@@ -29,8 +29,8 @@ export default function CariPage() {
     setLoading(true);
     try {
       const [artRes, resRes, projRes] = await Promise.allSettled([
-        articlesApi.list({ search: searchQuery, limit: 10 }),
-        researchApi.list({ search: searchQuery, limit: 6 }),
+        publicationsApi.list({ search: searchQuery, limit: 10 }),
+        publicationsApi.list({ search: searchQuery, limit: 6 }),
         projectsApi.list(),
       ]);
 

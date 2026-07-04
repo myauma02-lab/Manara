@@ -1,6 +1,6 @@
 ﻿"use client";
 import { useEffect, useState } from "react";
-import { settingsApi, articlesApi, recruitmentApi, newsletterApi } from "@/lib/api";
+import { settingsApi, publicationsApi, recruitmentApi, newsletterApi } from "@/lib/api";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
 
@@ -21,7 +21,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     Promise.allSettled([
       settingsApi.stats(),
-      articlesApi.adminList(),
+      publicationsApi.adminList(),
       recruitmentApi.list(),
     ]).then(([statsRes, articlesRes, recRes]) => {
       if (statsRes.status === "fulfilled") setStats(statsRes.value.data.data);

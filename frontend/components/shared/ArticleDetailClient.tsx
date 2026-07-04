@@ -1,7 +1,7 @@
 'use client';
 // components/shared/ArticleDetailClient.tsx
 import { useEffect, useState } from 'react';
-import { articlesApi } from '@/lib/api';
+import { publicationsApi } from '@/lib/api';
 import Image from 'next/image';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -13,7 +13,7 @@ export default function ArticleDetailClient({ slug }: { slug: string }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    articlesApi.detail(slug)
+    publicationsApi.detail(slug)
       .then(r => setArticle(r.data.data))
       .catch(() => {})
       .finally(() => setLoading(false));

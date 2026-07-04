@@ -2,13 +2,15 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { articlesApi } from "@/lib/api";
+import { publicationsApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 
 export default function KategoriPage() {
-  const { slug } = useParams();
+  const params = useParams();
+  const rawSlug = params.slug;
+  const slug = Array.isArray(rawSlug) ? rawSlug[0] : rawSlug || "";
   const [articles, setArticles] = useState<any[]>([]);
   const [category, setCategory] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -21,7 +23,7 @@ export default function KategoriPage() {
       .catch(() => {});
 
     // Load artikel per kategori
-    articlesApi.list({ category: slug, limit: 20 })
+    publicationsApi.list({ category: slug, limit: 20 })
       .then(r => setArticles(r.data.data || []))
       .catch(() => {})
       .finally(() => setLoading(false));
