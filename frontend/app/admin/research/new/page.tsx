@@ -1,8 +1,10 @@
 "use client";
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export default function NewResearchPage() {
   const router = useRouter();

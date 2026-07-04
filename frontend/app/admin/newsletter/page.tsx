@@ -1,9 +1,11 @@
 ﻿"use client";
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
 import { useEffect, useState } from "react";
 import { newsletterApi } from "@/lib/api";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export default function AdminNewsletterPage() {
   const [subscribers, setSubscribers] = useState<any[]>([]);

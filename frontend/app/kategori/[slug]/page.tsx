@@ -1,11 +1,13 @@
 "use client";
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { publicationsApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export default function KategoriPage() {
   const params = useParams();

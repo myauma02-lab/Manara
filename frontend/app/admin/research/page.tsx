@@ -1,15 +1,17 @@
 ﻿"use client";
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
 import { useEffect, useState } from "react";
-import { researchApi } from "@/lib/api";
+import { publicationsApi } from "@/lib/api";
 import Link from "next/link";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export default function AdminResearchPage() {
   const [papers, setPapers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = () => {
-    fetch(`${API_URL}/research`, {
+    fetch(`${API_URL}/publications`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("manara_token")}` }
     })
       .then(r => r.json())
@@ -23,7 +25,7 @@ export default function AdminResearchPage() {
   const handleDelete = async (id: string, title: string) => {
     if (!confirm(`Hapus paper "${title}"?`)) return;
     try {
-      await researchApi.delete(id);
+      await publicationsApi.delete(id);
       load();
     } catch {
       alert("Gagal menghapus");

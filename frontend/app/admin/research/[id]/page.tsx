@@ -1,9 +1,11 @@
 "use client";
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { researchApi } from "@/lib/api";
+import { publicationsApi } from "@/lib/api";
 import Link from "next/link";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export default function EditResearchPage() {
   const { id } = useParams();
@@ -12,7 +14,15 @@ export default function EditResearchPage() {
   const [loading, setLoading] = useState(true);
   const [authorsInput, setAuthorsInput] = useState("");
   const [keywordsInput, setKeywordsInput] = useState("");
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    title: string;
+    abstract: string;
+    volume: string;
+    issue: string;
+    year: string;
+    doi: string;
+    status: string;
+  }>({
     title: "",
     abstract: "",
     volume: "",
@@ -50,7 +60,8 @@ export default function EditResearchPage() {
     if (!form.title.trim()) { alert("Judul wajib diisi"); return; }
     setSaving(true);
     try {
-      await researchApi.update(String(id), {
+      // publicationsApi.update expects a FormData-like type; cast payload to any
+      await publicationsApi.update(String(id), {
         title: form.title,
         abstract: form.abstract,
         status,
@@ -64,7 +75,7 @@ export default function EditResearchPage() {
         issue: form.issue,
         year: form.year,
         doi: form.doi,
-      });
+      } as any);
       alert(status === "PUBLISHED" ? "Paper dipublikasikan!" : "Draft disimpan!");
       router.push("/admin/research");
     } catch {

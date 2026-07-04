@@ -1,8 +1,10 @@
 "use client";
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { authApi } from "@/lib/api";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 interface User {
   id: string;
