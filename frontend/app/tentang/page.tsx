@@ -16,10 +16,10 @@ const VALUES = [
 ];
 
 const TIMELINE = [
-  { year: "2024", title: "Manara Didirikan", desc: "Lima pendiri bertemu dengan satu keyakinan: anak muda Indonesia butuh ruang intelektual yang lebih serius dan bermakna." },
-  { year: "2024", title: "Platform Digital Diluncurkan", desc: "Website, newsletter, dan ekosistem media Manara mulai dibangun sebagai infrastruktur dasar kolektif." },
-  { year: "2025", title: "Manapeople — Batch Pertama", desc: "Program rekrutmen pertama dibuka, mengundang individu yang percaya bahwa gagasan dapat mengubah ruang publik." },
-  { year: "2025", title: "Manara Papers", desc: "Divisi riset mulai memproduksi paper kebijakan dan laporan lapangan yang dapat diakses publik." },
+  { year: "Desember 2025", title: "Manara Didirikan", desc: "Lima pendiri bertemu dengan satu keyakinan: anak muda Indonesia butuh ruang intelektual yang lebih serius dan bermakna." },
+  { year: "Juli 2026", title: "Platform Digital Diluncurkan", desc: "Website, newsletter, dan ekosistem media Manara mulai dibangun sebagai infrastruktur dasar kolektif." },
+  { year: "Agustus 2026", title: "Manapeople — Batch Pertama", desc: "Program rekrutmen pertama dibuka, mengundang individu yang percaya bahwa gagasan dapat mengubah ruang publik." },
+  { year: "To Do", title: "Manara Papers", desc: "Divisi riset mulai memproduksi paper kebijakan dan laporan lapangan yang dapat diakses publik." },
 ];
 
 export default function TentangManaraPage() {

@@ -33,7 +33,7 @@ export default function ManifestoSection() {
         </blockquote>
 
         <p style={{ fontFamily: "Georgia,serif", fontSize: "14px", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(134,175,170,0.3)", marginBottom: "64px" }}>
-          — Manara Collective, 2024
+          — Manara Collective, 2026
         </p>
 
         {/* Teaser principles */}

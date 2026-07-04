@@ -102,7 +102,7 @@ export default function NewProjectPage() {
               <input value={tagsInput} onChange={e => setTagsInput(e.target.value)}
                 placeholder="Riset, Kebijakan, Youth, Media..."
                 style={inputStyle} />
-              <p style={{ fontSize: "11px", color: "#B8CDD2", marginTop: "6px" }}>Contoh: Riset Muda, Kebijakan Publik, 2024</p>
+              <p style={{ fontSize: "11px", color: "#B8CDD2", marginTop: "6px" }}>Contoh: Riset Muda, Kebijakan Publik, 2026</p>
             </div>
 
             <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "24px" }}>

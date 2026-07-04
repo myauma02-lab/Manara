@@ -157,7 +157,7 @@ export default function EditResearchPage() {
             </div>
             <div>
               <label style={{ display: "block", fontSize: "11px", color: "#7A9AA5", marginBottom: "6px" }}>Tahun</label>
-              <input value={form.year} onChange={e => setForm(f => ({ ...f, year: e.target.value }))} placeholder="2024" style={{ ...inputStyle, padding: "8px 12px", fontSize: "13px" }} />
+              <input value={form.year} onChange={e => setForm(f => ({ ...f, year: e.target.value }))} placeholder="2026" style={{ ...inputStyle, padding: "8px 12px", fontSize: "13px" }} />
             </div>
             <div>
               <label style={{ display: "block", fontSize: "11px", color: "#7A9AA5", marginBottom: "6px" }}>DOI</label>

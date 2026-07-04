@@ -171,7 +171,7 @@ export default function ManifestoPage() {
             "Sebuah generasi yang berpikir dengan kedalaman adalah generasi yang tidak mudah dimanipulasi."
           </p>
           <p style={{ fontSize: "14px", fontWeight: 300, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(134,175,170,0.3)", marginBottom: "64px" }}>
-            — Manara Collective, 2024
+            — Manara Collective, 2026
           </p>
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/tentang" style={{ background: "#266c87", color: "#fff", padding: "14px 32px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", borderRadius: "2px", textDecoration: "none" }}>
