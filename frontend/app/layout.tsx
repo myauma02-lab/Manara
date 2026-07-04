@@ -33,8 +33,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Manara Collective" }],
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
   },
   openGraph: {
     type: "website",
