@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 // Ganti dengan URL Instagram Manara yang sebenarnya
-const INSTAGRAM_URL = "https://www.instagram.com/manararesearch/";
+const INSTAGRAM_URL = "https://www.instagram.com/manara_research/";
 
 // List embed post Instagram manual
 // Format: https://www.instagram.com/p/[POST_ID]/embed/
