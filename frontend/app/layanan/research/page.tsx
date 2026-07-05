@@ -54,7 +54,7 @@ export default function ResearchLayananPage() {
   return (
     <>
       <ServicePage data={RESEARCH_DATA} />
-      {/* Inject portfolio section sebelum footer */}
+      <ProjectsList />
     </>
   );
 }
