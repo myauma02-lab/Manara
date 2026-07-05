@@ -1,19 +1,12 @@
-import PlaceholderPage from "@/components/shared/PlaceholderPage";
+import ServicePage from "@/components/shared/ServicePage";
+import { POLICY_BRIEF_DATA } from "@/lib/services-data";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Policy Brief | Layanan Manara",
+  description: "Policy brief Manara — singkat, tajam, dan dapat ditindaklanjuti oleh pengambil keputusan.",
 };
 
 export default function PolicyBriefPage() {
-  return (
-    <PlaceholderPage
-      title="Policy Brief"
-      subtitle="Layanan · Manara"
-      description="Dokumen kebijakan singkat, tajam, dan actionable — dirancang untuk pengambil keputusan yang butuh landasan intelektual yang kuat."
-      parentHref="/layanan"
-      parentLabel="← Layanan"
-      icon="◇"
-    />
-  );
+  return <ServicePage data={POLICY_BRIEF_DATA} />;
 }

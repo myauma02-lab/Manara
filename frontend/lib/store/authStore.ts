@@ -1,29 +1,79 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { authApi } from '../api';
-interface AuthStore {
-  user: any; token: string | null; isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void; fetchMe: () => Promise<void>;
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { authApi } from "@/lib/api";
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  avatar?: string;
 }
-export const useAuthStore = create<AuthStore>()(
+
+interface AuthState {
+  user: User | null;
+  token: string | null;
+  loading: boolean;
+  initialized: boolean;
+  setToken: (token: string) => void;
+  setUser: (user: User) => void;
+  logout: () => void;
+  fetchMe: () => Promise<void>;
+}
+
+export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
-      user: null, token: null, isLoading: false,
-      login: async (email, password) => {
-        set({ isLoading: true });
-        try {
-          const { data } = await authApi.login(email, password);
-          localStorage.setItem('manara_token', data.token);
-          set({ user: data.user, token: data.token });
-        } finally { set({ isLoading: false }); }
+      user: null,
+      token: null,
+      loading: false,
+      initialized: false,
+
+      setToken: (token) => {
+        set({ token });
+        // Tetap simpan di localStorage untuk kompatibilitas
+        if (typeof window !== "undefined") {
+          localStorage.setItem("manara_token", token);
+        }
       },
-      logout: () => { localStorage.removeItem('manara_token'); set({ user: null, token: null }); },
+
+      setUser: (user) => set({ user }),
+
+      logout: () => {
+        set({ user: null, token: null, initialized: false });
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("manara_token");
+        }
+      },
+
       fetchMe: async () => {
-        try { const { data } = await authApi.me(); set({ user: data.user }); }
-        catch { get().logout(); }
+        const { token } = get();
+        if (!token) {
+          set({ initialized: true });
+          return;
+        }
+        set({ loading: true });
+        try {
+          const res = await authApi.me();
+          set({ user: res.data.data, initialized: true });
+        } catch {
+          // Token expired atau invalid
+          set({ user: null, token: null, initialized: true });
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("manara_token");
+          }
+        } finally {
+          set({ loading: false });
+        }
       },
     }),
-    { name: 'manara_auth', partialize: (s) => ({ user: s.user, token: s.token }) }
+    {
+      name: "manara-auth", // key di localStorage
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        token: state.token,
+        user: state.user,
+      }), // hanya persist token dan user
+    }
   )
 );

@@ -2,17 +2,43 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/authStore';
+import { authApi } from '@/lib/api';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { login, isLoading } = useAuthStore();
+  const { setToken, fetchMe } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const login = async (email: string, password: string) => {
+    const res = await authApi.login(email, password);
+      setToken(res.data.token); // pakai store, bukan localStorage langsung
+      await fetchMe(); // fetch user data
+      router.push("/admin");
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    if (!response.ok) throw new Error('Login failed');
+    const data = await response.json();
+    if (!data?.token) throw new Error('Login failed');
+    setToken(data.token);
+    await fetchMe();
+  };
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); setError('');
-    try { await login(email, password); router.push('/admin'); }
-    catch { setError('Email atau password salah'); }
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+    try {
+      await login(email, password);
+      router.push('/admin');
+    } catch {
+      setError('Email atau password salah');
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <div style={{ minHeight: '100vh', background: '#0F2830', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

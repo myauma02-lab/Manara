@@ -29,9 +29,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (isLoginPage) { setChecked(true); return; }
+    const { token, fetchMe } = useAuthStore.getState();
     if (!token) { router.push("/admin/login"); return; }
-    fetchMe().finally(() => setChecked(true));
-  }, [token, isLoginPage]);
+    fetchMe()
+    .then(() => {
+      const { token: currentToken } = useAuthStore.getState();
+      if (!currentToken) {
+        router.push("/admin/login");
+      }
+    })
+    .finally(() => setChecked(true));
+}, [isLoginPage]);
 
   // Close sidebar on route change (mobile)
   useEffect(() => { setSidebarOpen(false); }, [pathname]);

@@ -202,6 +202,18 @@ export default function Navbar() {
                   </Link>
                 )}
 
+                  <Link href="/admin" style={{
+                    fontSize: "11px",
+                    fontWeight: 300,
+                    color: isDark ? "rgba(238,244,246,0.25)" : "rgba(38,108,135,0.3)",
+                    textDecoration: "none",
+                    letterSpacing: "0.04em",
+                    marginLeft: "4px",
+                    transition: "color 0.2s",
+                  }}>
+                    Admin
+                  </Link>
+
                 {/* Dropdown */}
                 {item.children && desktopActive === item.label && (
                   <div
@@ -460,6 +472,7 @@ export default function Navbar() {
                       {item.label}
                     </Link>
                   )}
+                  
                 </div>
               ))}
 
@@ -487,6 +500,19 @@ export default function Navbar() {
                 </Link>
               </div>
             </div>
+                {/* Di bawah Link CTA di mobile menu */}
+                <Link href="/admin" style={{
+                  display: "block",
+                  textAlign: "center",
+                  padding: "10px",
+                  fontSize: "12px",
+                  fontWeight: 300,
+                  color: "rgba(38,108,135,0.4)",
+                  textDecoration: "none",
+                  marginTop: "8px",
+                }}>
+                  Login Admin
+                </Link>
           </div>
         </>
       )}

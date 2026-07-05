@@ -1,19 +1,12 @@
-import PlaceholderPage from "@/components/shared/PlaceholderPage";
+import ServicePage from "@/components/shared/ServicePage";
+import { TRAINING_DATA } from "@/lib/services-data";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Training | Layanan Manara",
+  description: "Program pelatihan Manara untuk riset, penulisan, dan analisis kebijakan.",
 };
 
 export default function TrainingPage() {
-  return (
-    <PlaceholderPage
-      title="Training"
-      subtitle="Layanan · Manara"
-      description="Program pelatihan riset, penulisan akademik, dan analisis kebijakan untuk individu dan organisasi yang ingin bergerak berbasis data."
-      parentHref="/layanan"
-      parentLabel="← Layanan"
-      icon="△"
-    />
-  );
+  return <ServicePage data={TRAINING_DATA} />;
 }
