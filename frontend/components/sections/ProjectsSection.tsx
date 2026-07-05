@@ -75,45 +75,52 @@ export default function ProjectsSection() {
 
         {/* Project list */}
         {!loading && projects.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {projects.map((p, i) => {
-              const st = STATUS_CONFIG[p.status] || STATUS_CONFIG.UPCOMING;
+              const st = STATUS_CONFIG[p.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.UPCOMING;
               return (
-                <Link key={p.id} href={`/proyek/${p.slug}`} style={{ textDecoration: "none" }}>
-                  <div style={{
-                    display: "grid",
-                    gridTemplateColumns: "48px 1fr auto",
-                    gap: "24px",
-                    alignItems: "center",
-                    padding: "28px 0",
-                    borderBottom: "1px solid rgba(38,108,135,0.1)",
-                    transition: "padding-left 0.25s ease",
-                    cursor: "pointer",
-                  }}
-                    onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.paddingLeft = "12px"}
-                    onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.paddingLeft = "0"}
-                  >
-                    <span style={{ fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300, color: "rgba(38,108,135,0.4)" }}>
-                      0{i + 1}
-                    </span>
-                    <div>
-                      <p style={{ fontFamily: "Georgia,serif", fontSize: "clamp(20px,2.5vw,28px)", fontWeight: 300, color: "#EEF4F6", marginBottom: "6px", transition: "color 0.2s" }}>
-                        {p.title}
-                      </p>
-                      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                        <span style={{ fontSize: "10px", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 10px", borderRadius: "2px", background: st.bg, color: st.color }}>
-                          {st.label}
-                        </span>
-                        {p.tags?.slice(0, 2).map((tag: string) => (
-                          <span key={tag} style={{ fontSize: "11px", color: "rgba(134,175,170,0.35)", border: "1px solid rgba(38,108,135,0.1)", padding: "2px 8px", borderRadius: "2px" }}>
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
+                <div key={p.id ?? i} style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "clamp(12px,3vw,24px)",
+                  padding: "clamp(16px,3vw,28px) 0",
+                  borderBottom: "1px solid rgba(38,108,135,0.1)",
+                  transition: "padding-left 0.25s ease",
+                  cursor: "pointer",
+                  width: "100%",
+                  overflow: "hidden",
+                }}>
+                  <span style={{
+                    fontFamily: "Georgia,serif",
+                    fontSize: "clamp(14px,2.5vw,18px)",
+                    fontWeight: 300,
+                    color: "rgba(38,108,135,0.4)",
+                    flexShrink: 0,
+                    width: "36px",
+                  }}>
+                    {`0${i + 1}`}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{
+                      fontFamily: "Georgia,serif",
+                      fontSize: "clamp(16px,2.5vw,28px)",
+                      fontWeight: 300,
+                      color: "#EEF4F6",
+                      marginBottom: "6px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                      {p.title}
+                    </p>
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                      <span style={{ fontSize: "10px", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 10px", borderRadius: "2px", background: st.bg, color: st.color }}>
+                        {st.label}
+                      </span>
                     </div>
-                    <span style={{ fontSize: "20px", color: "rgba(38,108,135,0.3)", transition: "color 0.2s, transform 0.2s" }}>→</span>
                   </div>
-                </Link>
+                  <span style={{ fontSize: "18px", color: "rgba(38,108,135,0.3)", flexShrink: 0 }}>→</span>
+                </div>
               );
             })}
           </div>

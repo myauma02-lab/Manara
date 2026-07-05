@@ -354,3 +354,62 @@ body {
 /* Rich text editor */
 .ql-container { font-family: 'DM Sans', sans-serif !important; font-size: 16px !important; border: none !important; }
 .ql-toolbar { border: none !important; border-bottom: 1px solid rgba(38,108,135,0.15) !important; background: #F8FAFA; }
+
+/* ─── GLOBAL MOBILE FIX ──────────────────────────────── */
+
+/* Prevent semua overflow horizontal */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Semua section tidak boleh overflow */
+section, div, main, article, aside {
+  max-width: 100%;
+}
+
+/* Grid yang aman di mobile */
+.two-col-grid,
+.about-grid,
+.founder-hero-grid,
+.founder-body-grid,
+.hero-grid,
+.featured-grid,
+.featured-research-grid,
+.related-grid,
+.footer-grid {
+  grid-template-columns: 1fr !important;
+}
+
+/* Override hanya untuk desktop */
+@media (min-width: 769px) {
+  .two-col-grid { grid-template-columns: 1fr 1fr !important; }
+  .about-grid { grid-template-columns: 1fr 1fr !important; }
+  .founder-hero-grid { grid-template-columns: 280px 1fr !important; }
+  .founder-body-grid { grid-template-columns: 280px 1fr !important; }
+  .hero-grid { grid-template-columns: 1fr auto !important; }
+  .featured-grid { grid-template-columns: 1fr 1fr !important; }
+  .featured-research-grid { grid-template-columns: 1fr 1fr !important; }
+  .related-grid { grid-template-columns: repeat(3,1fr) !important; }
+}
+
+@media (min-width: 901px) {
+  .footer-grid { grid-template-columns: 1.6fr repeat(4,1fr) !important; }
+}
+
+/* Teks tidak overflow */
+h1, h2, h3, h4, p, span {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Image responsive */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Iframe responsive (YouTube embed) */
+iframe {
+  max-width: 100%;
+}
