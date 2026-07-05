@@ -159,6 +159,7 @@ export default function Navbar() {
                 onMouseLeave={() => item.children && handleMouseLeave()}
               >
                 {item.children ? (
+                  <>
                   <button
                     onClick={() => router.push(item.href)}
                     style={{
@@ -185,9 +186,6 @@ export default function Navbar() {
                       ▼
                     </span>
                   </button>
-                ) : (
-
-                  <>
                     <Link href="/admin" style={{
                       fontSize: "11px",
                       fontWeight: 300,
@@ -199,6 +197,11 @@ export default function Navbar() {
                     }}>
                       Admin
                     </Link>
+                  </>
+
+                ) : (
+
+                  <>
 
                     <Link href={item.href} style={{
                       display: "block",
