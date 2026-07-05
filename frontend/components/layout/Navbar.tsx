@@ -186,33 +186,37 @@ export default function Navbar() {
                     </span>
                   </button>
                 ) : (
-                  <Link href={item.href} style={{
-                    display: "block",
-                    padding: "8px 14px",
-                    fontSize: "13px",
-                    fontWeight: isActive(item) ? 500 : 400,
-                    color: isDark
-                      ? isActive(item) ? "#EEF4F6" : "rgba(238,244,246,0.65)"
-                      : isActive(item) ? "#0F2830" : "#3A5560",
-                    textDecoration: "none",
-                    letterSpacing: "0.01em",
-                    transition: "color 0.2s",
-                  }}>
-                    {item.label}
-                  </Link>
+
+                  <>
+                    <Link href="/admin" style={{
+                      fontSize: "11px",
+                      fontWeight: 300,
+                      color: isDark ? "rgba(238,244,246,0.25)" : "rgba(38,108,135,0.3)",
+                      textDecoration: "none",
+                      letterSpacing: "0.04em",
+                      marginLeft: "4px",
+                      transition: "color 0.2s",
+                    }}>
+                      Admin
+                    </Link>
+
+                    <Link href={item.href} style={{
+                      display: "block",
+                      padding: "8px 14px",
+                      fontSize: "13px",
+                      fontWeight: isActive(item) ? 500 : 400,
+                      color: isDark
+                        ? isActive(item) ? "#EEF4F6" : "rgba(238,244,246,0.65)"
+                        : isActive(item) ? "#0F2830" : "#3A5560",
+                      textDecoration: "none",
+                      letterSpacing: "0.01em",
+                      transition: "color 0.2s",
+                    }}>
+                      {item.label}
+                    </Link>
+                  </>
                 )}
 
-                  <Link href="/admin" style={{
-                    fontSize: "11px",
-                    fontWeight: 300,
-                    color: isDark ? "rgba(238,244,246,0.25)" : "rgba(38,108,135,0.3)",
-                    textDecoration: "none",
-                    letterSpacing: "0.04em",
-                    marginLeft: "4px",
-                    transition: "color 0.2s",
-                  }}>
-                    Admin
-                  </Link>
 
                 {/* Dropdown */}
                 {item.children && desktopActive === item.label && (
