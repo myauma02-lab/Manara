@@ -10,6 +10,7 @@ const NAV = [
   { href: "/admin/founder", label: "Founders", icon: "○" },
   { href: "/admin/project", label: "Proyek", icon: "△" },
   { href: "/admin/media", label: "Media Library", icon: "⊞" },
+  { href: "/admin/newsletter", label: "Newsletter", icon: "@" },
   { href: "/admin/recruitment", label: "Manapeople", icon: "+" },
   { href: "/admin/kategori", label: "Kategori", icon: "◇" },
   { href: "/admin/pesan", label: "Pesan Masuk", icon: "✉" },
