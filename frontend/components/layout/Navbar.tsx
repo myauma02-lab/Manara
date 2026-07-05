@@ -186,17 +186,6 @@ export default function Navbar() {
                       ▼
                     </span>
                   </button>
-                    <Link href="/admin" style={{
-                      fontSize: "11px",
-                      fontWeight: 300,
-                      color: isDark ? "rgba(238,244,246,0.25)" : "rgba(38,108,135,0.3)",
-                      textDecoration: "none",
-                      letterSpacing: "0.04em",
-                      marginLeft: "4px",
-                      transition: "color 0.2s",
-                    }}>
-                      Admin
-                    </Link>
                   </>
 
                 ) : (
@@ -339,6 +328,19 @@ export default function Navbar() {
             }}>
               Terhubung
             </Link>
+
+            <Link href="/admin" style={{
+              fontSize: "11px",
+              fontWeight: 300,
+              color: isDark ? "rgba(238,244,246,0.25)" : "rgba(38,108,135,0.3)",
+              textDecoration: "none",
+              letterSpacing: "0.04em",
+              marginLeft: "4px",
+              transition: "color 0.2s",
+            }}>
+              Admin
+              </Link>
+
           </div>
         )}
 
