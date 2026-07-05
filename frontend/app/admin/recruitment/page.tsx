@@ -126,7 +126,7 @@ export default function AdminRecruitmentPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
             <div>
               <label style={{ display: "block", fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#7A9AA5", marginBottom: "7px" }}>Nama Batch *</label>
-              <input value={batchForm.batchName} onChange={e => setBatchForm(f => ({ ...f, batchName: e.target.value }))} required placeholder="Manapeople 2025 — Batch Pertama" style={inputStyle} />
+              <input value={batchForm.batchName} onChange={e => setBatchForm(f => ({ ...f, batchName: e.target.value }))} required placeholder="Manapeople 2026 — Batch Pertama" style={inputStyle} />
             </div>
             <div>
               <label style={{ display: "block", fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#7A9AA5", marginBottom: "7px" }}>Deskripsi</label>
