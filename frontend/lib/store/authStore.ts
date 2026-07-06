@@ -55,7 +55,8 @@ export const useAuthStore = create<AuthState>()(
         set({ loading: true });
         try {
           const res = await authApi.me();
-          set({ user: res.data.data, initialized: true });
+          // Backend /auth/me mengembalikan { success, user }, bukan { success, data }
+          set({ user: res.data.user, initialized: true });
         } catch {
           // Token expired atau invalid
           set({ user: null, token: null, initialized: true });
