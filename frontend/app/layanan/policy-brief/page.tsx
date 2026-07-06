@@ -1,4 +1,4 @@
-import ServicePage from "@/components/shared/ServicePage";
+import ServicePageWrapper from "@/components/shared/ServicePageWrapper";
 import { POLICY_BRIEF_DATA } from "@/lib/services-data";
 import type { Metadata } from "next";
 
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function PolicyBriefPage() {
-  return <ServicePage data={POLICY_BRIEF_DATA} />;
+  return <ServicePageWrapper defaultData={POLICY_BRIEF_DATA} />;
 }

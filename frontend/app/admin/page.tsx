@@ -55,6 +55,8 @@ export default function AdminDashboard() {
     { label: "Tambah Proyek", href: "/admin/project/new", icon: "△" },
     { label: "Lihat Lamaran", href: "/admin/recruitment", icon: "+" },
     { label: "Pesan Masuk", href: "/admin/pesan", icon: "✉" },
+    { title: "Publikasi", desc: "Kelola artikel, paper, dan journal", icon: "✦", href: "/admin/publikasi", color: "#266c87", cta: "Kelola Publikasi", },
+    { title: "Layanan", desc: "Edit konten 6 halaman layanan", icon: "◎", href: "/admin/layanan", color: "#3F6F6A", cta: "Kelola Layanan", },
   ];
 
   const STATUS_COLOR: any = {
@@ -87,6 +89,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats */}
+      
       <div style={{ display: "flex", gap: "16px", marginBottom: "40px", flexWrap: "wrap" }}>
         {STAT_CARDS.map(card => (
           <Link key={card.label} href={card.href} style={{

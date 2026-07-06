@@ -3,12 +3,13 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { settingsApi } from "@/lib/api";
 import Link from "next/link";
+
 // Import data default sebagai fallback
 import {
   RESEARCH_DATA, POLICY_BRIEF_DATA, TRAINING_DATA,
   CONSULTING_DATA, EVENT_DATA, MEDIA_SERVICE_DATA,
 } from "@/lib/services-data";
-import type { ServicePageData } from "@/components/shared/ServicePage";
+import type { ServicePageData, ServiceFeature, ServiceStep, ServiceDeliverable, ServiceFAQ } from "@/components/shared/ServicePage";
 
 const DATA_MAP: Record<string, ServicePageData> = {
   research: RESEARCH_DATA,
@@ -80,551 +81,475 @@ export default function EditLayananPage() {
     setData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleReset = () => {
-    if (!defaultData) return;
-    if (confirm("Kembalikan semua konten layanan ini ke default? Perubahan yang belum disimpan akan hilang.")) {
-      setData(defaultData);
-    }
-  };
-
-  // ---------- Styles ----------
-  const inputStyle: React.CSSProperties = {
+ const inputStyle = {
     width: "100%", padding: "10px 13px",
     border: "1px solid rgba(38,108,135,0.15)", borderRadius: "2px",
     fontSize: "14px", outline: "none", color: "#1C3038",
-    fontFamily: "inherit", background: "#fff", boxSizing: "border-box",
+    fontFamily: "inherit", background: "#fff", boxSizing: "border-box" as const,
   };
 
-  const inputDisabledStyle: React.CSSProperties = {
-    ...inputStyle,
-    background: "rgba(38,108,135,0.04)",
-    color: "#7A8A92",
-    cursor: "not-allowed",
+  const labelStyle = {
+    display: "block", fontSize: "11px", fontWeight: 500 as const,
+    letterSpacing: "0.1em", textTransform: "uppercase" as const,
+    color: "#7A9AA5", marginBottom: "6px",
   };
 
-  const textareaStyle: React.CSSProperties = {
-    ...inputStyle,
-    minHeight: "80px",
-    resize: "vertical" as const,
-    lineHeight: 1.5,
-  };
+  if (!defaultData) return (
+    <div style={{ padding: "40px" }}>
+      <p style={{ fontFamily: "Georgia,serif", fontSize: "20px", color: "#7A9AA5", marginBottom: "16px" }}>
+        Layanan tidak ditemukan.
+      </p>
+      <Link href="/admin/layanan" style={{ color: "#266c87", textDecoration: "none" }}>← Kembali</Link>
+    </div>
+  );
 
-  const labelStyle: React.CSSProperties = {
-    display: "block",
-    fontSize: "12px",
-    fontWeight: 600,
-    color: "#266C87",
-    marginBottom: "6px",
-    textTransform: "uppercase",
-    letterSpacing: "0.04em",
-  };
+  if (loading) return (
+    <div style={{ padding: "40px", color: "#7A9AA5", fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300 }}>
+      Memuat data layanan...
+    </div>
+  );
 
-  const helpStyle: React.CSSProperties = {
-    fontSize: "11px",
-    color: "#7A8A92",
-    marginTop: "4px",
-  };
+  // ── Section editors ──────────────────────────────────
 
-  const cardStyle: React.CSSProperties = {
-    background: "#fff",
-    border: "1px solid rgba(38,108,135,0.12)",
-    borderRadius: "3px",
-    padding: "20px",
-    marginBottom: "16px",
-  };
-
-  const sectionIntroStyle: React.CSSProperties = {
-    fontSize: "13px",
-    color: "#7A8A92",
-    marginBottom: "16px",
-    lineHeight: 1.5,
-  };
-
-  const btnPrimary: React.CSSProperties = {
-    background: "#266C87",
-    color: "#fff",
-    border: "none",
-    borderRadius: "2px",
-    padding: "10px 20px",
-    fontSize: "14px",
-    fontWeight: 600,
-    cursor: "pointer",
-  };
-
-  const btnSecondary: React.CSSProperties = {
-    background: "#fff",
-    color: "#266C87",
-    border: "1px solid rgba(38,108,135,0.3)",
-    borderRadius: "2px",
-    padding: "9px 16px",
-    fontSize: "13px",
-    fontWeight: 600,
-    cursor: "pointer",
-  };
-
-  const btnDangerGhost: React.CSSProperties = {
-    background: "transparent",
-    color: "#B3261E",
-    border: "1px solid rgba(179,38,30,0.3)",
-    borderRadius: "2px",
-    padding: "6px 10px",
-    fontSize: "12px",
-    fontWeight: 600,
-    cursor: "pointer",
-  };
-
-  const iconBtn: React.CSSProperties = {
-    background: "rgba(38,108,135,0.06)",
-    color: "#266C87",
-    border: "1px solid rgba(38,108,135,0.15)",
-    borderRadius: "2px",
-    padding: "5px 9px",
-    fontSize: "12px",
-    fontWeight: 600,
-    cursor: "pointer",
-  };
-
-  const row2Style: React.CSSProperties = {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "14px",
-  };
-
-  // ---------- Field generik ----------
-  function Field({
-    label, value, onChange, textarea = false, placeholder = "", disabled = false, help,
-  }: {
-    label: string; value: string; onChange?: (v: string) => void;
-    textarea?: boolean; placeholder?: string; disabled?: boolean; help?: string;
-  }) {
-    return (
-      <div style={{ marginBottom: "16px" }}>
-        <label style={labelStyle}>{label}</label>
-        {textarea ? (
-          <textarea
-            style={disabled ? { ...textareaStyle, background: "rgba(38,108,135,0.04)", color: "#7A8A92" } : textareaStyle}
-            value={value || ""}
-            placeholder={placeholder}
-            disabled={disabled}
-            onChange={(e) => onChange && onChange(e.target.value)}
-          />
-        ) : (
-          <input
-            style={disabled ? inputDisabledStyle : inputStyle}
-            value={value || ""}
-            placeholder={placeholder}
-            disabled={disabled}
-            onChange={(e) => onChange && onChange(e.target.value)}
-          />
-        )}
-        {help && <div style={helpStyle}>{help}</div>}
-      </div>
-    );
-  }
-
-  // ---------- Editor generik untuk array of object ----------
-  function ArrayObjectEditor<T extends Record<string, any>>({
-    items, onChange, fields, itemLabel, emptyItem,
-  }: {
-    items: T[];
-    onChange: (items: T[]) => void;
-    fields: { key: keyof T; label: string; textarea?: boolean; placeholder?: string }[];
-    itemLabel: (item: T, index: number) => string;
-    emptyItem: T;
-  }) {
-    const list = items || [];
-
-    const updateItem = (index: number, key: keyof T, value: any) => {
-      const next = [...list];
-      next[index] = { ...next[index], [key]: value };
-      onChange(next);
-    };
-
-    const addItem = () => onChange([...list, { ...emptyItem }]);
-
-    const removeItem = (index: number) => {
-      if (!confirm("Hapus item ini?")) return;
-      onChange(list.filter((_, i) => i !== index));
-    };
-
-    const moveItem = (index: number, dir: -1 | 1) => {
-      const target = index + dir;
-      if (target < 0 || target >= list.length) return;
-      const next = [...list];
-      [next[index], next[target]] = [next[target], next[index]];
-      onChange(next);
-    };
-
-    return (
+  const renderHero = () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
       <div>
-        {list.map((item, index) => (
-          <div key={index} style={cardStyle}>
-            <div style={{
-              display: "flex", justifyContent: "space-between", alignItems: "center",
-              marginBottom: "14px", paddingBottom: "10px",
-              borderBottom: "1px solid rgba(38,108,135,0.1)",
-            }}>
-              <span style={{ fontSize: "13px", fontWeight: 700, color: "#1C3038" }}>
-                {itemLabel(item, index)}
-              </span>
-              <div style={{ display: "flex", gap: "6px" }}>
-                <button type="button" style={iconBtn} onClick={() => moveItem(index, -1)} disabled={index === 0}>↑</button>
-                <button type="button" style={iconBtn} onClick={() => moveItem(index, 1)} disabled={index === list.length - 1}>↓</button>
-                <button type="button" style={btnDangerGhost} onClick={() => removeItem(index)}>Hapus</button>
-              </div>
-            </div>
-            {fields.map((f) => (
-              <Field
-                key={String(f.key)}
-                label={f.label}
-                value={item[f.key] ?? ""}
-                textarea={f.textarea}
-                placeholder={f.placeholder}
-                onChange={(v) => updateItem(index, f.key, v)}
-              />
-            ))}
+        <label style={labelStyle}>Judul Hero (baris 1)</label>
+        <input value={data.heroTitle} onChange={e => updateData("heroTitle", e.target.value)} style={inputStyle} />
+      </div>
+      <div>
+        <label style={labelStyle}>Judul Hero Aksen (baris 2, miring)</label>
+        <input value={data.heroTitleAccent} onChange={e => updateData("heroTitleAccent", e.target.value)} style={inputStyle} />
+      </div>
+      <div>
+        <label style={labelStyle}>Deskripsi Hero</label>
+        <textarea value={data.heroDesc} onChange={e => updateData("heroDesc", e.target.value)}
+          rows={3} style={{ ...inputStyle, resize: "vertical", lineHeight: 1.7 }} />
+      </div>
+      <div>
+        <label style={labelStyle}>Icon Hero</label>
+        <input value={data.heroIcon} onChange={e => updateData("heroIcon", e.target.value)}
+          style={{ ...inputStyle, maxWidth: "80px", textAlign: "center", fontSize: "20px" }} />
+        <p style={{ fontSize: "11px", color: "#B8CDD2", marginTop: "4px" }}>
+          Gunakan simbol: ○ ◇ △ ✦ □ ◎ ◉ ▷
+        </p>
+      </div>
+      <div>
+        <label style={labelStyle}>Warna Aksen (hex)</label>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <input value={data.accentColor} onChange={e => updateData("accentColor", e.target.value)}
+            style={{ ...inputStyle, maxWidth: "160px" }} />
+          <div style={{ width: "36px", height: "36px", borderRadius: "4px", background: data.accentColor, border: "1px solid rgba(0,0,0,0.1)" }} />
+        </div>
+        <p style={{ fontSize: "11px", color: "#B8CDD2", marginTop: "4px" }}>
+          Research: #266c87 · Paper: #3F6F6A · Journal: #5F8F8A
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderOverview = () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+      <div>
+        <label style={labelStyle}>Judul Overview</label>
+        <input value={data.overviewTitle} onChange={e => updateData("overviewTitle", e.target.value)} style={inputStyle} />
+      </div>
+      <div>
+        <label style={labelStyle}>Paragraf Overview</label>
+        {data.overviewDesc.map((p, i) => (
+          <div key={i} style={{ marginBottom: "8px", display: "flex", gap: "8px" }}>
+            <textarea value={p}
+              onChange={e => {
+                const arr = [...data.overviewDesc];
+                arr[i] = e.target.value;
+                updateData("overviewDesc", arr);
+              }}
+              rows={3} style={{ ...inputStyle, resize: "vertical", lineHeight: 1.7 }} />
+            <button onClick={() => updateData("overviewDesc", data.overviewDesc.filter((_, j) => j !== i))}
+              style={{ background: "none", border: "1px solid rgba(248,113,113,0.3)", borderRadius: "2px", color: "#f87171", cursor: "pointer", padding: "0 10px", flexShrink: 0 }}>
+              ×
+            </button>
           </div>
         ))}
-        <button type="button" style={btnSecondary} onClick={addItem}>
-          + Tambah Item
+        <button onClick={() => updateData("overviewDesc", [...data.overviewDesc, ""])}
+          style={{ fontSize: "12px", color: "#266c87", background: "none", border: "1px dashed rgba(38,108,135,0.3)", borderRadius: "2px", padding: "7px 16px", cursor: "pointer", width: "100%", marginTop: "4px" }}>
+          + Tambah Paragraf
         </button>
       </div>
-    );
-  }
 
-  // ---------- Editor untuk array of string (paragraf overview) ----------
-  function StringListEditor({
-    items, onChange, placeholder, textarea = false, itemLabel,
-  }: {
-    items: string[]; onChange: (items: string[]) => void; placeholder?: string;
-    textarea?: boolean; itemLabel?: (i: number) => string;
-  }) {
-    const list = items || [];
-
-    const updateItem = (index: number, value: string) => {
-      const next = [...list];
-      next[index] = value;
-      onChange(next);
-    };
-
-    const addItem = () => onChange([...list, ""]);
-    const removeItem = (index: number) => onChange(list.filter((_, i) => i !== index));
-    const moveItem = (index: number, dir: -1 | 1) => {
-      const target = index + dir;
-      if (target < 0 || target >= list.length) return;
-      const next = [...list];
-      [next[index], next[target]] = [next[target], next[index]];
-      onChange(next);
-    };
-
-    return (
       <div>
-        {list.map((item, index) => (
-          <div key={index} style={{ marginBottom: "12px" }}>
-            {itemLabel && <label style={labelStyle}>{itemLabel(index)}</label>}
-            <div style={{ display: "flex", gap: "8px" }}>
-              {textarea ? (
-                <textarea
-                  style={textareaStyle}
-                  value={item}
-                  placeholder={placeholder}
-                  onChange={(e) => updateItem(index, e.target.value)}
-                />
-              ) : (
-                <input
-                  style={inputStyle}
-                  value={item}
-                  placeholder={placeholder}
-                  onChange={(e) => updateItem(index, e.target.value)}
-                />
-              )}
-              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                <button type="button" style={iconBtn} onClick={() => moveItem(index, -1)} disabled={index === 0}>↑</button>
-                <button type="button" style={iconBtn} onClick={() => moveItem(index, 1)} disabled={index === list.length - 1}>↓</button>
-              </div>
-              <button type="button" style={btnDangerGhost} onClick={() => removeItem(index)}>Hapus</button>
-            </div>
+        <label style={labelStyle}>Statistik (maks 4)</label>
+        {data.overviewStats.map((stat, i) => (
+          <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 2fr auto", gap: "8px", marginBottom: "8px", alignItems: "center" }}>
+            <input value={stat.value} onChange={e => {
+              const arr = [...data.overviewStats];
+              arr[i] = { ...arr[i], value: e.target.value };
+              updateData("overviewStats", arr);
+            }} placeholder="Nilai" style={{ ...inputStyle, padding: "8px 10px" }} />
+            <input value={stat.label} onChange={e => {
+              const arr = [...data.overviewStats];
+              arr[i] = { ...arr[i], label: e.target.value };
+              updateData("overviewStats", arr);
+            }} placeholder="Label" style={{ ...inputStyle, padding: "8px 10px" }} />
+            <button onClick={() => updateData("overviewStats", data.overviewStats.filter((_, j) => j !== i))}
+              style={{ background: "none", border: "1px solid rgba(248,113,113,0.3)", borderRadius: "2px", color: "#f87171", cursor: "pointer", padding: "0 10px", height: "38px" }}>
+              ×
+            </button>
           </div>
         ))}
-        <button type="button" style={btnSecondary} onClick={addItem}>+ Tambah</button>
+        {data.overviewStats.length < 4 && (
+          <button onClick={() => updateData("overviewStats", [...data.overviewStats, { value: "", label: "" }])}
+            style={{ fontSize: "12px", color: "#266c87", background: "none", border: "1px dashed rgba(38,108,135,0.3)", borderRadius: "2px", padding: "7px 16px", cursor: "pointer", width: "100%" }}>
+            + Tambah Statistik
+          </button>
+        )}
       </div>
-    );
-  }
+    </div>
+  );
 
-  // ---------- Guard: slug tidak dikenal ----------
-  if (!defaultData) {
-    return (
-      <div style={{ padding: "40px", fontFamily: "inherit" }}>
-        <p style={{ color: "#B3261E", fontWeight: 600, marginBottom: "12px" }}>
-          Layanan dengan slug "{slugStr}" tidak ditemukan.
-        </p>
-        <Link href="/admin/layanan" style={{ color: "#266C87", fontSize: "14px" }}>
-          ← Kembali ke daftar layanan
-        </Link>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div style={{ padding: "40px", color: "#266C87", fontFamily: "inherit" }}>
-        Memuat konten...
-      </div>
-    );
-  }
-
-  const d: any = data;
-
-  // ---------- Render konten per section ----------
-  const renderSection = () => {
-    switch (activeSection) {
-      case "hero":
-        return (
-          <div style={cardStyle}>
-            <Field label="Slug (URL)" value={d.slug} disabled help="Slug tidak bisa diubah dari sini karena menentukan alamat halaman." />
-            <div style={row2Style}>
-              <Field label="Kategori" value={d.category} onChange={(v) => updateData("category", v)} />
-              <Field
-                label="Warna Aksen"
-                value={d.accentColor}
-                onChange={(v) => updateData("accentColor", v)}
-                placeholder="#266c87"
-                help="Kode warna HEX, mis. #266c87"
-              />
+  const renderFeatures = () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      <p style={{ fontSize: "13px", fontWeight: 300, color: "#7A9AA5" }}>
+        Fitur-fitur yang ditampilkan di section "What We Do".
+      </p>
+      {data.features.map((f, i) => (
+        <div key={i} style={{ background: "rgba(38,108,135,0.03)", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "16px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+            <p style={{ fontSize: "12px", fontWeight: 500, color: "#266c87" }}>Fitur #{i + 1}</p>
+            <button onClick={() => updateData("features", data.features.filter((_, j) => j !== i))}
+              style={{ background: "none", border: "none", color: "#f87171", cursor: "pointer", fontSize: "14px" }}>
+              Hapus
+            </button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "60px 1fr", gap: "8px", marginBottom: "8px" }}>
+            <div>
+              <label style={labelStyle}>Icon</label>
+              <input value={f.icon} onChange={e => {
+                const arr = [...data.features];
+                arr[i] = { ...arr[i], icon: e.target.value };
+                updateData("features", arr);
+              }} style={{ ...inputStyle, textAlign: "center", fontSize: "18px", padding: "8px" }} />
             </div>
-            <Field
-              label="Icon Hero"
-              value={d.heroIcon}
-              onChange={(v) => updateData("heroIcon", v)}
-              placeholder="○ ◇ ✦ ..."
-              help="Simbol/karakter tunggal yang tampil di hero"
-            />
-            <Field label="Judul Hero" value={d.heroTitle} onChange={(v) => updateData("heroTitle", v)} />
-            <Field
-              label="Judul Hero (Bagian Aksen)"
-              value={d.heroTitleAccent}
-              onChange={(v) => updateData("heroTitleAccent", v)}
-              help="Lanjutan judul yang ditampilkan dengan warna aksen"
-            />
-            <Field label="Deskripsi Hero" value={d.heroDesc} onChange={(v) => updateData("heroDesc", v)} textarea />
-            <Field
-              label="Gradient Hero (CSS, opsional)"
-              value={d.heroGrad}
-              onChange={(v) => updateData("heroGrad", v)}
-              textarea
-              help="Nilai CSS background-gradient. Hanya ubah jika paham CSS."
-            />
-            <div style={row2Style}>
-              <Field label="Parent Href" value={d.parentHref} onChange={(v) => updateData("parentHref", v)} />
-              <Field label="Parent Label" value={d.parentLabel} onChange={(v) => updateData("parentLabel", v)} />
+            <div>
+              <label style={labelStyle}>Judul</label>
+              <input value={f.title} onChange={e => {
+                const arr = [...data.features];
+                arr[i] = { ...arr[i], title: e.target.value };
+                updateData("features", arr);
+              }} style={inputStyle} />
             </div>
           </div>
-        );
+          <label style={labelStyle}>Deskripsi</label>
+          <textarea value={f.desc} onChange={e => {
+            const arr = [...data.features];
+            arr[i] = { ...arr[i], desc: e.target.value };
+            updateData("features", arr);
+          }} rows={2} style={{ ...inputStyle, resize: "none" }} />
+        </div>
+      ))}
+      <button onClick={() => updateData("features", [...data.features, { icon: "○", title: "", desc: "" }])}
+        style={{ fontSize: "12px", color: "#266c87", background: "none", border: "1px dashed rgba(38,108,135,0.3)", borderRadius: "2px", padding: "10px", cursor: "pointer", width: "100%" }}>
+        + Tambah Fitur
+      </button>
+    </div>
+  );
 
-      case "overview":
-        return (
-          <>
-            <div style={cardStyle}>
-              <Field label="Judul Overview" value={d.overviewTitle} onChange={(v) => updateData("overviewTitle", v)} />
+  const renderProcess = () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+      <div>
+        <label style={labelStyle}>Judul Proses</label>
+        <input value={data.processTitle} onChange={e => updateData("processTitle", e.target.value)} style={inputStyle} />
+      </div>
+      <div>
+        <label style={labelStyle}>Deskripsi Proses</label>
+        <textarea value={data.processDesc} onChange={e => updateData("processDesc", e.target.value)}
+          rows={2} style={{ ...inputStyle, resize: "none" }} />
+      </div>
+      <div>
+        <label style={labelStyle}>Langkah-langkah</label>
+        {data.steps.map((step, i) => (
+          <div key={i} style={{ background: "rgba(38,108,135,0.03)", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "14px", marginBottom: "8px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+              <p style={{ fontSize: "12px", fontWeight: 500, color: "#266c87" }}>Langkah {i + 1}</p>
+              <button onClick={() => updateData("steps", data.steps.filter((_, j) => j !== i))}
+                style={{ background: "none", border: "none", color: "#f87171", cursor: "pointer", fontSize: "13px" }}>
+                Hapus
+              </button>
             </div>
-            <p style={sectionIntroStyle}>Paragraf Deskripsi Overview</p>
-            <StringListEditor
-              items={d.overviewDesc}
-              onChange={(items) => updateData("overviewDesc", items)}
-              textarea
-              itemLabel={(i) => `Paragraf ${i + 1}`}
-              placeholder="Tulis paragraf overview..."
-            />
-            <p style={sectionIntroStyle}>Statistik Overview</p>
-            <ArrayObjectEditor
-              items={d.overviewStats}
-              onChange={(items) => updateData("overviewStats", items)}
-              itemLabel={(item, i) => item.value || `Statistik #${i + 1}`}
-              emptyItem={{ value: "", label: "" }}
-              fields={[
-                { key: "value", label: "Value (mis. Berbasis / 4-8 / 10)" },
-                { key: "label", label: "Label penjelas" },
-              ]}
-            />
-          </>
-        );
-
-      case "features":
-        return (
-          <ArrayObjectEditor
-            items={d.features}
-            onChange={(items) => updateData("features", items)}
-            itemLabel={(item, i) => item.title || `Fitur #${i + 1}`}
-            emptyItem={{ icon: "○", title: "", desc: "" }}
-            fields={[
-              { key: "icon", label: "Icon (simbol)" },
-              { key: "title", label: "Judul" },
-              { key: "desc", label: "Deskripsi", textarea: true },
-            ]}
-          />
-        );
-
-      case "process":
-        return (
-          <>
-            <div style={cardStyle}>
-              <Field label="Judul Proses" value={d.processTitle} onChange={(v) => updateData("processTitle", v)} />
-              <Field label="Deskripsi Proses" value={d.processDesc} onChange={(v) => updateData("processDesc", v)} textarea />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 120px", gap: "8px", marginBottom: "8px" }}>
+              <div>
+                <label style={labelStyle}>Nomor</label>
+                <input value={step.num} onChange={e => {
+                  const arr = [...data.steps];
+                  arr[i] = { ...arr[i], num: e.target.value };
+                  updateData("steps", arr);
+                }} placeholder="01" style={{ ...inputStyle, padding: "8px 10px" }} />
+              </div>
+              <div>
+                <label style={labelStyle}>Judul</label>
+                <input value={step.title} onChange={e => {
+                  const arr = [...data.steps];
+                  arr[i] = { ...arr[i], title: e.target.value };
+                  updateData("steps", arr);
+                }} style={{ ...inputStyle, padding: "8px 10px" }} />
+              </div>
+              <div>
+                <label style={labelStyle}>Durasi</label>
+                <input value={step.duration || ""} onChange={e => {
+                  const arr = [...data.steps];
+                  arr[i] = { ...arr[i], duration: e.target.value };
+                  updateData("steps", arr);
+                }} placeholder="1–2 minggu" style={{ ...inputStyle, padding: "8px 10px" }} />
+              </div>
             </div>
-            <ArrayObjectEditor
-              items={d.steps}
-              onChange={(items) => updateData("steps", items.map((it: any, i: number) => ({
-                ...it,
-                num: String(i + 1).padStart(2, "0"),
-              })))}
-              itemLabel={(item, i) => `Langkah ${String(i + 1).padStart(2, "0")}: ${item.title || ""}`}
-              emptyItem={{ num: "00", title: "", desc: "", duration: "" }}
-              fields={[
-                { key: "title", label: "Judul Langkah" },
-                { key: "desc", label: "Deskripsi", textarea: true },
-                { key: "duration", label: "Durasi", placeholder: "mis. 1–2 minggu" },
-              ]}
-            />
-          </>
-        );
-
-      case "deliverables":
-        return (
-          <ArrayObjectEditor
-            items={d.deliverables}
-            onChange={(items) => updateData("deliverables", items)}
-            itemLabel={(item, i) => item.title || `Deliverable #${i + 1}`}
-            emptyItem={{ icon: "○", title: "", desc: "" }}
-            fields={[
-              { key: "icon", label: "Icon (simbol)" },
-              { key: "title", label: "Judul" },
-              { key: "desc", label: "Deskripsi", textarea: true },
-            ]}
-          />
-        );
-
-      case "clients":
-        return (
-          <ArrayObjectEditor
-            items={d.clients}
-            onChange={(items) => updateData("clients", items)}
-            itemLabel={(item, i) => item.label || `Klien #${i + 1}`}
-            emptyItem={{ icon: "🏛️", label: "" }}
-            fields={[
-              { key: "icon", label: "Icon (emoji)" },
-              { key: "label", label: "Nama Target Klien" },
-            ]}
-          />
-        );
-
-      case "why":
-        return (
-          <>
-            <div style={cardStyle}>
-              <Field label="Judul Section" value={d.whyTitle} onChange={(v) => updateData("whyTitle", v)} />
-            </div>
-            <ArrayObjectEditor
-              items={d.whyPoints}
-              onChange={(items) => updateData("whyPoints", items)}
-              itemLabel={(item, i) => item.title || `Alasan #${i + 1}`}
-              emptyItem={{ title: "", desc: "" }}
-              fields={[
-                { key: "title", label: "Judul" },
-                { key: "desc", label: "Deskripsi", textarea: true },
-              ]}
-            />
-          </>
-        );
-
-      case "faq":
-        return (
-          <ArrayObjectEditor
-            items={d.faqs}
-            onChange={(items) => updateData("faqs", items)}
-            itemLabel={(item, i) => item.q || `FAQ #${i + 1}`}
-            emptyItem={{ q: "", a: "" }}
-            fields={[
-              { key: "q", label: "Pertanyaan" },
-              { key: "a", label: "Jawaban", textarea: true },
-            ]}
-          />
-        );
-
-      case "cta":
-        return (
-          <div style={cardStyle}>
-            <Field label="Judul CTA" value={d.ctaTitle} onChange={(v) => updateData("ctaTitle", v)} />
-            <Field label="Deskripsi CTA" value={d.ctaDesc} onChange={(v) => updateData("ctaDesc", v)} textarea />
+            <label style={labelStyle}>Deskripsi</label>
+            <textarea value={step.desc} onChange={e => {
+              const arr = [...data.steps];
+              arr[i] = { ...arr[i], desc: e.target.value };
+              updateData("steps", arr);
+            }} rows={2} style={{ ...inputStyle, resize: "none" }} />
           </div>
-        );
+        ))}
+        <button onClick={() => updateData("steps", [...data.steps, { num: `0${data.steps.length + 1}`, title: "", desc: "", duration: "" }])}
+          style={{ fontSize: "12px", color: "#266c87", background: "none", border: "1px dashed rgba(38,108,135,0.3)", borderRadius: "2px", padding: "10px", cursor: "pointer", width: "100%" }}>
+          + Tambah Langkah
+        </button>
+      </div>
+    </div>
+  );
 
-      default:
-        return null;
-    }
+  const renderDeliverables = () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      {data.deliverables.map((d, i) => (
+        <div key={i} style={{ background: "rgba(38,108,135,0.03)", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "14px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+            <p style={{ fontSize: "12px", fontWeight: 500, color: "#266c87" }}>Deliverable #{i + 1}</p>
+            <button onClick={() => updateData("deliverables", data.deliverables.filter((_, j) => j !== i))}
+              style={{ background: "none", border: "none", color: "#f87171", cursor: "pointer", fontSize: "13px" }}>
+              Hapus
+            </button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "60px 1fr", gap: "8px", marginBottom: "8px" }}>
+            <div>
+              <label style={labelStyle}>Icon</label>
+              <input value={d.icon} onChange={e => {
+                const arr = [...data.deliverables];
+                arr[i] = { ...arr[i], icon: e.target.value };
+                updateData("deliverables", arr);
+              }} style={{ ...inputStyle, textAlign: "center", fontSize: "18px", padding: "8px" }} />
+            </div>
+            <div>
+              <label style={labelStyle}>Judul</label>
+              <input value={d.title} onChange={e => {
+                const arr = [...data.deliverables];
+                arr[i] = { ...arr[i], title: e.target.value };
+                updateData("deliverables", arr);
+              }} style={inputStyle} />
+            </div>
+          </div>
+          <label style={labelStyle}>Deskripsi</label>
+          <textarea value={d.desc} onChange={e => {
+            const arr = [...data.deliverables];
+            arr[i] = { ...arr[i], desc: e.target.value };
+            updateData("deliverables", arr);
+          }} rows={2} style={{ ...inputStyle, resize: "none" }} />
+        </div>
+      ))}
+      <button onClick={() => updateData("deliverables", [...data.deliverables, { icon: "○", title: "", desc: "" }])}
+        style={{ fontSize: "12px", color: "#266c87", background: "none", border: "1px dashed rgba(38,108,135,0.3)", borderRadius: "2px", padding: "10px", cursor: "pointer", width: "100%" }}>
+        + Tambah Deliverable
+      </button>
+    </div>
+  );
+
+  const renderClients = () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      <p style={{ fontSize: "13px", color: "#7A9AA5" }}>Klien yang ditampilkan sebagai tag di halaman publik.</p>
+      {data.clients.map((c, i) => (
+        <div key={i} style={{ display: "grid", gridTemplateColumns: "60px 1fr auto", gap: "8px", alignItems: "center" }}>
+          <input value={c.icon} onChange={e => {
+            const arr = [...data.clients];
+            arr[i] = { ...arr[i], icon: e.target.value };
+            updateData("clients", arr);
+          }} placeholder="🏛️" style={{ ...inputStyle, textAlign: "center", fontSize: "18px", padding: "8px" }} />
+          <input value={c.label} onChange={e => {
+            const arr = [...data.clients];
+            arr[i] = { ...arr[i], label: e.target.value };
+            updateData("clients", arr);
+          }} placeholder="Label klien" style={inputStyle} />
+          <button onClick={() => updateData("clients", data.clients.filter((_, j) => j !== i))}
+            style={{ background: "none", border: "1px solid rgba(248,113,113,0.3)", borderRadius: "2px", color: "#f87171", cursor: "pointer", padding: "0 10px", height: "40px" }}>
+            ×
+          </button>
+        </div>
+      ))}
+      <button onClick={() => updateData("clients", [...data.clients, { icon: "🏢", label: "" }])}
+        style={{ fontSize: "12px", color: "#266c87", background: "none", border: "1px dashed rgba(38,108,135,0.3)", borderRadius: "2px", padding: "10px", cursor: "pointer", width: "100%" }}>
+        + Tambah Klien
+      </button>
+    </div>
+  );
+
+  const renderWhy = () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+      <div>
+        <label style={labelStyle}>Judul Section</label>
+        <input value={data.whyTitle} onChange={e => updateData("whyTitle", e.target.value)} style={inputStyle} />
+      </div>
+      {data.whyPoints.map((p, i) => (
+        <div key={i} style={{ background: "rgba(38,108,135,0.03)", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "14px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+            <p style={{ fontSize: "12px", fontWeight: 500, color: "#266c87" }}>Poin #{i + 1}</p>
+            <button onClick={() => updateData("whyPoints", data.whyPoints.filter((_, j) => j !== i))}
+              style={{ background: "none", border: "none", color: "#f87171", cursor: "pointer", fontSize: "13px" }}>
+              Hapus
+            </button>
+          </div>
+          <input value={p.title} onChange={e => {
+            const arr = [...data.whyPoints];
+            arr[i] = { ...arr[i], title: e.target.value };
+            updateData("whyPoints", arr);
+          }} placeholder="Judul poin" style={{ ...inputStyle, marginBottom: "8px", fontWeight: 500 }} />
+          <textarea value={p.desc} onChange={e => {
+            const arr = [...data.whyPoints];
+            arr[i] = { ...arr[i], desc: e.target.value };
+            updateData("whyPoints", arr);
+          }} rows={2} placeholder="Deskripsi..." style={{ ...inputStyle, resize: "none" }} />
+        </div>
+      ))}
+      <button onClick={() => updateData("whyPoints", [...data.whyPoints, { title: "", desc: "" }])}
+        style={{ fontSize: "12px", color: "#266c87", background: "none", border: "1px dashed rgba(38,108,135,0.3)", borderRadius: "2px", padding: "10px", cursor: "pointer", width: "100%" }}>
+        + Tambah Poin
+      </button>
+    </div>
+  );
+
+  const renderFaq = () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      {data.faqs.map((faq, i) => (
+        <div key={i} style={{ background: "rgba(38,108,135,0.03)", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "14px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+            <p style={{ fontSize: "12px", fontWeight: 500, color: "#266c87" }}>FAQ #{i + 1}</p>
+            <button onClick={() => updateData("faqs", data.faqs.filter((_, j) => j !== i))}
+              style={{ background: "none", border: "none", color: "#f87171", cursor: "pointer", fontSize: "13px" }}>
+              Hapus
+            </button>
+          </div>
+          <label style={labelStyle}>Pertanyaan</label>
+          <input value={faq.q} onChange={e => {
+            const arr = [...data.faqs];
+            arr[i] = { ...arr[i], q: e.target.value };
+            updateData("faqs", arr);
+          }} placeholder="Pertanyaan yang sering diajukan..." style={{ ...inputStyle, marginBottom: "8px" }} />
+          <label style={labelStyle}>Jawaban</label>
+          <textarea value={faq.a} onChange={e => {
+            const arr = [...data.faqs];
+            arr[i] = { ...arr[i], a: e.target.value };
+            updateData("faqs", arr);
+          }} rows={3} style={{ ...inputStyle, resize: "vertical", lineHeight: 1.7 }} />
+        </div>
+      ))}
+      <button onClick={() => updateData("faqs", [...data.faqs, { q: "", a: "" }])}
+        style={{ fontSize: "12px", color: "#266c87", background: "none", border: "1px dashed rgba(38,108,135,0.3)", borderRadius: "2px", padding: "10px", cursor: "pointer", width: "100%" }}>
+        + Tambah FAQ
+      </button>
+    </div>
+  );
+
+  const renderCta = () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+      <div>
+        <label style={labelStyle}>Judul CTA</label>
+        <input value={data.ctaTitle} onChange={e => updateData("ctaTitle", e.target.value)} style={inputStyle} />
+      </div>
+      <div>
+        <label style={labelStyle}>Deskripsi CTA</label>
+        <textarea value={data.ctaDesc} onChange={e => updateData("ctaDesc", e.target.value)}
+          rows={2} style={{ ...inputStyle, resize: "none" }} />
+      </div>
+    </div>
+  );
+
+  const SECTION_RENDERERS: Record<ActiveSection, () => JSX.Element> = {
+    hero: renderHero,
+    overview: renderOverview,
+    features: renderFeatures,
+    process: renderProcess,
+    deliverables: renderDeliverables,
+    clients: renderClients,
+    why: renderWhy,
+    faq: renderFaq,
+    cta: renderCta,
   };
 
   return (
-    <div style={{ fontFamily: "inherit", padding: "28px", maxWidth: "1100px", margin: "0 auto" }}>
+    <div style={{ padding: "40px", maxWidth: "1040px" }}>
+
       {/* Header */}
-      <div style={{
-        display: "flex", justifyContent: "space-between", alignItems: "center",
-        marginBottom: "24px", flexWrap: "wrap", gap: "12px",
-      }}>
-        <div>
-          <Link href="/admin/layanan" style={{ color: "#266C87", fontSize: "13px", textDecoration: "none" }}>
-            ← Kembali ke daftar layanan
-          </Link>
-          <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#1C3038", margin: "6px 0 0" }}>
-            Edit Layanan: {d.category || slugStr}
+      <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "28px" }}>
+        <Link href="/admin/layanan" style={{ color: "#B8CDD2", textDecoration: "none", fontSize: "20px" }}>←</Link>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: "11px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "2px" }}>
+            Edit Layanan
+          </p>
+          <h1 style={{ fontFamily: "Georgia,serif", fontSize: "26px", fontWeight: 300, color: "#0F2830" }}>
+            {data.category}
           </h1>
         </div>
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          {saved && (
-            <span style={{ color: "#2E7D32", fontSize: "13px", fontWeight: 600 }}>
-              ✓ Tersimpan
-            </span>
-          )}
-          <button type="button" style={btnSecondary} onClick={handleReset}>
-            Reset ke Default
-          </button>
-          <button type="button" style={btnPrimary} onClick={handleSave} disabled={saving}>
-            {saving ? "Menyimpan..." : "Simpan Perubahan"}
+
+        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <Link href={`/layanan/${slugStr}`} target="_blank"
+            style={{ padding: "9px 16px", fontSize: "12px", border: "1px solid rgba(38,108,135,0.2)", borderRadius: "2px", color: "#7A9AA5", textDecoration: "none", letterSpacing: "0.04em" }}>
+            Preview ↗
+          </Link>
+          <button onClick={handleSave} disabled={saving}
+            style={{ padding: "9px 24px", fontSize: "12px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", background: saved ? "#3F6F6A" : "#266c87", color: "#fff", border: "none", borderRadius: "2px", cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.6 : 1, transition: "background 0.3s" }}>
+            {saving ? "Menyimpan..." : saved ? "✓ Tersimpan!" : "Simpan Semua"}
           </button>
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: "24px", alignItems: "flex-start", flexWrap: "wrap" }}>
-        {/* Sidebar navigasi section */}
-        <div style={{
-          width: "220px", flexShrink: 0,
-          border: "1px solid rgba(38,108,135,0.12)", borderRadius: "3px",
-          background: "#fff", overflow: "hidden",
-        }}>
-          {(Object.keys(SECTION_LABELS) as ActiveSection[]).map((key) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setActiveSection(key)}
-              style={{
-                display: "block", width: "100%", textAlign: "left",
-                padding: "12px 16px", fontSize: "13px", fontWeight: activeSection === key ? 700 : 500,
-                color: activeSection === key ? "#266C87" : "#1C3038",
-                background: activeSection === key ? "rgba(38,108,135,0.08)" : "transparent",
-                border: "none", borderBottom: "1px solid rgba(38,108,135,0.08)",
-                cursor: "pointer",
-              }}
-            >
-              {SECTION_LABELS[key]}
-            </button>
-          ))}
+      <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: "24px" }}>
+
+        {/* LEFT — Section navigator */}
+        <div style={{ position: "sticky", top: "80px", alignSelf: "start" }}>
+          <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", overflow: "hidden" }}>
+            <div style={{ padding: "12px 16px", borderBottom: "1px solid rgba(38,108,135,0.08)", background: "rgba(38,108,135,0.02)" }}>
+              <p style={{ fontSize: "10px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#B8CDD2" }}>
+                Section
+              </p>
+            </div>
+            {(Object.entries(SECTION_LABELS) as [ActiveSection, string][]).map(([key, label]) => (
+              <button key={key} onClick={() => setActiveSection(key)}
+                style={{ width: "100%", padding: "11px 16px", display: "block", textAlign: "left", background: activeSection === key ? "rgba(38,108,135,0.06)" : "transparent", border: "none", borderLeft: `3px solid ${activeSection === key ? "#266c87" : "transparent"}`, cursor: "pointer", fontSize: "13px", fontWeight: activeSection === key ? 500 : 300, color: activeSection === key ? "#266c87" : "#3A5560", transition: "all 0.15s" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Reset ke default */}
+          <button onClick={() => {
+            if (confirm("Reset ke data default? Semua perubahan yang belum disimpan akan hilang.")) {
+              setData(defaultData);
+            }
+          }}
+            style={{ width: "100%", marginTop: "10px", padding: "8px", fontSize: "11px", color: "#B8CDD2", background: "none", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "2px", cursor: "pointer", letterSpacing: "0.04em" }}>
+            Reset ke Default
+          </button>
         </div>
 
-        {/* Panel konten section aktif */}
-        <div style={{ flex: 1, minWidth: "300px" }}>
-          <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#1C3038", marginBottom: "16px" }}>
-            {SECTION_LABELS[activeSection]}
-          </h2>
-          {renderSection()}
+        {/* RIGHT — Editor area */}
+        <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "28px" }}>
+          <div style={{ marginBottom: "20px", paddingBottom: "16px", borderBottom: "1px solid rgba(38,108,135,0.08)" }}>
+            <h2 style={{ fontFamily: "Georgia,serif", fontSize: "22px", fontWeight: 300, color: "#0F2830", marginBottom: "4px" }}>
+              {SECTION_LABELS[activeSection]}
+            </h2>
+            <p style={{ fontSize: "13px", color: "#B8CDD2" }}>
+              Ubah konten section ini. Klik "Simpan Semua" untuk menyimpan ke database.
+            </p>
+          </div>
+
+          {SECTION_RENDERERS[activeSection]?.()}
         </div>
       </div>
     </div>

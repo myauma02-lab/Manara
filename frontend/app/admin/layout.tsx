@@ -6,18 +6,18 @@ import { useAuthStore } from "@/lib/store/authStore";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: "◎" },
-  { href: "/admin/profile", label: "Profil", icon: "8" },
-  { href: "/admin/publikasi", label: "Publikasi", icon: "0" },
-  { href: "/admin/layanan", label: "Layanan", icon: "9" },
-  { href: "/admin/founder", label: "Founders", icon: "○" },
+  { href: "/admin/publikasi", label: "Publikasi", icon: "✦" },
+  { href: "/admin/layanan", label: "Layanan", icon: "◇" },
+  { href: "/admin/recruitment", label: "Manapeople", icon: "+" },
   { href: "/admin/project", label: "Proyek/", icon: "△" },
   { href: "/admin/media", label: "Media Library", icon: "⊞" },
-  { href: "/admin/newsletter", label: "Newsletter", icon: "@" },
-  { href: "/admin/recruitment", label: "Manapeople", icon: "+" },
-  { href: "/admin/kategori", label: "Kategori", icon: "◇" },
   { href: "/admin/pesan", label: "Pesan Masuk", icon: "✉" },
+  { href: "/admin/newsletter", label: "Newsletter", icon: "@" },
+  { href: "/admin/founder", label: "Founders", icon: "○" },
+  { href: "/admin/kategori", label: "Kategori", icon: "◇" },
   { href: "/admin/users", label: "Users", icon: "⊕" },
   { href: "/admin/settings", label: "Pengaturan", icon: "⚙" },
+  { href: "/admin/profile", label: "Profil", icon: "👤" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

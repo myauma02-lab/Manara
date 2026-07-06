@@ -1,4 +1,4 @@
-import ServicePage from "@/components/shared/ServicePage";
+import ServicePageWrapper from "@/components/shared/ServicePageWrapper";
 import { MEDIA_SERVICE_DATA } from "@/lib/services-data";
 import type { Metadata } from "next";
 
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function MediaLayananPage() {
-  return <ServicePage data={MEDIA_SERVICE_DATA} />;
+  return <ServicePageWrapper defaultData={MEDIA_SERVICE_DATA} />;
 }

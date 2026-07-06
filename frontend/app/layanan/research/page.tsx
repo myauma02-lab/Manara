@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { projectsApi } from "@/lib/api";
-import ServicePage from "@/components/shared/ServicePage";
+import ServicePageWrapper from "@/components/shared/ServicePageWrapper";
 import { RESEARCH_DATA } from "@/lib/services-data";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -53,7 +53,7 @@ function ProjectsList() {
 export default function ResearchLayananPage() {
   return (
     <>
-      <ServicePage data={RESEARCH_DATA} />
+      <ServicePageWrapper defaultData={RESEARCH_DATA} />
       <ProjectsList />
     </>
   );
