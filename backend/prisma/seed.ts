@@ -48,11 +48,11 @@ async function main() {
 
   // Active Recruitment
   await prisma.recruitment.upsert({
-    where: { id: 'manapeople-2025' },
+    where: { id: 'manapeople-2026' },
     update: {},
     create: {
-      id: 'manapeople-2025',
-      batchName: 'Manapeople 2025 — Batch Pertama',
+      id: 'manapeople-2026',
+      batchName: 'Manapeople 2026 — Batch Pertama',
       description: 'Bergabunglah dengan kolektif intelektual Manara. Kami membuka ruang bagi individu yang percaya gagasan dapat mengubah ruang publik.',
       isOpen: true,
       positions: [

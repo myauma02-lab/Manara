@@ -47,7 +47,7 @@ async function main() {
     console.log('✅ Founders seeded');
     // Active Recruitment
     await prisma.recruitment.upsert({
-        where: { id: 'manapeople-2025' },
+        where: { id: 'manapeople-2026' },
         update: {},
         create: {
             id: 'manapeople-2026',
