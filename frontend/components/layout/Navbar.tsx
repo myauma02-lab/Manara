@@ -11,6 +11,7 @@ const NAV = [
       { label: "Tentang Manara", href: "/tentang/manara", desc: "Siapa kami dan mengapa kami ada" },
       { label: "Manifesto", href: "/tentang/manifesto", desc: "Tujuh prinsip yang menuntun Manara" },
       { label: "Founder", href: "/tentang/founder", desc: "Orang-orang di balik Manara" },
+      { label: "Manara Fellows", href: "/tentang/fellows", desc: "Jaringan tenaga ahli dan peneliti Manara" },
     ],
   },
   {
@@ -115,6 +116,7 @@ export default function Navbar() {
     return pathname === item.href;
   };
 
+  
   return (
     <>
       {/* ── NAVBAR BAR ── */}

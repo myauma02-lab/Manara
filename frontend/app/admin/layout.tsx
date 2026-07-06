@@ -8,6 +8,7 @@ const NAV = [
   { href: "/admin", label: "Dashboard", icon: "◎" },
   { href: "/admin/publikasi", label: "Publikasi", icon: "✦" },
   { href: "/admin/layanan", label: "Layanan", icon: "◇" },
+  { href: "/admin/fellows", label: "Fellows", icon: "◉" },
   { href: "/admin/recruitment", label: "Manapeople", icon: "+" },
   { href: "/admin/project", label: "Proyek/", icon: "△" },
   { href: "/admin/media", label: "Media Library", icon: "⊞" },

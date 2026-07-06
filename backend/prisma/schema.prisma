@@ -370,3 +370,23 @@ model PublicationTag {
   @@unique([publicationId, tagId])
   @@map("publication_tags")
 }
+
+model Fellow {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  title       String?  // gelar akademik, misal: "S.T., M.T., Ph.D."
+  position    String?  // jabatan, misal: "Peneliti Senior"
+  expertise   String[] // bidang keahlian
+  institution String?  // afiliasi
+  bio         String?  @db.Text
+  photo       String?
+  email       String?
+  socialLinks Json?    // { linkedin, twitter, instagram, website }
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("fellows")
+}

@@ -29,6 +29,7 @@ import categoryRoutes from "./routes/categories";
 import userRoutes from "./routes/users";
 import contactRoutes from "./routes/contact";
 import publicationRoutes from "./routes/publications";
+import fellowRoutes from "./routes/fellows";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -106,6 +107,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/publications", publicationRoutes);
+app.use("/api/fellows", fellowRoutes);
 app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",

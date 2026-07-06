@@ -10,6 +10,7 @@ const FOOTER_NAV = [
       { label: "Tentang Manara", href: "/tentang/manara" },
       { label: "Manifesto", href: "/tentang/manifesto" },
       { label: "Founder", href: "/tentang/founder" },
+      { label: "Manara Fellows", href: "/tentang/fellows" },
     ],
   },
   {

@@ -125,3 +125,12 @@ export const publicationsApi = {
   delete: (id: string) =>
     api.delete(`/publications/${id}`),
 };
+
+export const fellowsApi = {
+  list: () => api.get("/fellows"),
+  all: () => api.get("/fellows/all"),
+  detail: (slug: string) => api.get(`/fellows/${slug}`),
+  create: (data: FormData) => api.post("/fellows", data),
+  update: (id: string, data: FormData) => api.put(`/fellows/${id}`, data),
+  delete: (id: string) => api.delete(`/fellows/${id}`),
+};
