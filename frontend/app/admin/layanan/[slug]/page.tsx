@@ -8,7 +8,7 @@ import {
   RESEARCH_DATA, POLICY_BRIEF_DATA, TRAINING_DATA,
   CONSULTING_DATA, EVENT_DATA, MEDIA_SERVICE_DATA,
 } from "@/lib/services-data";
-import type { ServicePageData, ServiceFeature, ServiceStep, ServiceDeliverable, ServiceFAQ } from "@/components/shared/ServicePage";
+import type { ServicePageData } from "@/components/shared/ServicePage";
 
 const DATA_MAP: Record<string, ServicePageData> = {
   research: RESEARCH_DATA,
@@ -76,17 +76,18 @@ export default function EditLayananPage() {
     }
   };
 
-  const updateData = (field: keyof typeof SECTION_LABELS, value: any) => {
+  const updateData = (field: keyof ServicePageData, value: any) => {
     setData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleReset = () => {
     if (!defaultData) return;
-    if (confirm("Kembalikan semua konten section ini ke default? Perubahan yang belum disimpan akan hilang.")) {
+    if (confirm("Kembalikan semua konten layanan ini ke default? Perubahan yang belum disimpan akan hilang.")) {
       setData(defaultData);
     }
   };
 
+  // ---------- Styles ----------
   const inputStyle: React.CSSProperties = {
     width: "100%", padding: "10px 13px",
     border: "1px solid rgba(38,108,135,0.15)", borderRadius: "2px",
@@ -94,9 +95,16 @@ export default function EditLayananPage() {
     fontFamily: "inherit", background: "#fff", boxSizing: "border-box",
   };
 
+  const inputDisabledStyle: React.CSSProperties = {
+    ...inputStyle,
+    background: "rgba(38,108,135,0.04)",
+    color: "#7A8A92",
+    cursor: "not-allowed",
+  };
+
   const textareaStyle: React.CSSProperties = {
     ...inputStyle,
-    minHeight: "90px",
+    minHeight: "80px",
     resize: "vertical" as const,
     lineHeight: 1.5,
   };
@@ -111,12 +119,25 @@ export default function EditLayananPage() {
     letterSpacing: "0.04em",
   };
 
+  const helpStyle: React.CSSProperties = {
+    fontSize: "11px",
+    color: "#7A8A92",
+    marginTop: "4px",
+  };
+
   const cardStyle: React.CSSProperties = {
     background: "#fff",
     border: "1px solid rgba(38,108,135,0.12)",
     borderRadius: "3px",
     padding: "20px",
     marginBottom: "16px",
+  };
+
+  const sectionIntroStyle: React.CSSProperties = {
+    fontSize: "13px",
+    color: "#7A8A92",
+    marginBottom: "16px",
+    lineHeight: 1.5,
   };
 
   const btnPrimary: React.CSSProperties = {
@@ -163,42 +184,51 @@ export default function EditLayananPage() {
     cursor: "pointer",
   };
 
-  // ---------- Generic helpers untuk field text/textarea ----------
+  const row2Style: React.CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "14px",
+  };
+
+  // ---------- Field generik ----------
   function Field({
-    label, value, onChange, textarea = false, placeholder = "",
+    label, value, onChange, textarea = false, placeholder = "", disabled = false, help,
   }: {
-    label: string; value: string; onChange: (v: string) => void;
-    textarea?: boolean; placeholder?: string;
+    label: string; value: string; onChange?: (v: string) => void;
+    textarea?: boolean; placeholder?: string; disabled?: boolean; help?: string;
   }) {
     return (
       <div style={{ marginBottom: "16px" }}>
         <label style={labelStyle}>{label}</label>
         {textarea ? (
           <textarea
-            style={textareaStyle}
+            style={disabled ? { ...textareaStyle, background: "rgba(38,108,135,0.04)", color: "#7A8A92" } : textareaStyle}
             value={value || ""}
             placeholder={placeholder}
-            onChange={(e) => onChange(e.target.value)}
+            disabled={disabled}
+            onChange={(e) => onChange && onChange(e.target.value)}
           />
         ) : (
           <input
-            style={inputStyle}
+            style={disabled ? inputDisabledStyle : inputStyle}
             value={value || ""}
             placeholder={placeholder}
-            onChange={(e) => onChange(e.target.value)}
+            disabled={disabled}
+            onChange={(e) => onChange && onChange(e.target.value)}
           />
         )}
+        {help && <div style={helpStyle}>{help}</div>}
       </div>
     );
   }
 
-  // ---------- Generic list editor untuk array of object (features/process/deliverables/faq/why) ----------
+  // ---------- Editor generik untuk array of object ----------
   function ArrayObjectEditor<T extends Record<string, any>>({
     items, onChange, fields, itemLabel, emptyItem,
   }: {
     items: T[];
     onChange: (items: T[]) => void;
-    fields: { key: keyof T; label: string; textarea?: boolean }[];
+    fields: { key: keyof T; label: string; textarea?: boolean; placeholder?: string }[];
     itemLabel: (item: T, index: number) => string;
     emptyItem: T;
   }) {
@@ -249,23 +279,25 @@ export default function EditLayananPage() {
                 label={f.label}
                 value={item[f.key] ?? ""}
                 textarea={f.textarea}
+                placeholder={f.placeholder}
                 onChange={(v) => updateItem(index, f.key, v)}
               />
             ))}
           </div>
         ))}
         <button type="button" style={btnSecondary} onClick={addItem}>
-          + Tambah {itemLabel(emptyItem, list.length).replace(/\s*#?\d+$/, "")}
+          + Tambah Item
         </button>
       </div>
     );
   }
 
-  // ---------- Simple string list editor (mis. clients) ----------
+  // ---------- Editor untuk array of string (paragraf overview) ----------
   function StringListEditor({
-    items, onChange, placeholder,
+    items, onChange, placeholder, textarea = false, itemLabel,
   }: {
     items: string[]; onChange: (items: string[]) => void; placeholder?: string;
+    textarea?: boolean; itemLabel?: (i: number) => string;
   }) {
     const list = items || [];
 
@@ -277,18 +309,41 @@ export default function EditLayananPage() {
 
     const addItem = () => onChange([...list, ""]);
     const removeItem = (index: number) => onChange(list.filter((_, i) => i !== index));
+    const moveItem = (index: number, dir: -1 | 1) => {
+      const target = index + dir;
+      if (target < 0 || target >= list.length) return;
+      const next = [...list];
+      [next[index], next[target]] = [next[target], next[index]];
+      onChange(next);
+    };
 
     return (
       <div>
         {list.map((item, index) => (
-          <div key={index} style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
-            <input
-              style={inputStyle}
-              value={item}
-              placeholder={placeholder}
-              onChange={(e) => updateItem(index, e.target.value)}
-            />
-            <button type="button" style={btnDangerGhost} onClick={() => removeItem(index)}>Hapus</button>
+          <div key={index} style={{ marginBottom: "12px" }}>
+            {itemLabel && <label style={labelStyle}>{itemLabel(index)}</label>}
+            <div style={{ display: "flex", gap: "8px" }}>
+              {textarea ? (
+                <textarea
+                  style={textareaStyle}
+                  value={item}
+                  placeholder={placeholder}
+                  onChange={(e) => updateItem(index, e.target.value)}
+                />
+              ) : (
+                <input
+                  style={inputStyle}
+                  value={item}
+                  placeholder={placeholder}
+                  onChange={(e) => updateItem(index, e.target.value)}
+                />
+              )}
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                <button type="button" style={iconBtn} onClick={() => moveItem(index, -1)} disabled={index === 0}>↑</button>
+                <button type="button" style={iconBtn} onClick={() => moveItem(index, 1)} disabled={index === list.length - 1}>↓</button>
+              </div>
+              <button type="button" style={btnDangerGhost} onClick={() => removeItem(index)}>Hapus</button>
+            </div>
           </div>
         ))}
         <button type="button" style={btnSecondary} onClick={addItem}>+ Tambah</button>
@@ -326,100 +381,171 @@ export default function EditLayananPage() {
       case "hero":
         return (
           <div style={cardStyle}>
-            <Field label="Judul (Title)" value={d.hero?.title} onChange={(v) => updateData("hero", { ...d.hero, title: v })} />
-            <Field label="Subjudul" value={d.hero?.subtitle} onChange={(v) => updateData("hero", { ...d.hero, subtitle: v })} textarea />
-            <Field label="Gambar (URL)" value={d.hero?.image} onChange={(v) => updateData("hero", { ...d.hero, image: v })} placeholder="/images/..." />
-            <Field label="Label / Badge" value={d.hero?.badge} onChange={(v) => updateData("hero", { ...d.hero, badge: v })} />
+            <Field label="Slug (URL)" value={d.slug} disabled help="Slug tidak bisa diubah dari sini karena menentukan alamat halaman." />
+            <div style={row2Style}>
+              <Field label="Kategori" value={d.category} onChange={(v) => updateData("category", v)} />
+              <Field
+                label="Warna Aksen"
+                value={d.accentColor}
+                onChange={(v) => updateData("accentColor", v)}
+                placeholder="#266c87"
+                help="Kode warna HEX, mis. #266c87"
+              />
+            </div>
+            <Field
+              label="Icon Hero"
+              value={d.heroIcon}
+              onChange={(v) => updateData("heroIcon", v)}
+              placeholder="○ ◇ ✦ ..."
+              help="Simbol/karakter tunggal yang tampil di hero"
+            />
+            <Field label="Judul Hero" value={d.heroTitle} onChange={(v) => updateData("heroTitle", v)} />
+            <Field
+              label="Judul Hero (Bagian Aksen)"
+              value={d.heroTitleAccent}
+              onChange={(v) => updateData("heroTitleAccent", v)}
+              help="Lanjutan judul yang ditampilkan dengan warna aksen"
+            />
+            <Field label="Deskripsi Hero" value={d.heroDesc} onChange={(v) => updateData("heroDesc", v)} textarea />
+            <Field
+              label="Gradient Hero (CSS, opsional)"
+              value={d.heroGrad}
+              onChange={(v) => updateData("heroGrad", v)}
+              textarea
+              help="Nilai CSS background-gradient. Hanya ubah jika paham CSS."
+            />
+            <div style={row2Style}>
+              <Field label="Parent Href" value={d.parentHref} onChange={(v) => updateData("parentHref", v)} />
+              <Field label="Parent Label" value={d.parentLabel} onChange={(v) => updateData("parentLabel", v)} />
+            </div>
           </div>
         );
 
       case "overview":
         return (
-          <div style={cardStyle}>
-            <Field label="Judul" value={d.overview?.title} onChange={(v) => updateData("overview", { ...d.overview, title: v })} />
-            <Field label="Deskripsi" value={d.overview?.description} onChange={(v) => updateData("overview", { ...d.overview, description: v })} textarea />
-          </div>
+          <>
+            <div style={cardStyle}>
+              <Field label="Judul Overview" value={d.overviewTitle} onChange={(v) => updateData("overviewTitle", v)} />
+            </div>
+            <p style={sectionIntroStyle}>Paragraf Deskripsi Overview</p>
+            <StringListEditor
+              items={d.overviewDesc}
+              onChange={(items) => updateData("overviewDesc", items)}
+              textarea
+              itemLabel={(i) => `Paragraf ${i + 1}`}
+              placeholder="Tulis paragraf overview..."
+            />
+            <p style={sectionIntroStyle}>Statistik Overview</p>
+            <ArrayObjectEditor
+              items={d.overviewStats}
+              onChange={(items) => updateData("overviewStats", items)}
+              itemLabel={(item, i) => item.value || `Statistik #${i + 1}`}
+              emptyItem={{ value: "", label: "" }}
+              fields={[
+                { key: "value", label: "Value (mis. Berbasis / 4-8 / 10)" },
+                { key: "label", label: "Label penjelas" },
+              ]}
+            />
+          </>
         );
 
       case "features":
         return (
-          <ArrayObjectEditor<ServiceFeature & Record<string, any>>
+          <ArrayObjectEditor
             items={d.features}
             onChange={(items) => updateData("features", items)}
             itemLabel={(item, i) => item.title || `Fitur #${i + 1}`}
-            emptyItem={{ title: "", description: "", icon: "" } as any}
+            emptyItem={{ icon: "○", title: "", desc: "" }}
             fields={[
+              { key: "icon", label: "Icon (simbol)" },
               { key: "title", label: "Judul" },
-              { key: "description", label: "Deskripsi", textarea: true },
-              { key: "icon", label: "Icon (opsional)" },
+              { key: "desc", label: "Deskripsi", textarea: true },
             ]}
           />
         );
 
       case "process":
         return (
-          <ArrayObjectEditor<ServiceStep & Record<string, any>>
-            items={d.process}
-            onChange={(items) => updateData("process", items.map((it, i) => ({ ...it, step: i + 1 })))}
-            itemLabel={(item, i) => `Langkah ${i + 1}: ${item.title || ""}`}
-            emptyItem={{ step: 0, title: "", description: "" } as any}
-            fields={[
-              { key: "title", label: "Judul Langkah" },
-              { key: "description", label: "Deskripsi", textarea: true },
-            ]}
-          />
+          <>
+            <div style={cardStyle}>
+              <Field label="Judul Proses" value={d.processTitle} onChange={(v) => updateData("processTitle", v)} />
+              <Field label="Deskripsi Proses" value={d.processDesc} onChange={(v) => updateData("processDesc", v)} textarea />
+            </div>
+            <ArrayObjectEditor
+              items={d.steps}
+              onChange={(items) => updateData("steps", items.map((it: any, i: number) => ({
+                ...it,
+                num: String(i + 1).padStart(2, "0"),
+              })))}
+              itemLabel={(item, i) => `Langkah ${String(i + 1).padStart(2, "0")}: ${item.title || ""}`}
+              emptyItem={{ num: "00", title: "", desc: "", duration: "" }}
+              fields={[
+                { key: "title", label: "Judul Langkah" },
+                { key: "desc", label: "Deskripsi", textarea: true },
+                { key: "duration", label: "Durasi", placeholder: "mis. 1–2 minggu" },
+              ]}
+            />
+          </>
         );
 
       case "deliverables":
         return (
-          <ArrayObjectEditor<ServiceDeliverable & Record<string, any>>
+          <ArrayObjectEditor
             items={d.deliverables}
             onChange={(items) => updateData("deliverables", items)}
             itemLabel={(item, i) => item.title || `Deliverable #${i + 1}`}
-            emptyItem={{ title: "", description: "" } as any}
+            emptyItem={{ icon: "○", title: "", desc: "" }}
             fields={[
+              { key: "icon", label: "Icon (simbol)" },
               { key: "title", label: "Judul" },
-              { key: "description", label: "Deskripsi", textarea: true },
+              { key: "desc", label: "Deskripsi", textarea: true },
             ]}
           />
         );
 
       case "clients":
         return (
-          <div style={cardStyle}>
-            <label style={labelStyle}>Daftar Target Klien</label>
-            <StringListEditor
-              items={d.clients}
-              onChange={(items) => updateData("clients", items)}
-              placeholder="Mis. Kementerian / Lembaga Pemerintah"
-            />
-          </div>
-        );
-
-      case "why":
-        return (
-          <ArrayObjectEditor<ServiceFeature & Record<string, any>>
-            items={d.why}
-            onChange={(items) => updateData("why", items)}
-            itemLabel={(item, i) => item.title || `Alasan #${i + 1}`}
-            emptyItem={{ title: "", description: "" } as any}
+          <ArrayObjectEditor
+            items={d.clients}
+            onChange={(items) => updateData("clients", items)}
+            itemLabel={(item, i) => item.label || `Klien #${i + 1}`}
+            emptyItem={{ icon: "🏛️", label: "" }}
             fields={[
-              { key: "title", label: "Judul" },
-              { key: "description", label: "Deskripsi", textarea: true },
+              { key: "icon", label: "Icon (emoji)" },
+              { key: "label", label: "Nama Target Klien" },
             ]}
           />
         );
 
+      case "why":
+        return (
+          <>
+            <div style={cardStyle}>
+              <Field label="Judul Section" value={d.whyTitle} onChange={(v) => updateData("whyTitle", v)} />
+            </div>
+            <ArrayObjectEditor
+              items={d.whyPoints}
+              onChange={(items) => updateData("whyPoints", items)}
+              itemLabel={(item, i) => item.title || `Alasan #${i + 1}`}
+              emptyItem={{ title: "", desc: "" }}
+              fields={[
+                { key: "title", label: "Judul" },
+                { key: "desc", label: "Deskripsi", textarea: true },
+              ]}
+            />
+          </>
+        );
+
       case "faq":
         return (
-          <ArrayObjectEditor<ServiceFAQ & Record<string, any>>
-            items={d.faq}
-            onChange={(items) => updateData("faq", items)}
-            itemLabel={(item, i) => item.question || `FAQ #${i + 1}`}
-            emptyItem={{ question: "", answer: "" } as any}
+          <ArrayObjectEditor
+            items={d.faqs}
+            onChange={(items) => updateData("faqs", items)}
+            itemLabel={(item, i) => item.q || `FAQ #${i + 1}`}
+            emptyItem={{ q: "", a: "" }}
             fields={[
-              { key: "question", label: "Pertanyaan" },
-              { key: "answer", label: "Jawaban", textarea: true },
+              { key: "q", label: "Pertanyaan" },
+              { key: "a", label: "Jawaban", textarea: true },
             ]}
           />
         );
@@ -427,10 +553,8 @@ export default function EditLayananPage() {
       case "cta":
         return (
           <div style={cardStyle}>
-            <Field label="Judul" value={d.cta?.title} onChange={(v) => updateData("cta", { ...d.cta, title: v })} />
-            <Field label="Deskripsi" value={d.cta?.description} onChange={(v) => updateData("cta", { ...d.cta, description: v })} textarea />
-            <Field label="Teks Tombol" value={d.cta?.buttonText} onChange={(v) => updateData("cta", { ...d.cta, buttonText: v })} />
-            <Field label="Link Tombol" value={d.cta?.buttonLink} onChange={(v) => updateData("cta", { ...d.cta, buttonLink: v })} placeholder="/kontak atau https://wa.me/..." />
+            <Field label="Judul CTA" value={d.ctaTitle} onChange={(v) => updateData("ctaTitle", v)} />
+            <Field label="Deskripsi CTA" value={d.ctaDesc} onChange={(v) => updateData("ctaDesc", v)} textarea />
           </div>
         );
 
@@ -451,7 +575,7 @@ export default function EditLayananPage() {
             ← Kembali ke daftar layanan
           </Link>
           <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#1C3038", margin: "6px 0 0" }}>
-            Edit Layanan: {slugStr}
+            Edit Layanan: {d.category || slugStr}
           </h1>
         </div>
         <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
