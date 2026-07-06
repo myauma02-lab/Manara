@@ -197,7 +197,7 @@ model ResearchPaper {
 
 // ─── NEWSLETTER ─────────────────────────────────────────────────
 model NewsletterSubscriber {
-  id          String              @id @default(uuid())
+  id          String              @id @default(cuid())
   email       String              @unique
   name        String?
   status      SubscriberStatus    @default(ACTIVE)
