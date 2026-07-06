@@ -344,7 +344,7 @@ export default function NewPublikasiPage() {
                 {[
                   { key: "volume", label: "Volume", ph: "1" },
                   { key: "issue", label: "Nomor", ph: "1" },
-                  { key: "year", label: "Tahun", ph: "2025" },
+                  { key: "year", label: "Tahun", ph: "6" },
                   { key: "doi", label: "DOI (opsional)", ph: "10.xxxx/xxxxx" },
                 ].map(f => (
                   <div key={f.key}>

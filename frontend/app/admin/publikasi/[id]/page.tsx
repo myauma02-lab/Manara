@@ -260,7 +260,7 @@ export default function EditPublikasiPage() {
                 {[
                   { key: "volume", label: "Volume", ph: "1" },
                   { key: "issue", label: "Nomor", ph: "1" },
-                  { key: "year", label: "Tahun", ph: "2025" },
+                  { key: "year", label: "Tahun", ph: "2026" },
                   { key: "doi", label: "DOI", ph: "10.xxxx/xxxxx" },
                 ].map(f => (
                   <div key={f.key}>
