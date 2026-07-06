@@ -57,7 +57,7 @@ export const projectsApi = {
 
 export const newsletterApi = {
   subscribe: (data: { email: string; name?: string }) => api.post("/newsletter/subscribe", data),
-  subscribers: () => api.get("/newsletter/subscribers"),
+  subscribers: (data: { email: string; name?: string }) => api.get("/newsletter/subscribers", { params: data }),
 };
 
 export const recruitmentApi = {
