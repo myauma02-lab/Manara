@@ -16,6 +16,12 @@ const NAV = [
   { href: "/admin/pesan", label: "Pesan Masuk", icon: "✉" },
   { href: "/admin/users", label: "Users", icon: "⊕" },
   { href: "/admin/settings", label: "Pengaturan", icon: "⚙" },
+  { href: "/admin/publikasi", label: "Publikasi", icon: "0" },
+  { href: "/admin/layanan", label: "Layanan", icon: "9" },
+  { href: "/admin/profile", label: "Profil", icon: "8" },
+
+
+
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
