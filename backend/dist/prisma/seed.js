@@ -70,10 +70,10 @@ async function main() {
         { key: 'site_tagline', value: 'Shaping Ideas for the Public Sphere' },
         { key: 'hero_headline', value: 'Di mana gagasan menemukan cahayanya.' },
         { key: 'hero_subheadline', value: 'Ruang intelektual, kreatif, dan berpengetahuan — dibangun oleh dan untuk generasi yang berpikir dengan kedalaman.' },
-        { key: 'contact_email', value: 'hello@manara.id' },
-        { key: 'social_instagram', value: '' },
-        { key: 'social_twitter', value: '' },
-        { key: 'social_youtube', value: '' },
+        { key: 'contact_email', value: 'manararesearch@gmail.com' },
+        { key: 'social_instagram', value: 'https://instagram.com/manara_research' },
+        { key: 'social_twitter', value: 'https://x.com/manara' },
+        { key: 'social_youtube', value: 'https://youtube.com/@manara' },
     ];
     for (const s of defaultSettings) {
         await prisma.siteSetting.upsert({

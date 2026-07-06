@@ -59,9 +59,9 @@ export default function ContactSection() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "20px", marginBottom: "48px" }}>
               {[
-                { icon: "@", label: "Email", value: "hello@manara.id" },
-                { icon: "◎", label: "Berbasis Di", value: "Surabaya & Sidoarjo, Jawa Timur" },
-                { icon: "✦", label: "Kemitraan", value: "kolaborasi@manara.id" },
+                { icon: "@", label: "Email", value: "manararesearch@gmail.com" },
+                { icon: "◎", label: "Berbasis Di", value: "Kota Malang, Jawa Timur" },
+                { icon: "✦", label: "Kemitraan", value: "manararesearch@gmail.com" },
               ].map(ch => (
                 <div key={ch.label} style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                   <div style={{ width: "44px", height: "44px", borderRadius: "50%", border: "1px solid rgba(38,108,135,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#266c87", fontSize: "15px", flexShrink: 0 }}>

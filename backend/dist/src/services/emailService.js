@@ -15,8 +15,8 @@ const transporter = nodemailer_1.default.createTransport({
         pass: process.env.SMTP_PASS,
     },
 });
-const FROM = process.env.EMAIL_FROM || "Manara <hello@manara.id>";
-const ADMIN_EMAIL = process.env.SMTP_USER || "hello@manara.id";
+const FROM = process.env.EMAIL_FROM || "Manara <manararesearch@gmail.com>";
+const ADMIN_EMAIL = process.env.SMTP_USER || "manararesearch@gmail.com";
 // Template dasar
 const baseTemplate = (title, content) => `
 <!DOCTYPE html>
