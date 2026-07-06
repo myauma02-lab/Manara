@@ -18,7 +18,7 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: {
-    default: "Manara — Shaping Ideas for the Public Sphere",
+    default: "Manara",
     template: "%s | Manara",
   },
   description:
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "id_ID",
     siteName: "Manara",
-    title: "Manara — Shaping Ideas for the Public Sphere",
+    title: "Manara",
     description:
       "Ruang intelektual, kreatif, dan berpengetahuan untuk generasi yang berpikir mendalam.",
   },
