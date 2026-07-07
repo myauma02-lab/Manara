@@ -71,7 +71,7 @@ async function main() {
     { key: 'site_title', value: 'Manara' },
     { key: 'site_tagline', value: 'Shaping Ideas for the Public Sphere' },
     { key: 'hero_headline', value: 'Di mana gagasan menemukan cahayanya.' },
-    { key: 'hero_subheadline', value: 'Ruang intelektual, kreatif, dan berpengetahuan — dibangun oleh dan untuk generasi yang berpikir dengan kedalaman.' },
+    { key: 'hero_subheadline', value: 'Ruang intelektual, kreatif, dan berpengetahuan. Dibangun oleh dan untuk generasi yang berpikir dengan kedalaman.' },
     { key: 'contact_email', value: 'manararesearch@gmail.com' },
     { key: 'social_instagram', value: '' },
     { key: 'social_twitter', value: '' },

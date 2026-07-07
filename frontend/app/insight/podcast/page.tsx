@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Podcast | Insight Manara",
-  description: "Manara Podcast — percakapan mendalam dengan pemikir, kreator, dan praktisi.",
+  description: "Manara Podcast - percakapan mendalam dengan pemikir, kreator, dan praktisi.",
 };
 
 // Ganti dengan YouTube channel/playlist ID Manara

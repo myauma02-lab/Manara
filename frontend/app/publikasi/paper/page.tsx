@@ -70,7 +70,7 @@ export default function PaperPage() {
               )}
             </div>
             <p style={{ fontSize: "15px", fontWeight: 300, color: "#7A9AA5", lineHeight: 1.8, maxWidth: "540px", marginBottom: "28px" }}>
-              Policy paper, working paper, policy brief, white paper, dan research note — ditujukan untuk pemerintah, NGO, akademisi, dan lembaga.
+              Policy paper, working paper, policy brief, white paper, dan research note. Ditujukan untuk pemerintah, NGO, akademisi, dan lembaga.
             </p>
 
             {/* Search */}

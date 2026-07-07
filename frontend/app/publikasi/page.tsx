@@ -29,7 +29,7 @@ const TYPES = [
     href: "/publikasi/journal",
     title: "Manara Journal",
     subtitle: "Volume · Nomor · DOI · Peer Review",
-    desc: "Publikasi ilmiah formal dengan standar akademik — fondasi untuk indexing SINTA dan jurnal internasional.",
+    desc: "Publikasi ilmiah formal dengan standar akademik - fondasi untuk indexing SINTA dan jurnal internasional.",
     icon: "○",
     color: "#5F8F8A",
   },
@@ -67,7 +67,7 @@ export default function PublikasiPage() {
               <em style={{ color: "#266c87", fontStyle: "italic" }}>Manara.</em>
             </h1>
             <p style={{ fontSize: "16px", fontWeight: 300, color: "#7A9AA5", maxWidth: "540px", lineHeight: 1.85 }}>
-              Tiga format publikasi — dari tulisan populer hingga jurnal ilmiah — dirancang untuk menjangkau pembaca yang berbeda dengan kedalaman yang berbeda.
+              Tiga format publikasi - dari tulisan populer hingga jurnal ilmiah - dirancang untuk menjangkau pembaca yang berbeda dengan kedalaman yang berbeda.
             </p>
           </div>
 

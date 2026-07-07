@@ -10,10 +10,10 @@ export const RESEARCH_DATA: ServicePageData = {
   heroIcon: "○",
   heroTitle: "Riset yang menggerakkan",
   heroTitleAccent: "perubahan nyata.",
-  heroDesc: "Manara menyediakan layanan riset kebijakan berbasis bukti — dari identifikasi masalah hingga rekomendasi yang actionable untuk pengambil keputusan.",
+  heroDesc: "Manara menyediakan layanan riset kebijakan berbasis bukti. Dari identifikasi masalah hingga rekomendasi yang actionable untuk pengambil keputusan.",
   overviewTitle: "Riset bukan sekadar laporan. Ini fondasi perubahan.",
   overviewDesc: [
-    "Manara Research adalah divisi kajian kebijakan yang bekerja di persimpangan antara akademik dan praktis. Kami tidak hanya mengumpulkan data — kami menginterpretasikannya dalam konteks yang relevan bagi pemangku kepentingan.",
+    "Manara Research adalah divisi kajian kebijakan yang bekerja di persimpangan antara akademik dan praktis. Lebih dari sekedar mengumpulkan data. Kami menginterpretasikannya dalam konteks yang relevan bagi pemangku kepentingan.",
     "Setiap proyek riset kami dirancang untuk dapat ditindaklanjuti: dari policy brief yang dapat dibaca dalam 10 menit hingga laporan komprehensif yang menjadi referensi jangka panjang.",
   ],
   overviewStats: [
@@ -23,7 +23,7 @@ export const RESEARCH_DATA: ServicePageData = {
     { value: "Kolaboratif", label: "Lintas disiplin dan sektor" },
   ],
   features: [
-    { icon: "◎", title: "Policy Research", desc: "Kajian mendalam terhadap isu kebijakan publik — pendidikan, lingkungan, ekonomi, dan sosial." },
+    { icon: "◎", title: "Policy Research", desc: "Kajian mendalam terhadap isu kebijakan publik - pendidikan, lingkungan, ekonomi, dan sosial." },
     { icon: "◇", title: "Data Analysis", desc: "Pengolahan dan visualisasi data kuantitatif dan kualitatif yang mudah dipahami." },
     { icon: "○", title: "Literature Review", desc: "Tinjauan literatur sistematis sebagai fondasi akademik proyek riset." },
     { icon: "✦", title: "Field Research", desc: "Pengumpulan data lapangan melalui wawancara, survei, dan observasi." },
@@ -58,7 +58,7 @@ export const RESEARCH_DATA: ServicePageData = {
   whyTitle: "Riset yang berpihak pada publik.",
   whyPoints: [
     { title: "Independent & Objektif", desc: "Tidak berafiliasi dengan kepentingan politik manapun. Temuan kami berbicara atas nama data." },
-    { title: "Konteks Lokal yang Kuat", desc: "Pemahaman mendalam tentang dinamika sosial, budaya, dan politik Indonesia — khususnya Jawa Timur." },
+    { title: "Konteks Lokal yang Kuat", desc: "Pemahaman mendalam tentang dinamika sosial, budaya, dan politik Indonesia, khususnya Jawa Timur." },
     { title: "Akademik Sekaligus Praktis", desc: "Rigor akademik tanpa kehilangan relevansi praktis. Laporan kami bisa dibaca dan ditindaklanjuti." },
     { title: "Open Access", desc: "Sebagian besar temuan kami dipublikasikan secara terbuka untuk memperluas dampak." },
   ],
@@ -83,11 +83,11 @@ export const POLICY_BRIEF_DATA: ServicePageData = {
   heroIcon: "◇",
   heroTitle: "Kebijakan yang berbicara",
   heroTitleAccent: "dengan data.",
-  heroDesc: "Policy brief Manara dirancang untuk menjembatani riset akademis dengan pengambil keputusan — singkat, tajam, dan dapat ditindaklanjuti.",
+  heroDesc: "Policy brief Manara dirancang untuk menjembatani riset akademis dengan pengambil keputusan singkat, tajam, dan dapat ditindaklanjuti.",
   overviewTitle: "Dari temuan riset menjadi rekomendasi yang dibaca.",
   overviewDesc: [
     "Policy brief yang baik bukan sekadar ringkasan laporan. Ini adalah instrumen advokasi yang harus bisa dibaca dalam 10 menit dan menghasilkan tindakan konkret dari pembacanya.",
-    "Manara mengembangkan policy brief dengan standar internasional — dari problem framing yang tajam, evidence synthesis yang kuat, hingga rekomendasi yang spesifik dan dapat diimplementasikan.",
+    "Manara mengembangkan policy brief dengan standar internasional. Dari problem framing yang tajam, evidence synthesis yang kuat, hingga rekomendasi yang spesifik dan dapat diimplementasikan.",
   ],
   overviewStats: [
     { value: "4–8", label: "Halaman, cukup untuk satu pertemuan" },
@@ -97,7 +97,7 @@ export const POLICY_BRIEF_DATA: ServicePageData = {
   ],
   features: [
     { icon: "◎", title: "Executive Policy Brief", desc: "Dokumen 4–8 halaman untuk pejabat, eksekutif, dan pengambil keputusan tingkat tinggi." },
-    { icon: "◇", title: "Legislative Brief", desc: "Brief khusus untuk anggota legislatif — fokus pada implikasi hukum dan regulasi." },
+    { icon: "◇", title: "Legislative Brief", desc: "Brief khusus untuk anggota legislatif. Fokus pada implikasi hukum dan regulasi." },
     { icon: "○", title: "Advocacy Brief", desc: "Dirancang untuk mendukung kampanye advokasi NGO dan kelompok masyarakat sipil." },
     { icon: "✦", title: "Technical Brief", desc: "Brief teknis untuk audiens yang lebih spesifik dengan pemahaman mendalam terhadap isu." },
     { icon: "△", title: "Rapid Brief", desc: "Produksi cepat untuk isu yang membutuhkan respons segera terhadap perkembangan kebijakan." },
@@ -106,7 +106,7 @@ export const POLICY_BRIEF_DATA: ServicePageData = {
   processDesc: "Setiap policy brief kami melalui proses yang ketat namun efisien.",
   steps: [
     { num: "01", title: "Issue Identification", desc: "Mengidentifikasi dan memframing isu kebijakan yang akan diangkat, termasuk konteks dan urgensi.", duration: "2–3 hari" },
-    { num: "02", title: "Evidence Review", desc: "Tinjauan cepat terhadap bukti yang relevan — data, studi, dan kebijakan yang sudah ada.", duration: "3–5 hari" },
+    { num: "02", title: "Evidence Review", desc: "Tinjauan cepat terhadap bukti yang relevan, baik data, studi, dan kebijakan yang sudah ada.", duration: "3–5 hari" },
     { num: "03", title: "Drafting", desc: "Penulisan brief dengan struktur standar: latar, masalah, temuan, dan rekomendasi.", duration: "3–5 hari" },
     { num: "04", title: "Review & Finalization", desc: "Review bersama klien, revisi, dan finalisasi desain untuk publikasi.", duration: "2–3 hari" },
   ],
@@ -151,11 +151,11 @@ export const TRAINING_DATA: ServicePageData = {
   heroIcon: "△",
   heroTitle: "Kapasitas yang tumbuh",
   heroTitleAccent: "bersama organisasi.",
-  heroDesc: "Program pelatihan Manara dirancang untuk meningkatkan kapasitas riset, penulisan, dan analisis kebijakan — dari individu hingga tim.",
+  heroDesc: "Program pelatihan Manara dirancang untuk meningkatkan kapasitas riset, penulisan, dan analisis kebijakan dari individu hingga tim.",
   overviewTitle: "Pelatihan yang mengubah cara berpikir, bukan hanya cara bekerja.",
   overviewDesc: [
     "Program training Manara bukan seminar biasa. Kami merancang kurikulum berbasis kebutuhan aktual peserta, dengan metode yang menggabungkan teori, praktik, dan mentorship.",
-    "Setiap program dirancang agar peserta pulang dengan kemampuan yang dapat langsung diterapkan — bukan hanya pengetahuan yang menguap setelah seminggu.",
+    "Setiap program dirancang agar peserta pulang dengan kemampuan yang dapat langsung diterapkan, bukan hanya pengetahuan yang menguap setelah seminggu.",
   ],
   overviewStats: [
     { value: "Praktis", label: "Langsung bisa diterapkan" },
@@ -197,7 +197,7 @@ export const TRAINING_DATA: ServicePageData = {
   ],
   whyTitle: "Belajar bersama mereka yang juga berpraktik.",
   whyPoints: [
-    { title: "Fasilitator yang Juga Praktisi", desc: "Semua trainer Manara adalah praktisi aktif di bidangnya — bukan hanya pengajar teori." },
+    { title: "Fasilitator yang Juga Praktisi", desc: "Semua trainer Manara adalah praktisi aktif di bidangnya." },
     { title: "Kurikulum Berbasis Konteks Lokal", desc: "Studi kasus dan contoh yang relevan dengan realitas Indonesia, khususnya Jawa Timur." },
     { title: "Small Group Learning", desc: "Rasio peserta kecil untuk memastikan setiap orang mendapat perhatian dan ruang bertanya." },
     { title: "Dukungan Pasca Pelatihan", desc: "Akses ke komunitas alumni dan sesi mentorship lanjutan setelah pelatihan selesai." },
@@ -226,7 +226,7 @@ export const CONSULTING_DATA: ServicePageData = {
   overviewTitle: "Konsultasi yang berpihak pada dampak, bukan sekadar saran.",
   overviewDesc: [
     "Manara Consulting hadir untuk organisasi yang membutuhkan perspektif eksternal yang kritis, berbasis data, dan berakar pada pemahaman mendalam tentang konteks sosial-politik Indonesia.",
-    "Kami tidak menjual solusi jadi. Kami bekerja bersama klien untuk memahami masalah sesungguhnya, lalu merancang pendekatan yang paling relevan — bahkan jika itu berarti menantang asumsi awal.",
+    "Kami tidak menjual solusi jadi. Kami bekerja bersama klien untuk memahami masalah sesungguhnya, lalu merancang pendekatan yang paling relevan bahkan jika itu berarti menantang asumsi awal.",
   ],
   overviewStats: [
     { value: "Kritis", label: "Perspektif yang tidak hanya mengonfirmasi" },
@@ -236,10 +236,10 @@ export const CONSULTING_DATA: ServicePageData = {
   ],
   features: [
     { icon: "✦", title: "Strategic Planning", desc: "Fasilitasi penyusunan rencana strategis organisasi berbasis analisis situasi dan stakeholder." },
-    { icon: "◎", title: "Policy Advocacy", desc: "Strategi advokasi kebijakan — dari pemetaan pemangku kepentingan hingga rencana komunikasi." },
+    { icon: "◎", title: "Policy Advocacy", desc: "Strategi advokasi kebijakan dari pemetaan pemangku kepentingan hingga rencana komunikasi." },
     { icon: "◇", title: "Program Development", desc: "Desain program intervensi sosial berbasis teori perubahan yang terukur." },
     { icon: "○", title: "Communication Strategy", desc: "Pengembangan strategi komunikasi publik untuk lembaga dan program." },
-    { icon: "△", title: "Organizational Capacity", desc: "Asesmen dan penguatan kapasitas organisasi — struktur, proses, dan SDM." },
+    { icon: "△", title: "Organizational Capacity", desc: "Asesmen dan penguatan kapasitas organisasi, struktur, proses, dan SDM." },
     { icon: "□", title: "Monitoring & Evaluation", desc: "Desain sistem M&E dan evaluasi program yang sedang atau sudah berjalan." },
   ],
   processTitle: "Diagnosa sebelum resep.",
@@ -268,10 +268,10 @@ export const CONSULTING_DATA: ServicePageData = {
   ],
   whyTitle: "Konsultan yang juga berpikir kritis terhadap dirinya.",
   whyPoints: [
-    { title: "Perspektif Independen", desc: "Kami tidak terikat pada satu ideologi atau kepentingan — memberikan analisis yang jujur meski tidak nyaman." },
+    { title: "Perspektif Independen", desc: "Kami tidak terikat pada satu ideologi atau kepentingan. Memberikan analisis yang jujur meski tidak nyaman." },
     { title: "Berbasis Riset", desc: "Setiap rekomendasi didukung oleh data dan analisis yang dapat diverifikasi." },
     { title: "Ko-kreasi, Bukan Dikte", desc: "Kami bekerja bersama tim klien, bukan memberikan solusi dari menara gading." },
-    { title: "Transfer Kapasitas", desc: "Kami memastikan klien bisa melanjutkan tanpa kami — bukan menciptakan ketergantungan." },
+    { title: "Transfer Kapasitas", desc: "Kami memastikan klien bisa melanjutkan tanpa kami, bukan menciptakan ketergantungan." },
   ],
   faqs: [
     { q: "Apa yang membedakan Manara dari konsultan lain?", a: "Kami berangkat dari perspektif intelektual yang kritis, bukan sekadar framework standar. Kami juga lebih fokus pada transfer kapasitas daripada dependensi." },
@@ -280,7 +280,7 @@ export const CONSULTING_DATA: ServicePageData = {
     { q: "Bagaimana struktur biaya konsultasi?", a: "Kami menawarkan beberapa model: project-based, retainer bulanan, atau per hari konsultasi. Diskusikan kebutuhan kamu dengan kami." },
   ],
   ctaTitle: "Butuh perspektif eksternal yang jujur dan berbasis data?",
-  ctaDesc: "Kami tidak hanya menjawab pertanyaan yang kamu ajukan — kami juga membantu kamu mengajukan pertanyaan yang tepat.",
+  ctaDesc: "Kami tidak hanya menjawab pertanyaan yang kamu ajukan, kami juga membantu kamu mengajukan pertanyaan yang tepat.",
 };
 
 export const EVENT_DATA: ServicePageData = {
@@ -293,7 +293,7 @@ export const EVENT_DATA: ServicePageData = {
   heroIcon: "□",
   heroTitle: "Ruang diskusi yang",
   heroTitleAccent: "menggerakkan gagasan.",
-  heroDesc: "Manara merancang dan mengelola forum, seminar, diskusi publik, dan program kolaborasi yang membawa gagasan ke ruang nyata — bermakna bagi peserta dan berdampak bagi publik.",
+  heroDesc: "Manara merancang dan mengelola forum, seminar, diskusi publik, dan program kolaborasi yang membawa gagasan ke ruang nyata. Bermakna bagi peserta dan berdampak bagi publik.",
   overviewTitle: "Event bukan sekadar pertemuan. Ini ruang untuk mengubah cara berpikir.",
   overviewDesc: [
     "Program event Manara dirancang dengan filosofi yang sama dengan seluruh kerja kami: kedalaman, relevansi, dan dampak. Setiap forum yang kami kelola bukan sekadar wadah berkumpul.",
@@ -364,10 +364,10 @@ export const MEDIA_SERVICE_DATA: ServicePageData = {
   heroIcon: "◉",
   heroTitle: "Gagasan yang menjangkau",
   heroTitleAccent: "lebih banyak orang.",
-  heroDesc: "Ekosistem media Manara menggabungkan kekuatan tulisan, audio, dan visual untuk menyebarkan gagasan ke publik yang lebih luas — dengan kedalaman yang tidak dikorbankan.",
+  heroDesc: "Ekosistem media Manara menggabungkan kekuatan tulisan, audio, dan visual untuk menyebarkan gagasan ke publik yang lebih luas dengan kedalaman yang tidak dikorbankan.",
   overviewTitle: "Media sebagai alat, bukan tujuan.",
   overviewDesc: [
-    "Manara percaya bahwa medium yang tepat dapat melipatgandakan dampak sebuah gagasan. Karena itu kami mengembangkan ekosistem media yang beragam — dari jurnal akademik hingga konten sosial media.",
+    "Manara percaya bahwa medium yang tepat dapat melipatgandakan dampak sebuah gagasan. Karena itu kami mengembangkan ekosistem media yang beragam, dari jurnal akademik hingga konten sosial media.",
     "Semua kanal media Manara terhubung dalam satu filosofi yang sama: kedalaman, kejujuran, dan relevansi. Format boleh berbeda, standar tidak pernah dikompromikan.",
   ],
   overviewStats: [
@@ -409,9 +409,9 @@ export const MEDIA_SERVICE_DATA: ServicePageData = {
   ],
   whyTitle: "Konten yang diingat, bukan sekadar dikonsumsi.",
   whyPoints: [
-    { title: "Standar Editorial yang Ketat", desc: "Setiap konten melalui review editorial sebelum dipublikasikan — tidak ada konten yang lolos tanpa verifikasi." },
+    { title: "Standar Editorial yang Ketat", desc: "Setiap konten melalui review editorial sebelum dipublikasikan." },
     { title: "Multi-format, Satu Kualitas", desc: "Dari artikel panjang hingga video pendek, standar kedalaman dan kejujuran tidak berubah." },
-    { title: "Open Access", desc: "Semua konten Manara dapat diakses gratis — karena pengetahuan adalah hak, bukan privilege." },
+    { title: "Open Access", desc: "Semua konten Manara dapat diakses gratis." },
     { title: "Komunitas yang Aktif", desc: "Setiap konten membangun komunitas pembaca yang kritis dan engaged." },
   ],
   faqs: [

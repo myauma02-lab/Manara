@@ -45,7 +45,7 @@ export default function InsightPage() {
               <em style={{ color: "#266c87", fontStyle: "italic" }}>gagasan Manara.</em>
             </h1>
             <p style={{ fontSize: "16px", fontWeight: 300, color: "#7A9AA5", maxWidth: "520px", lineHeight: 1.85 }}>
-              Manara hadir di berbagai format — dipilih agar gagasan bisa menjangkau siapa saja, di manapun mereka berada.
+              Manara hadir di berbagai format. Dipilih agar gagasan bisa menjangkau siapa saja, di manapun mereka berada.
             </p>
           </div>
 

@@ -39,7 +39,7 @@ const NAV = [
     label: "Insight",
     href: "/insight",
     children: [
-      { label: "Newsletter", href: "/insight/newsletter", desc: "Surat Manara — mingguan di inbox-mu" },
+      { label: "Newsletter", href: "/insight/newsletter", desc: "Surat Manara - mingguan di inbox-mu" },
       { label: "Suara Manara", href: "/insight/suara-manara", desc: "Serial video pendek di Instagram" },
       { label: "Podcast", href: "/insight/podcast", desc: "Percakapan mendalam di YouTube" },
     ],

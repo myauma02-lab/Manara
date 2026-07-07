@@ -7,7 +7,7 @@ export default function UpcomingSection() {
           <em style={{ color: '#266c87' }}>Manapeople</em> — Bergabunglah bersama kami.
         </h2>
         <p style={{ fontSize: '16px', fontWeight: 300, color: '#7A9AA5', maxWidth: '500px', lineHeight: 1.85, marginBottom: '32px' }}>
-          Program rekrutmen dan onboarding terbuka pertama Manara — sebuah undangan untuk menjadi bagian dari kolektif ini.
+          Program rekrutmen dan onboarding terbuka pertama Manara. sebuah undangan untuk menjadi bagian dari kolektif ini.
         </p>
         <Link href="/manapeople" style={{ background: '#266c87', color: '#fff', padding: '15px 36px', fontSize: '13px', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', borderRadius: '2px', textDecoration: 'none' }}>
           Daftarkan Minatmu →

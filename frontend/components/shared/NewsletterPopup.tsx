@@ -128,7 +128,7 @@ export default function NewsletterPopup() {
             ) : (
               <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 <p style={{ fontSize: "13px", fontWeight: 300, color: "rgba(134,175,170,0.5)", lineHeight: 1.7, marginBottom: "4px" }}>
-                  Newsletter mingguan — ringkas, substantif, tanpa spam.
+                  Newsletter mingguan. Ringkas, substantif, tanpa spam.
                 </p>
                 <input
                   type="text"

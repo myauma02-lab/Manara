@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Policy Brief | Layanan Manara",
-  description: "Policy brief Manara — singkat, tajam, dan dapat ditindaklanjuti oleh pengambil keputusan.",
+  description: "Policy brief Manara - singkat, tajam, dan dapat ditindaklanjuti oleh pengambil keputusan.",
 };
 
 export default function PolicyBriefPage() {

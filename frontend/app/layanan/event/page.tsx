@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Event | Layanan Manara",
-  description: "Forum, seminar, dan diskusi publik yang bermakna — dikelola oleh Manara.",
+  description: "Forum, seminar, dan diskusi publik yang bermakna - dikelola oleh Manara.",
 };
 
 export default function EventPage() {

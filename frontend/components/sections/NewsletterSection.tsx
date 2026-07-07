@@ -36,7 +36,7 @@ export default function NewsletterSection() {
           Surat Manara.
         </h2>
         <p style={{ fontSize: "16px", fontWeight: 300, color: "rgba(134,175,170,0.45)", lineHeight: 1.85, marginBottom: "40px" }}>
-          Gagasan terbaik, analisis terkini, dan kurasi bacaan pilihan — langsung ke inbox setiap minggu. Gratis, tanpa spam.
+          Gagasan terbaik, analisis terkini, dan kurasi bacaan pilihan, langsung ke inbox setiap minggu. Gratis, tanpa spam.
         </p>
 
         {done ? (

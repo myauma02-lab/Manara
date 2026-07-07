@@ -43,8 +43,8 @@ export default function TentangManaraPage() {
             Tentang Manara
           </p>
           <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(36px,6vw,72px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.08, marginBottom: "28px", letterSpacing: "-0.01em" }}>
-            Lebih dari organisasi —<br />
-            <em style={{ color: "#86AFAA", fontStyle: "italic" }}>sebuah gerakan pemikiran.</em>
+            Lebih dari organisasi.<br />
+            <em style={{ color: "#86AFAA", fontStyle: "italic" }}>Sebuah gerakan pemikiran.</em>
           </h1>
           <p style={{ fontSize: "18px", fontWeight: 300, color: "rgba(134,175,170,0.55)", lineHeight: 1.85, maxWidth: "560px" }}>
             Manara adalah kolektif intelektual dan inisiatif media kreatif yang lahir dari keyakinan bahwa diskursus yang bermakna dimulai dari mereka yang berani berpikir mendalam.
@@ -73,7 +73,7 @@ export default function TentangManaraPage() {
                 Manara hadir sebagai ruang intelektual, kreatif, dan berpengetahuan guna menciptakan kebermanfaatan sosial berdasarkan nilai-nilai keilmuan, kolektivitas, dan independensi.
               </p>
               <p style={{ fontSize: "16px", fontWeight: 300, color: "#3A5560", lineHeight: 1.9, marginBottom: "18px" }}>
-                Kami adalah sebagian think tank, sebagian studio kreatif, sebagian platform wacana anak muda. Kami tidak memproduksi kebisingan — kami membangun sinyal.
+                Kami adalah sebagian think tank, sebagian studio kreatif, sebagian platform wacana anak muda. Kami tidak memproduksi kebisingan. Kami membangun sinyal.
               </p>
               <p style={{ fontSize: "16px", fontWeight: 300, color: "#3A5560", lineHeight: 1.9, marginBottom: "32px" }}>
                 Berbasis di Surabaya dan Sidoarjo, Jawa Timur, Manara bergerak dengan keyakinan bahwa perubahan ruang publik dimulai dari perubahan cara berpikir.
@@ -121,7 +121,7 @@ export default function TentangManaraPage() {
             berdasarkan nilai-nilai keilmuan, kolektivitas, dan independensi.
           </h2>
           <p style={{ fontSize: "16px", fontWeight: 300, color: "rgba(134,175,170,0.4)", lineHeight: 1.9, maxWidth: "520px", margin: "0 auto" }}>
-            Kami membayangkan generasi yang berefleksi sebelum bereaksi — yang membangun argumen sebelum mengambil posisi, dan yang menempatkan kebenaran di atas viralitas.
+            Kami membayangkan generasi yang berefleksi sebelum bereaksi, yang membangun argumen sebelum mengambil posisi, dan yang menempatkan kebenaran di atas viralitas.
           </p>
         </div>
       </section>

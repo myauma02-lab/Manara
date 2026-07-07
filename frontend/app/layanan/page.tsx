@@ -27,7 +27,7 @@ const LAYANAN = [
   {
     href: "/layanan/media",
     title: "Media",
-    desc: "Ekosistem media Manara — jurnal, podcast, video, dan newsletter.",
+    desc: "Ekosistem media Manara - jurnal, podcast, video, dan newsletter.",
     icon: "◎",
     ready: true,
   },

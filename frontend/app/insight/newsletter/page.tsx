@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Newsletter | Insight Manara",
-  description: "Surat Manara — newsletter mingguan berisi gagasan dan analisis terbaik dari tim Manara.",
+  description: "Surat Manara - newsletter mingguan berisi gagasan dan analisis terbaik dari tim Manara.",
 };
 
 export default function NewsletterPage() {

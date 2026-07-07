@@ -69,7 +69,7 @@ export default function JournalPage() {
               )}
             </div>
             <p style={{ fontSize: "15px", fontWeight: 300, color: "#7A9AA5", lineHeight: 1.8, maxWidth: "540px", marginBottom: "28px" }}>
-              Jurnal ilmiah Manara dengan standar peer review — fondasi untuk indexing SINTA dan referensi akademis.
+              Jurnal ilmiah Manara dengan standar peer review - fondasi untuk indexing SINTA dan referensi akademis.
             </p>
 
             {/* ISSN info */}

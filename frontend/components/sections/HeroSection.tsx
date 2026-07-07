@@ -76,7 +76,7 @@ export default function HeroSection() {
           maxWidth: "520px",
           marginBottom: "44px",
         }}>
-          Manara adalah ruang intelektual dan media kreatif untuk gagasan yang ingin didengar — dengan kedalaman yang tidak dikorbankan.
+          Manara adalah ruang intelektual dan media kreatif untuk gagasan yang ingin didengar dengan kedalaman yang tidak dikorbankan.
         </p>
 
         {/* CTA */}
@@ -129,9 +129,9 @@ export default function HeroSection() {
               sub: "Peneliti & Akademisi",
             },
             {
-              value: "2024",
+              value: "2026",
               label: "Berdiri",
-              sub: "Surabaya, Jawa Timur",
+              sub: "Kota Malang, Jawa Timur",
             },
             {
               value: "5",

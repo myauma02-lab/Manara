@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Suara Manara | Insight",
-  description: "Serial video pendek Manara — gagasan besar dalam format yang tajam dan mudah dicerna.",
+  description: "Serial video pendek Manara - gagasan besar dalam format yang tajam dan mudah dicerna.",
 };
 
 // Ganti dengan URL Instagram Manara yang sebenarnya

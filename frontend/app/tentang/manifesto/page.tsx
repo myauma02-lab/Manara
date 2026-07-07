@@ -5,23 +5,23 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Manifesto | Tentang Manara",
-  description: "Tujuh prinsip yang menuntun Manara — tentang mengapa kami ada, apa yang kami percaya, dan bagaimana kami bekerja.",
+  description: "Tujuh prinsip yang menuntun Manara. Tentang mengapa kami ada, apa yang kami percaya, dan bagaimana kami bekerja.",
 };
 
 const PRINCIPLES = [
   { num: "I", title: "Kami percaya bahwa kedalaman adalah bentuk keberanian.", body: "Dalam dunia yang menghargai kecepatan dan permukaan, memilih untuk berpikir dengan mendalam adalah tindakan perlawanan. Manara berdiri di atas pilihan itu." },
-  { num: "II", title: "Kami percaya bahwa pemuda bukan sekadar masa depan.", body: "Kami adalah kekuatan analisis, kreativitas, dan ketidakpuasan yang berlangsung sekarang. Bukan yang sedang dipersiapkan — yang sedang bergerak." },
+  { num: "II", title: "Kami percaya bahwa pemuda bukan sekadar masa depan.", body: "Kami adalah kekuatan analisis, kreativitas, dan ketidakpuasan yang berlangsung sekarang." },
   { num: "III", title: "Kami percaya bahwa gagasan membutuhkan ruang untuk bernapas.", body: "Argumen yang terburu-buru adalah argumen yang lemah. Kami membangun ruang di mana gagasan bisa diuji, dipertanyakan, dan diperkuat sebelum disuarakan." },
   { num: "IV", title: "Kami percaya bahwa intelektualitas tanpa empati adalah kesia-siaan.", body: "Riset yang tidak menyentuh realitas manusia bukanlah riset yang berguna. Kami menulis tentang manusia, untuk manusia, dengan tetap menjaga ketelitian metodologi." },
-  { num: "V", title: "Kami percaya bahwa independensi adalah syarat kejujuran.", body: "Manara tidak berada di bawah kepentingan politik, korporasi, atau ideologi tunggal manapun. Kemerdekaan editorial adalah harga mati — bukan negosiasi." },
-  { num: "VI", title: "Kami percaya pada kekuatan kolektif tanpa kehilangan suara individual.", body: "Kami adalah kolektif, bukan paduan suara. Setiap suara yang ada di Manara membawa perspektif sendiri — dan ketegangan di antara perspektif itulah yang menghasilkan wawasan." },
+  { num: "V", title: "Kami percaya bahwa independensi adalah syarat kejujuran.", body: "Manara tidak berada di bawah kepentingan politik, korporasi, atau ideologi tunggal manapun. Kemerdekaan editorial adalah harga mati." },
+  { num: "VI", title: "Kami percaya pada kekuatan kolektif tanpa kehilangan suara individual.", body: "Kami adalah kolektif, bukan paduan suara. Setiap suara yang ada di Manara membawa perspektif sendiri, dan ketegangan di antara perspektif itulah yang menghasilkan wawasan." },
   { num: "VII", title: "Kami percaya bahwa ruang publik yang sehat membutuhkan penjaga yang sadar.", body: "Kami tidak hadir untuk mengisi kebisingan. Kami hadir untuk mempertanyakan, memperlambat, dan menawarkan alternatif dari kesimpulan yang terburu-buru." },
 ];
 
 const COMMITMENTS = [
   { title: "Terhadap Pembaca", body: "Kami tidak akan menulis sesuatu yang kami sendiri tidak yakini. Setiap klaim akan disertai argumen. Setiap opini akan dibedakan dengan jelas dari fakta." },
   { title: "Terhadap Subjek Liputan", body: "Kami akan adil, bukan sekadar berimbang. Keadilan berarti memberikan konteks yang cukup, bukan hanya dua sisi yang bisa saja tidak setara." },
-  { title: "Terhadap Komunitas", body: "Manara bukan panggung monolog. Kami membangun dialog — dan dialog membutuhkan kesediaan untuk dikoreksi, diperdebat, dan diubah." },
+  { title: "Terhadap Komunitas", body: "Manara bukan panggung monolog. Kami membangun dialog dan dialog membutuhkan kesediaan untuk dikoreksi, diperdebat, dan diubah." },
   { title: "Terhadap Diri Sendiri", body: "Kami akan terus mempertanyakan cara kerja kami sendiri. Sebuah institusi yang tidak bisa mengkritisi dirinya sendiri tidak layak mengkritisi orang lain." },
 ];
 
@@ -52,7 +52,7 @@ export default function ManifestoPage() {
             Kami tidak<br />mengangkat suara<br />untuk didengar.
           </h1>
           <p style={{ fontFamily: "Georgia,serif", fontSize: "clamp(18px,2.5vw,26px)", fontWeight: 300, fontStyle: "italic", color: "rgba(134,175,170,0.5)", lineHeight: 1.5, maxWidth: "580px" }}>
-            Kami mendalamkannya — agar orang-orang yang tepat, pada waktu yang tepat, mendengarkan hal yang tepat.
+            Kami mendalamkannya agar orang-orang yang tepat, pada waktu yang tepat, mendengarkan hal yang tepat.
           </p>
         </div>
       </section>
@@ -67,7 +67,7 @@ export default function ManifestoPage() {
             Kami tidak mendirikan Manara karena berpikir kami tahu semua jawaban. Kami mendirikannya karena kami percaya bahwa pertanyaan yang tepat, yang diajukan dengan tekun dan kejujuran, sudah merupakan kontribusi yang nyata.
           </p>
           <p style={{ fontSize: "17px", fontWeight: 300, color: "#3A5560", lineHeight: 1.9 }}>
-            Inilah manifesto kami — bukan kumpulan janji yang ingin kami kesan-kesankan, melainkan cermin yang kami pegang di depan diri kami sendiri.
+            Inilah manifesto kami merupakan cermin yang kami pegang di depan diri kami sendiri.
           </p>
         </div>
       </section>

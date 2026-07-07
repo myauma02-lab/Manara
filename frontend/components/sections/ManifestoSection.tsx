@@ -28,7 +28,7 @@ export default function ManifestoSection() {
 
         {/* Quote */}
         <blockquote style={{ fontFamily: "Georgia,serif", fontSize: "clamp(28px,5vw,56px)", fontWeight: 300, fontStyle: "italic", color: "#EEF4F6", lineHeight: 1.25, marginBottom: "40px", margin: "0 0 40px" }}>
-          "Kami tidak mengangkat suara untuk didengar — kami mendalamkannya agar orang-orang yang tepat{" "}
+          "Kami tidak mengangkat suara untuk didengar. Kami mendalamkannya agar orang-orang yang tepat{" "}
           <em style={{ color: "#86AFAA", fontStyle: "normal" }}>mendengarkan.</em>"
         </blockquote>
 

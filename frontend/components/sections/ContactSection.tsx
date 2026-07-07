@@ -54,7 +54,7 @@ export default function ContactSection() {
               Mari mulai<br />sebuah percakapan.
             </h2>
             <p style={{ fontSize: "16px", fontWeight: 300, color: "#7A9AA5", lineHeight: 1.85, marginBottom: "48px" }}>
-              Apakah kamu ingin berkolaborasi, berkontribusi, menghadiri program, atau sekadar menyapa — kami ingin mendengar darimu.
+              Apakah kamu ingin berkolaborasi, berkontribusi, menghadiri program, atau sekadar menyapa. kami ingin mendengar darimu.
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "20px", marginBottom: "48px" }}>
