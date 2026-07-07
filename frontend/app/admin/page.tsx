@@ -1,229 +1,285 @@
 ﻿"use client";
 import { useEffect, useState } from "react";
-import { settingsApi, publicationsApi, recruitmentApi, newsletterApi } from "@/lib/api";
+import { publicationsApi, fellowsApi, recruitmentApi, newsletterApi } from "@/lib/api";
 import Link from "next/link";
-import { useAuthStore } from "@/lib/store/authStore";
 
 interface Stats {
-  articles: number; founders: number; projects: number;
-  subscribers: number; pendingApplications: number;
+  totalPubikasi: number;
+  totalArtikel: number;
+  totalPaper: number;
+  totalJournal: number;
+  totalFellows: number;
+  totalSubscriber: number;
+  lamaranPending: number;
+  pesanBelumDibaca: number;
+  loaded: boolean;
 }
 
-
-
 export default function AdminDashboard() {
-  const { user } = useAuthStore();
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [recentArticles, setRecentArticles] = useState<any[]>([]);
-  const [recentApplications, setRecentApplications] = useState<any[]>([]);
+  const [stats, setStats] = useState<Stats>({
+    totalPubikasi: 0, totalArtikel: 0, totalPaper: 0, totalJournal: 0,
+    totalFellows: 0, totalSubscriber: 0, lamaranPending: 0, pesanBelumDibaca: 0,
+    loaded: false,
+  });
+  const [recentPubs, setRecentPubs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.allSettled([
-      settingsApi.stats(),
-      publicationsApi.adminList(),
-      recruitmentApi.list(),
-    ]).then(([statsRes, articlesRes, recRes]) => {
-      if (statsRes.status === "fulfilled") setStats(statsRes.value.data.data);
-      if (articlesRes.status === "fulfilled") {
-        setRecentArticles(articlesRes.value.data.data?.slice(0, 5) || []);
-      }
-      if (recRes.status === "fulfilled") {
-        const batches = recRes.value.data.data || [];
-        const active = batches[0];
-        if (active) {
-          recruitmentApi.applications(active.id)
-            .then(r => setRecentApplications(r.data.data?.slice(0, 5) || []))
-            .catch(() => {});
-        }
-      }
-    }).finally(() => setLoading(false));
+    Promise.all([
+      // Publikasi per type
+      publicationsApi.adminList({ limit: 1 }),
+      publicationsApi.adminList({ type: "ARTICLE", limit: 1 }),
+      publicationsApi.adminList({ type: "PAPER", limit: 1 }),
+      publicationsApi.adminList({ type: "JOURNAL", limit: 1 }),
+      // Recent publications
+      publicationsApi.adminList({ limit: 6 }),
+      // Fellows
+      fellowsApi.all().catch(() => ({ data: { data: [] } })),
+      // Subscriber
+      newsletterApi.subscribers().catch(() => ({ data: { data: [] } })),
+      // Rekrutmen
+      recruitmentApi.list().catch(() => ({ data: { data: [] } })),
+    ])
+      .then(([allPub, artPub, paperPub, journalPub, recentPub, fellowsRes, subsRes, recruitRes]) => {
+        // Hitung lamaran pending
+        const allApps = (recruitRes.data.data || []).flatMap((r: any) => r.applications || []);
+        const pending = allApps.filter((a: any) => a.status === "PENDING").length;
+
+        setStats({
+          totalPubikasi: allPub.data.pagination?.total || 0,
+          totalArtikel: artPub.data.pagination?.total || 0,
+          totalPaper: paperPub.data.pagination?.total || 0,
+          totalJournal: journalPub.data.pagination?.total || 0,
+          totalFellows: (fellowsRes.data.data || []).length,
+          totalSubscriber: (subsRes.data.data || []).length,
+          lamaranPending: pending,
+          pesanBelumDibaca: 0, // akan dikembangkan
+          loaded: true,
+        });
+        setRecentPubs(recentPub.data.data || []);
+      })
+      .catch(() => setStats(s => ({ ...s, loaded: true })))
+      .finally(() => setLoading(false));
   }, []);
 
-  const STAT_CARDS = [
-    { label: "Total Artikel", value: stats?.articles ?? "—", href: "/admin/artikel", dot: "#266c87" },
-    { label: "Founders", value: stats?.founders ?? "—", href: "/admin/founder", dot: "#5F8F8A" },
-    { label: "Proyek", value: stats?.projects ?? "—", href: "/admin/project", dot: "#8A8F5E" },
-    { label: "Subscriber", value: stats?.subscribers ?? "—", href: "/admin/newsletter", dot: "#C6AD8A" },
-    { label: "Lamaran Pending", value: stats?.pendingApplications ?? "—", href: "/admin/recruitment", dot: "#86AFAA" },
-  ];
-
-  const QUICK_ACTIONS = [
-    { label: "Tulis Artikel Baru", href: "/admin/artikel/new", icon: "✦" },
-    { label: "Upload Research Paper", href: "/admin/research/new", icon: "○" },
-    { label: "Tambah Founder", href: "/admin/founder/new", icon: "◎" },
-    { label: "Tambah Proyek", href: "/admin/project/new", icon: "△" },
-    { label: "Lihat Lamaran", href: "/admin/recruitment", icon: "+" },
-    { label: "Pesan Masuk", href: "/admin/pesan", icon: "✉" },
-    { title: "Publikasi", desc: "Kelola artikel, paper, dan journal", icon: "✦", href: "/admin/publikasi", color: "#266c87", cta: "Kelola Publikasi", },
-    { title: "Layanan", desc: "Edit konten 6 halaman layanan", icon: "◎", href: "/admin/layanan", color: "#3F6F6A", cta: "Kelola Layanan", },
-  ];
-
-  const STATUS_COLOR: any = {
-    PUBLISHED: { bg: "rgba(95,143,138,0.15)", color: "#3F6F6A" },
-    DRAFT: { bg: "rgba(198,173,138,0.2)", color: "#A78E6D" },
-    REVIEW: { bg: "rgba(38,108,135,0.1)", color: "#266c87" },
+  const StatCard = ({ value, label, sub, href, color = "#266c87", alert = false }: {
+    value: string | number; label: string; sub?: string;
+    href?: string; color?: string; alert?: boolean;
+  }) => {
+    const content = (
+      <div style={{
+        background: "#fff",
+        border: `1px solid ${alert && Number(value) > 0 ? color + "40" : "rgba(38,108,135,0.1)"}`,
+        borderRadius: "4px",
+        padding: "20px 24px",
+        position: "relative",
+        transition: "all 0.2s",
+      }}>
+        {alert && Number(value) > 0 && (
+          <div style={{ position: "absolute", top: "12px", right: "12px", width: "8px", height: "8px", borderRadius: "50%", background: color, animation: "pulse-dot 2s infinite" }} />
+        )}
+        <p style={{ fontFamily: "Georgia,serif", fontSize: "clamp(28px,3vw,40px)", fontWeight: 300, color: Number(value) > 0 ? "#0F2830" : "#B8CDD2", lineHeight: 1, marginBottom: "6px", transition: "color 0.3s" }}>
+          {loading ? "..." : value}
+        </p>
+        <p style={{ fontSize: "13px", fontWeight: 500, color: "#3A5560" }}>{label}</p>
+        {sub && <p style={{ fontSize: "11px", color: "#B8CDD2", marginTop: "2px" }}>{sub}</p>}
+      </div>
+    );
+    return href ? <Link href={href} style={{ textDecoration: "none" }}>{content}</Link> : content;
   };
-  const APP_STATUS_COLOR: any = {
-    PENDING: { bg: "rgba(198,173,138,0.2)", color: "#A78E6D" },
-    REVIEWING: { bg: "rgba(38,108,135,0.1)", color: "#266c87" },
-    SHORTLISTED: { bg: "rgba(95,143,138,0.15)", color: "#3F6F6A" },
-    ACCEPTED: { bg: "rgba(63,111,106,0.15)", color: "#3F6F6A" },
-    REJECTED: { bg: "rgba(248,113,113,0.1)", color: "#f87171" },
+
+  const TYPE_CONFIG: Record<string, { label: string; color: string; href: string }> = {
+    ARTICLE: { label: "Artikel", color: "#266c87", href: "/publikasi/artikel" },
+    PAPER: { label: "Paper", color: "#3F6F6A", href: "/publikasi/paper" },
+    JOURNAL: { label: "Journal", color: "#5F8F8A", href: "/publikasi/journal" },
   };
 
   return (
     <div style={{ padding: "40px", maxWidth: "1100px" }}>
 
       {/* Header */}
-      <div style={{ marginBottom: "40px" }}>
-        <p style={{ fontSize: "11px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "8px" }}>
-          Admin Dashboard
+      <div style={{ marginBottom: "36px" }}>
+        <p style={{ fontSize: "11px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "4px" }}>
+          {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
         </p>
-        <h1 style={{ fontFamily: "Georgia,serif", fontSize: "36px", fontWeight: 300, color: "#0F2830", marginBottom: "6px" }}>
-          Selamat datang, <em style={{ color: "#266c87", fontStyle: "italic" }}>{user?.name?.split(" ")[0]}.</em>
+        <h1 style={{ fontFamily: "Georgia,serif", fontSize: "36px", fontWeight: 300, color: "#0F2830", marginBottom: "4px" }}>
+          Dashboard Manara
         </h1>
         <p style={{ fontSize: "14px", fontWeight: 300, color: "#7A9AA5" }}>
-          Kelola semua konten dan operasi Manara dari sini.
+          Selamat datang di Admin Panel. Berikut ringkasan aktivitas terkini.
         </p>
       </div>
 
-      {/* Stats */}
-      
-      <div style={{ display: "flex", gap: "16px", marginBottom: "40px", flexWrap: "wrap" }}>
-        {STAT_CARDS.map(card => (
-          <Link key={card.label} href={card.href} style={{
-            background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px",
-            padding: "24px", textDecoration: "none", flex: "1", minWidth: "140px",
-            display: "block", transition: "border-color 0.2s",
-          }}>
-            <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: card.dot, marginBottom: "16px" }} />
-            <p style={{ fontFamily: "Georgia,serif", fontSize: "44px", fontWeight: 300, color: "#0F2830", lineHeight: 1, marginBottom: "6px" }}>
-              {loading ? <span style={{ opacity: 0.3 }}>—</span> : card.value}
-            </p>
-            <p style={{ fontSize: "12px", fontWeight: 400, color: "#7A9AA5" }}>{card.label}</p>
-          </Link>
-        ))}
-      </div>
-
-      {/* Content grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginBottom: "32px" }}>
-
-        {/* Recent articles */}
-        <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", overflow: "hidden" }}>
-          <div style={{ padding: "20px 24px", borderBottom: "1px solid rgba(38,108,135,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <p style={{ fontSize: "13px", fontWeight: 500, color: "#0F2830" }}>Artikel Terbaru</p>
-            <Link href="/admin/artikel" style={{ fontSize: "12px", color: "#266c87", textDecoration: "none" }}>Lihat semua →</Link>
-          </div>
-          <div>
-            {loading ? (
-              <div style={{ padding: "20px 24px" }}>
-                {[1,2,3].map(i => (
-                  <div key={i} style={{ height: "48px", background: "rgba(38,108,135,0.04)", borderRadius: "2px", marginBottom: "8px", animation: "pulse 1.5s infinite" }} />
-                ))}
-              </div>
-            ) : recentArticles.length === 0 ? (
-              <div style={{ padding: "32px 24px", textAlign: "center" }}>
-                <p style={{ fontSize: "13px", color: "#B8CDD2", marginBottom: "12px" }}>Belum ada artikel</p>
-                <Link href="/admin/artikel/new" style={{ fontSize: "12px", fontWeight: 500, color: "#266c87", textDecoration: "none" }}>+ Tulis Artikel Pertama</Link>
-              </div>
-            ) : recentArticles.map(a => (
-              <Link key={a.id} href={`/admin/artikel/${a.id}`} style={{ textDecoration: "none", display: "block" }}>
-                <div style={{ padding: "14px 24px", borderBottom: "1px solid rgba(38,108,135,0.05)", display: "flex", gap: "12px", alignItems: "center", transition: "background 0.15s" }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: "13px", fontWeight: 400, color: "#0F2830", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {a.title}
-                    </p>
-                    <p style={{ fontSize: "11px", color: "#B8CDD2", marginTop: "2px" }}>{a.author?.name}</p>
-                  </div>
-                  <span style={{ fontSize: "10px", fontWeight: 500, padding: "3px 8px", borderRadius: "2px", background: STATUS_COLOR[a.status]?.bg || "rgba(184,205,210,0.2)", color: STATUS_COLOR[a.status]?.color || "#7A9AA5", flexShrink: 0 }}>
-                    {a.status}
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Recent applications */}
-        <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", overflow: "hidden" }}>
-          <div style={{ padding: "20px 24px", borderBottom: "1px solid rgba(38,108,135,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <p style={{ fontSize: "13px", fontWeight: 500, color: "#0F2830" }}>Lamaran Terbaru</p>
-            <Link href="/admin/recruitment" style={{ fontSize: "12px", color: "#266c87", textDecoration: "none" }}>Lihat semua →</Link>
-          </div>
-          <div>
-            {loading ? (
-              <div style={{ padding: "20px 24px" }}>
-                {[1,2,3].map(i => (
-                  <div key={i} style={{ height: "48px", background: "rgba(38,108,135,0.04)", borderRadius: "2px", marginBottom: "8px", animation: "pulse 1.5s infinite" }} />
-                ))}
-              </div>
-            ) : recentApplications.length === 0 ? (
-              <div style={{ padding: "32px 24px", textAlign: "center" }}>
-                <p style={{ fontSize: "13px", color: "#B8CDD2" }}>Belum ada lamaran masuk</p>
-              </div>
-            ) : recentApplications.map(app => {
-              const cfg = APP_STATUS_COLOR[app.status] || APP_STATUS_COLOR.PENDING;
-              return (
-                <div key={app.id} style={{ padding: "14px 24px", borderBottom: "1px solid rgba(38,108,135,0.05)", display: "flex", gap: "12px", alignItems: "center" }}>
-                  <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(38,108,135,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 500, color: "#266c87", flexShrink: 0 }}>
-                    {app.fullName.charAt(0)}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: "13px", fontWeight: 400, color: "#0F2830", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {app.fullName}
-                    </p>
-                    <p style={{ fontSize: "11px", color: "#B8CDD2", marginTop: "2px" }}>{app.position}</p>
-                  </div>
-                  <span style={{ fontSize: "10px", fontWeight: 500, padding: "3px 8px", borderRadius: "2px", background: cfg.bg, color: cfg.color, flexShrink: 0 }}>
-                    {app.status}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+      {/* Stats Grid — Row 1: Publikasi */}
+      <div style={{ marginBottom: "12px" }}>
+        <p style={{ fontSize: "10px", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "10px" }}>
+          Publikasi
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "12px" }} className="stats-grid-4">
+          <StatCard value={stats.totalPubikasi} label="Total Publikasi" sub="Semua tipe" href="/admin/publikasi" />
+          <StatCard value={stats.totalArtikel} label="Artikel" sub={`${stats.totalArtikel} diterbitkan`} href="/admin/publikasi" color="#266c87" />
+          <StatCard value={stats.totalPaper} label="Manara Paper" sub="Policy & working paper" href="/admin/publikasi" color="#3F6F6A" />
+          <StatCard value={stats.totalJournal} label="Manara Journal" sub="Jurnal ilmiah" href="/admin/publikasi" color="#5F8F8A" />
         </div>
       </div>
 
-      {/* Quick Actions */}
+      {/* Stats Grid — Row 2: Komunitas */}
       <div style={{ marginBottom: "32px" }}>
-        <p style={{ fontSize: "11px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "16px" }}>
-          Aksi Cepat
+        <p style={{ fontSize: "10px", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "10px" }}>
+          Komunitas & Aktivitas
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "10px" }}>
-          {QUICK_ACTIONS.map(action => (
-            <Link key={action.label} href={action.href} style={{
-              display: "flex", alignItems: "center", gap: "10px",
-              background: "#fff", border: "1px solid rgba(38,108,135,0.1)",
-              borderRadius: "4px", padding: "14px 18px",
-              textDecoration: "none", transition: "all 0.2s",
-            }}>
-              <span style={{ color: "#266c87", fontSize: "14px", width: "18px", textAlign: "center" }}>{action.icon}</span>
-              <span style={{ fontSize: "13px", fontWeight: 300, color: "#3A5560" }}>{action.label}</span>
-              <span style={{ marginLeft: "auto", color: "#B8CDD2", fontSize: "14px" }}>→</span>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "12px" }} className="stats-grid-4">
+          <StatCard value={stats.totalFellows} label="Fellows" sub="Tenaga ahli aktif" href="/admin/fellows" color="#266c87" />
+          <StatCard value={stats.totalSubscriber} label="Subscriber" sub="Newsletter aktif" href="/admin/newsletter" color="#3F6F6A" />
+          <StatCard value={stats.lamaranPending} label="Lamaran Pending" sub="Menunggu review" href="/admin/recruitment" color="#C6A84B" alert={true} />
+          <StatCard value={stats.pesanBelumDibaca} label="Pesan Baru" sub="Kontak masuk" href="/admin/pesan" color="#f87171" alert={true} />
+        </div>
+      </div>
+
+      {/* Dua kolom: Recent + Quick Actions */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "20px" }} className="two-col-grid">
+
+        {/* Recent Publikasi */}
+        <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", overflow: "hidden" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid rgba(38,108,135,0.08)", background: "rgba(38,108,135,0.02)" }}>
+            <p style={{ fontSize: "13px", fontWeight: 500, color: "#0F2830" }}>Publikasi Terbaru</p>
+            <Link href="/admin/publikasi" style={{ fontSize: "12px", color: "#266c87", textDecoration: "none" }}>
+              Lihat semua →
+            </Link>
+          </div>
+
+          {loading ? (
+            <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
+              {[1,2,3,4].map(i => (
+                <div key={i} style={{ display: "flex", gap: "12px", animation: "pulse 1.5s infinite" }}>
+                  <div style={{ width: "44px", height: "44px", background: "rgba(38,108,135,0.06)", borderRadius: "2px", flexShrink: 0 }} />
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+                    <div style={{ height: "13px", background: "rgba(38,108,135,0.06)", borderRadius: "2px", width: "75%" }} />
+                    <div style={{ height: "11px", background: "rgba(38,108,135,0.04)", borderRadius: "2px", width: "45%" }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : recentPubs.length === 0 ? (
+            <div style={{ padding: "40px", textAlign: "center" }}>
+              <p style={{ fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300, color: "#7A9AA5", marginBottom: "12px" }}>
+                Belum ada publikasi.
+              </p>
+              <Link href="/admin/publikasi/new?type=ARTICLE"
+                style={{ fontSize: "13px", fontWeight: 500, color: "#266c87", textDecoration: "none", border: "1px solid rgba(38,108,135,0.2)", padding: "8px 16px", borderRadius: "2px" }}>
+                Buat Artikel Pertama →
+              </Link>
+            </div>
+          ) : (
+            <div>
+              {recentPubs.map(pub => {
+                const tc = TYPE_CONFIG[pub.type] || TYPE_CONFIG.ARTICLE;
+                const typePath = pub.type === "ARTICLE" ? "artikel" : pub.type === "PAPER" ? "paper" : "journal";
+                return (
+                  <div key={pub.id} style={{ display: "flex", gap: "14px", padding: "14px 20px", borderBottom: "1px solid rgba(38,108,135,0.05)", alignItems: "center" }}>
+                    {/* Cover thumbnail */}
+                    <div style={{ width: "44px", height: "44px", borderRadius: "2px", flexShrink: 0, background: pub.coverImage ? `url(${pub.coverImage}) center/cover` : "linear-gradient(135deg,#0F2830,#266c87)" }} />
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", gap: "6px", marginBottom: "3px", alignItems: "center" }}>
+                        <span style={{ fontSize: "10px", fontWeight: 500, color: tc.color, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                          {tc.label}
+                        </span>
+                        <span style={{ fontSize: "10px", padding: "1px 6px", borderRadius: "2px", background: pub.status === "PUBLISHED" ? "rgba(63,111,106,0.1)" : "rgba(198,168,75,0.1)", color: pub.status === "PUBLISHED" ? "#3F6F6A" : "#A0853A", fontWeight: 500 }}>
+                          {pub.status === "PUBLISHED" ? "Live" : pub.status}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: "13px", fontWeight: 500, color: "#0F2830", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {pub.title}
+                      </p>
+                      <p style={{ fontSize: "11px", color: "#B8CDD2" }}>
+                        {pub.author?.name} · {new Date(pub.updatedAt || pub.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
+                      </p>
+                    </div>
+
+                    <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+                      <Link href={`/admin/publikasi/${pub.id}`}
+                        style={{ fontSize: "11px", color: "#266c87", border: "1px solid rgba(38,108,135,0.2)", padding: "4px 10px", borderRadius: "2px", textDecoration: "none" }}>
+                        Edit
+                      </Link>
+                      {pub.status === "PUBLISHED" && (
+                        <Link href={`/publikasi/${typePath}/${pub.slug}`} target="_blank"
+                          style={{ fontSize: "11px", color: "#7A9AA5", padding: "4px 8px", textDecoration: "none" }}>
+                          ↗
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Quick Actions */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <p style={{ fontSize: "10px", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "2px" }}>
+            Quick Actions
+          </p>
+
+          {[
+            { icon: "✦", label: "Tulis Artikel", href: "/admin/publikasi/new?type=ARTICLE", color: "#266c87", desc: "Buat artikel baru" },
+            { icon: "◇", label: "Upload Paper", href: "/admin/publikasi/new?type=PAPER", color: "#3F6F6A", desc: "Policy atau working paper" },
+            { icon: "○", label: "Tambah Journal", href: "/admin/publikasi/new?type=JOURNAL", color: "#5F8F8A", desc: "Artikel jurnal ilmiah" },
+            { icon: "◉", label: "Tambah Fellow", href: "/admin/fellows/new", color: "#266c87", desc: "Tenaga ahli baru" },
+            { icon: "△", label: "Edit Layanan", href: "/admin/layanan", color: "#8A8F5E", desc: "Konten halaman layanan" },
+            { icon: "⚙", label: "Pengaturan", href: "/admin/settings", color: "#7A9AA5", desc: "Website & sosial media" },
+          ].map(action => (
+            <Link key={action.href} href={action.href} style={{ textDecoration: "none" }}>
+              <div style={{
+                display: "flex", alignItems: "center", gap: "12px",
+                background: "#fff", border: "1px solid rgba(38,108,135,0.1)",
+                borderRadius: "4px", padding: "12px 16px",
+                transition: "all 0.2s",
+              }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.borderColor = action.color + "40";
+                  (e.currentTarget as HTMLElement).style.transform = "translateX(3px)";
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(38,108,135,0.1)";
+                  (e.currentTarget as HTMLElement).style.transform = "none";
+                }}
+              >
+                <div style={{ width: "34px", height: "34px", borderRadius: "50%", border: `1px solid ${action.color}30`, display: "flex", alignItems: "center", justifyContent: "center", color: action.color, fontSize: "14px", flexShrink: 0 }}>
+                  {action.icon}
+                </div>
+                <div>
+                  <p style={{ fontSize: "13px", fontWeight: 500, color: "#0F2830" }}>{action.label}</p>
+                  <p style={{ fontSize: "11px", color: "#B8CDD2" }}>{action.desc}</p>
+                </div>
+                <span style={{ marginLeft: "auto", color: "#B8CDD2", fontSize: "14px" }}>→</span>
+              </div>
             </Link>
           ))}
+
+          {/* Link ke website publik */}
+          <div style={{ marginTop: "4px", paddingTop: "14px", borderTop: "1px solid rgba(38,108,135,0.08)" }}>
+            <a href="https://manara.my.id" target="_blank" rel="noopener noreferrer"
+              style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#7A9AA5", textDecoration: "none" }}>
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#3F6F6A", display: "inline-block" }} />
+              manara.my.id — Lihat Website Publik ↗
+            </a>
+          </div>
         </div>
       </div>
 
-      {/* System info */}
-      <div style={{ background: "#0F2830", borderRadius: "4px", padding: "28px 32px", border: "1px solid rgba(38,108,135,0.1)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
-        <div>
-          <p style={{ fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300, color: "rgba(238,244,246,0.9)", marginBottom: "4px" }}>
-            Manara CMS v1.0
-          </p>
-          <p style={{ fontSize: "13px", fontWeight: 300, color: "rgba(134,175,170,0.4)" }}>
-            Semua perubahan langsung berlaku di website publik.
-          </p>
-        </div>
-        <div style={{ display: "flex", gap: "10px" }}>
-          <Link href="/" target="_blank" style={{ fontSize: "12px", fontWeight: 500, color: "#266c87", border: "1px solid rgba(38,108,135,0.2)", padding: "8px 18px", borderRadius: "2px", textDecoration: "none" }}>
-            Lihat Website →
-          </Link>
-        </div>
-      </div>
-
-      <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }`}</style>
+      <style>{`
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.75)} }
+        @media (max-width: 900px) {
+          .stats-grid-4 { grid-template-columns: repeat(2,1fr) !important; }
+          .two-col-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 540px) {
+          .stats-grid-4 { grid-template-columns: 1fr 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }
