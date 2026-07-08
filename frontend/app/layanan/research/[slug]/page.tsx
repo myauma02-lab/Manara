@@ -19,6 +19,7 @@ export default function ResearchDetailPage() {
   const [loading, setLoading] = useState(true);
   const [related, setRelated] = useState<any[]>([]);
 
+  
   useEffect(() => {
     projectsApi.detail(String(slug))
       .then(r => {
