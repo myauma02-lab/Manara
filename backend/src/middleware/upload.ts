@@ -80,17 +80,26 @@ const publicationStorage = new CloudinaryStorage({
   params: async (_req, file) => {
     const isPdf = file.mimetype === "application/pdf";
 
-    return {
-      folder: isPdf ? "manara/publications/pdf" : "manara/publications/cover",
-      resource_type: isPdf ? "raw" : "image",
-      allowed_formats: isPdf
-        ? ["pdf"]
-        : ["jpg", "jpeg", "png", "webp", "gif"],
-      transformation: isPdf
-        ? undefined
-        : [{ quality: "auto", fetch_format: "auto" }],
-      public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, "-")}`,
-    };
+return {
+  folder: isPdf
+    ? "manara/publications/pdf"
+    : "manara/publications/cover",
+
+  // PDF di-upload sebagai image
+  resource_type: "image",
+
+  allowed_formats: isPdf
+    ? ["pdf"]
+    : ["jpg", "jpeg", "png", "webp", "gif"],
+
+  format: isPdf ? "pdf" : undefined,
+
+  transformation: isPdf
+    ? undefined
+    : [{ quality: "auto", fetch_format: "auto" }],
+
+  public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, "-")}`,
+  };
   },
 });
 
