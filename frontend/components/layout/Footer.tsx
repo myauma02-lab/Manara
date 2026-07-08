@@ -22,14 +22,13 @@ const FOOTER_NAV = [
     ],
   },
   {
-    title: "Layanan",
+    title: "Proyek & Layanan",  // ← Gabungkan jadi 1 kolom
     links: [
-      { label: "Research", href: "/layanan/research" },
+      { label: "Semua Proyek", href: "/proyek" },
+      { label: "Layanan Research", href: "/layanan/research" },
       { label: "Policy Brief", href: "/layanan/policy-brief" },
       { label: "Training", href: "/layanan/training" },
-      { label: "Media", href: "/layanan/media" },
       { label: "Consulting", href: "/layanan/consulting" },
-      { label: "Event", href: "/layanan/event" },
     ],
   },
   {
