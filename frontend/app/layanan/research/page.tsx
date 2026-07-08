@@ -9,10 +9,6 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Research | Layanan Manara",
-  description: "Layanan riset kebijakan berbasis bukti dari Manara.",
-};
 
 export default function ResearchServicePage() {
   return <ServicePage data={RESEARCH_DATA} />;
