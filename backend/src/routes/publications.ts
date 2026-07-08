@@ -309,21 +309,33 @@ router.get("/:slug/download", async (req, res) => {
   try {
     const pub = await prisma.publication.findUnique({
       where: { slug: req.params.slug },
-      select: { id: true, pdfUrl: true, title: true },
+      select: {
+        id: true,
+        pdfUrl: true,
+      },
     });
 
     if (!pub?.pdfUrl) {
-      return res.status(404).json({ message: "File tidak tersedia" });
+      return res.status(404).json({
+        message: "File tidak tersedia",
+      });
     }
 
     await prisma.publication.update({
       where: { id: pub.id },
-      data: { downloadCount: { increment: 1 } },
+      data: {
+        downloadCount: {
+          increment: 1,
+        },
+      },
     }).catch(() => {});
 
-    res.json({ success: true, url: pub.pdfUrl, title: pub.title });
+    return res.redirect(pub.pdfUrl);
+
   } catch (err: any) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message,
+    });
   }
 });
 
