@@ -140,21 +140,41 @@ enum MediaType {
 
 // ─── PROJECTS / PROGRAMS ────────────────────────────────────────
 model Project {
-  id            String        @id @default(uuid())
-  title         String
-  slug          String        @unique
-  description   String        @db.Text
-  coverImage    String?
-  coverPublicId String?
-  status        ProjectStatus @default(UPCOMING)
-  category      String?
-  tags          String[]
-  startDate     DateTime?
-  endDate       DateTime?
-  isFeatured    Boolean       @default(false)
-  order         Int           @default(0)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  description String?       @db.Text
+  coverImage  String?
+  status      ProjectStatus @default(UPCOMING)
+  category    String?       // "Kebijakan Publik", "Lingkungan", dll
+  tags        String[]
+  startDate   DateTime?
+  endDate     DateTime?
+  progress    Int           @default(0)    // 0-100 persen
+  isFeatured  Boolean       @default(false)
+  isPublic    Boolean       @default(true)
+
+  // Tim pengerjaan
+  teamMembers String[]      // nama-nama anggota tim
+
+  // Output
+  outputs     String[]      // deliverables / hasil proyek
+
+  // Milestones
+  milestones  Json?         // [{title, date, done}]
+
+  // Links
+  reportUrl   String?       // link laporan final
+  dataUrl     String?       // link dataset
+  relatedPubs String[]      // slug publikasi terkait
+
+  // Meta
+  client      String?       // klien / mitra
+  budget      String?       // budget range (opsional, bisa di-hide)
+  location    String?       // lokasi penelitian
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   @@map("projects")
 }
