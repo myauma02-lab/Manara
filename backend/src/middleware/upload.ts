@@ -18,7 +18,7 @@ const createStorage = (folder: string) =>
       folder: `manara/${folder}`,
       allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
       transformation: [{ quality: 'auto', fetch_format: 'auto' }],
-      public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
+      public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, "-")}`,
     }),
   });
 
@@ -28,7 +28,7 @@ const pdfStorage = new CloudinaryStorage({
     folder: 'manara/papers',
     allowed_formats: ['pdf'],
     resource_type: 'raw',
-    public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
+    public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, "-")}`,
   }),
 });
 
@@ -38,7 +38,7 @@ const cvStorage = new CloudinaryStorage({
     folder: 'manara/applications',
     allowed_formats: ['pdf', 'doc', 'docx'],
     resource_type: 'raw',
-    public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
+    public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, "-")}`,
   }),
 });
 
@@ -89,7 +89,7 @@ const publicationStorage = new CloudinaryStorage({
       transformation: isPdf
         ? undefined
         : [{ quality: "auto", fetch_format: "auto" }],
-      public_id: `${Date.now()}-${file.originalname.split(".")[0]}`,
+      public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, "-")}`,
     };
   },
 });
