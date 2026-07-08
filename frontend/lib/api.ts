@@ -48,7 +48,22 @@ export const foundersApi = {
 };
 
 export const projectsApi = {
-  list: (params?: any) => api.get("/projects", { params }),
+  list: (params?: {
+    status?: string;
+    category?: string;
+    search?: string;
+    featured?: boolean;
+    limit?: number;
+    page?: number;
+  }) => api.get("/projects", { params }),
+
+  adminList: (params?: {
+    status?: string;
+    search?: string;
+    limit?: number;
+    page?: number;
+  }) => api.get("/projects/admin/all", { params }),
+
   detail: (slug: string) => api.get(`/projects/${slug}`),
   create: (data: FormData) => api.post("/projects", data),
   update: (id: string, data: FormData) => api.put(`/projects/${id}`, data),

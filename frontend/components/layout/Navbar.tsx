@@ -24,9 +24,10 @@ const NAV = [
     ],
   },
   {
-    label: "Layanan",
+    label: "Proyek & Layanan",
     href: "/layanan",
     children: [
+      { label: "Semua Proyek", href: "/proyek" },
       { label: "Research", href: "/layanan/research", desc: "Riset kebijakan berbasis bukti" },
       { label: "Policy Brief", href: "/layanan/policy-brief", desc: "Dokumen kebijakan yang actionable" },
       { label: "Training", href: "/layanan/training", desc: "Pelatihan riset dan penulisan" },

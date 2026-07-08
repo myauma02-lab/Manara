@@ -357,26 +357,20 @@ export default function ServicePage({ data }: { data: ServicePageData }) {
 
       {/* ── CONTACT CTA ── */}
       <section id="contact-cta" style={{ padding: "120px clamp(20px,5vw,40px)", background: "#0F2830", textAlign: "center", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 60% 60% at 50% 50%, ${data.accentColor}12 0%, transparent 70%)`, pointerEvents: "none" }} />
-        <div style={{ maxWidth: "640px", margin: "0 auto", position: "relative", zIndex: 2 }}>
-          <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.4)", marginBottom: "20px" }}>
-            Mulai Sekarang
-          </p>
-          <h2 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(28px,4.5vw,52px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.2, marginBottom: "16px" }}>
-            {data.ctaTitle}
-          </h2>
-          <p style={{ fontSize: "16px", fontWeight: 300, color: "rgba(134,175,170,0.45)", lineHeight: 1.85, marginBottom: "40px" }}>
-            {data.ctaDesc}
-          </p>
-          <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/#contact" style={{ background: "#266c87", color: "#fff", padding: "14px 32px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", borderRadius: "2px", textDecoration: "none" }}>
-              Hubungi Kami
-            </Link>
-            <Link href="/manapeople" style={{ border: "1px solid rgba(38,108,135,0.3)", color: "rgba(134,175,170,0.6)", padding: "14px 32px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", borderRadius: "2px", textDecoration: "none" }}>
-              Bergabung Dulu
-            </Link>
-          </div>
-        </div>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+    <Link href="/#contact" style={{ background: "#266c87", color: "#FFFFFF", padding: "14px 32px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", borderRadius: "2px", textDecoration: "none" }}>
+      Hubungi Kami
+    </Link>
+    <Link href="/manapeople" style={{ border: "1px solid rgba(38,108,135,0.3)", color: "rgba(134,175,170,0.6)", padding: "14px 32px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", borderRadius: "2px", textDecoration: "none", background: "transparent" }}>
+      Bergabung Dulu
+    </Link>
+    {/* Tambah ini khusus untuk service Research */}
+    {data.slug === "research" && (
+      <Link href="/proyek" style={{ border: "1px solid rgba(38,108,135,0.3)", color: "rgba(134,175,170,0.6)", padding: "14px 32px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", borderRadius: "2px", textDecoration: "none" }}>
+        Lihat Proyek →
+      </Link>
+    )}
+  </div>
       </section>
 
       <Footer />

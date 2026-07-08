@@ -69,8 +69,8 @@ export const RESEARCH_DATA: ServicePageData = {
     { q: "Apakah bisa request topik spesifik?", a: "Tentu. Kami melayani commission research berdasarkan kebutuhan klien. Hubungi kami untuk diskusi awal." },
     { q: "Apakah ada biaya konsultasi awal?", a: "Tidak. Konsultasi awal untuk mendiskusikan kebutuhan dan scope proyek dilakukan secara gratis." },
   ],
-  ctaTitle: "Siap memulai proyek riset bersama Manara?",
-  ctaDesc: "Ceritakan kebutuhan risetmu. Kami akan merespons dalam 1×24 jam kerja.",
+  ctaTitle: "Lihat proyek riset kami atau mulai kolaborasi.",
+  ctaDesc: "Jelajahi proyek aktif Manara, atau hubungi kami untuk mendiskusikan kebutuhan risetmu.",
 };
 
 export const POLICY_BRIEF_DATA: ServicePageData = {
