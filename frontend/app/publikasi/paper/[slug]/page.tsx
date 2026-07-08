@@ -23,18 +23,25 @@ export default function PaperDetailPage() {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  const handleDownload = async () => {
-    if (!paper) return;
-    setDownloading(true);
-    try {
-      const res = await publicationsApi.download(paper.slug);
-      window.open(res.data.url, "_blank");
-    } catch {
-      alert("File tidak tersedia");
-    } finally {
-      setDownloading(false);
-    }
-  };
+const handleDownload = async () => {
+  if (!paper?.pdfUrl) { alert("File tidak tersedia"); return; }
+  setDownloading(true);
+  try {
+    // Increment count dulu
+    await publicationsApi.download(paper.slug).catch(() => {});
+    // Buka URL langsung — bukan dari window.open setelah await
+    // tapi pakai anchor programmatic
+    const a = document.createElement("a");
+    a.href = paper.pdfUrl;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } finally {
+    setDownloading(false);
+  }
+};
 
   if (loading) return (
     <main>
@@ -107,48 +114,71 @@ export default function PaperDetailPage() {
 
           {/* Download button */}
           {paper.pdfUrl && (
-            <button onClick={handleDownload} disabled={downloading}
-              style={{ display: "inline-flex", alignItems: "center", gap: "10px", background: "#3F6F6A", color: "#fff", padding: "13px 28px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", border: "none", borderRadius: "2px", cursor: "pointer", marginBottom: "40px", opacity: downloading ? 0.7 : 1 }}>
-              {downloading ? "Membuka..." : "↓ Unduh PDF"}
-              <span style={{ fontSize: "11px", opacity: 0.6 }}>· {paper.downloadCount || 0} unduhan</span>
-            </button>
+              <a
+              href={paper.pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                publicationsApi.download(paper.slug).catch(() => {});
+              }}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "10px",
+                background: "#3F6F6A",
+                color: "#fff",
+                padding: "13px 28px",
+                fontSize: "13px",
+                fontWeight: 500,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                borderRadius: "2px",
+                textDecoration: "none",
+                marginBottom: "40px",
+              }}
+            >
+              ↓ Unduh PDF
+              <span style={{ fontSize: "11px", opacity: 0.6 }}>
+                · {paper.downloadCount || 0} unduhan
+              </span>
+            </a>
           )}
 
-          {/* Abstract */}
-          {paper.abstract && (
-            <div style={{ borderTop: "1px solid rgba(38,108,135,0.1)", paddingTop: "36px", marginBottom: "36px" }}>
-              <p style={{ fontSize: "11px", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "16px" }}>
-                Abstrak
-              </p>
-              <p style={{ fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300, fontStyle: "italic", color: "#3A5560", lineHeight: 1.8, borderLeft: "3px solid #3F6F6A", paddingLeft: "20px" }}>
-                {paper.abstract}
-              </p>
-            </div>
-          )}
-
-          {/* Keywords */}
-          {paper.keywords?.length > 0 && (
-            <div style={{ marginBottom: "32px" }}>
-              <p style={{ fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "12px" }}>
-                Kata Kunci
-              </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                {paper.keywords.map((kw: string) => (
-                  <span key={kw} style={{ fontSize: "13px", border: "1px solid rgba(38,108,135,0.15)", padding: "5px 14px", borderRadius: "2px", color: "#7A9AA5" }}>
-                    {kw}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Share */}
-          <div style={{ paddingTop: "24px", borderTop: "1px solid rgba(38,108,135,0.1)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
-            <ShareButtons title={paper.title} />
-            <Link href="/publikasi/paper" style={{ fontSize: "13px", color: "#B8CDD2", textDecoration: "none" }}>← Semua Paper</Link>
+        {/* Abstract */}
+        {paper.abstract && (
+          <div style={{ borderTop: "1px solid rgba(38,108,135,0.1)", paddingTop: "36px", marginBottom: "36px" }}>
+            <p style={{ fontSize: "11px", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "16px" }}>
+              Abstrak
+            </p>
+            <p style={{ fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300, fontStyle: "italic", color: "#3A5560", lineHeight: 1.8, borderLeft: "3px solid #3F6F6A", paddingLeft: "20px" }}>
+              {paper.abstract}
+            </p>
           </div>
+        )}
+
+        {/* Keywords */}
+        {paper.keywords?.length > 0 && (
+          <div style={{ marginBottom: "32px" }}>
+            <p style={{ fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "12px" }}>
+              Kata Kunci
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+              {paper.keywords.map((kw: string) => (
+                <span key={kw} style={{ fontSize: "13px", border: "1px solid rgba(38,108,135,0.15)", padding: "5px 14px", borderRadius: "2px", color: "#7A9AA5" }}>
+                  {kw}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Share */}
+        <div style={{ paddingTop: "24px", borderTop: "1px solid rgba(38,108,135,0.1)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
+          <ShareButtons title={paper.title} />
+          <Link href="/publikasi/paper" style={{ fontSize: "13px", color: "#B8CDD2", textDecoration: "none" }}>← Semua Paper</Link>
         </div>
       </div>
+    </div>
       <Footer />
     </main>
   );

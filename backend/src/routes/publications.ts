@@ -309,33 +309,31 @@ router.get("/:slug/download", async (req, res) => {
   try {
     const pub = await prisma.publication.findUnique({
       where: { slug: req.params.slug },
-      select: {
-        id: true,
-        pdfUrl: true,
-      },
+      select: { id: true, pdfUrl: true, title: true },
     });
 
-    if (!pub?.pdfUrl) {
-      return res.status(404).json({
-        message: "File tidak tersedia",
-      });
+    if (!pub) {
+      return res.status(404).json({ message: "Publikasi tidak ditemukan" });
     }
 
+    if (!pub.pdfUrl) {
+      return res.status(404).json({ message: "File PDF tidak tersedia" });
+    }
+
+    // Increment download count
     await prisma.publication.update({
       where: { id: pub.id },
-      data: {
-        downloadCount: {
-          increment: 1,
-        },
-      },
+      data: { downloadCount: { increment: 1 } },
     }).catch(() => {});
 
-    return res.redirect(pub.pdfUrl);
-
-  } catch (err: any) {
-    res.status(500).json({
-      message: err.message,
+    // Return URL saja — biarkan frontend yang handle redirect
+    res.json({
+      success: true,
+      url: pub.pdfUrl,
+      title: pub.title,
     });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
   }
 });
 

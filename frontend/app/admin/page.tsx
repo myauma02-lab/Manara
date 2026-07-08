@@ -34,9 +34,11 @@ export default function AdminDashboard() {
       // Recent publications
       publicationsApi.adminList({ limit: 6 }),
       // Fellows
-      fellowsApi.all().catch(() => ({ data: { data: [] } })),
+      fellowsApi.all().catch(() => ({ data: { data: [] } })) ,
       // Subscriber
       newsletterApi.subscribers().catch(() => ({ data: { data: [] } })),
+
+      
       // Rekrutmen
       recruitmentApi.list().catch(() => ({ data: { data: [] } })),
     ])

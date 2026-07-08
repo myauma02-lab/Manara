@@ -129,11 +129,34 @@ export default function JournalDetailPage() {
 
           {/* Download */}
           {journal.pdfUrl && (
-            <button onClick={handleDownload} disabled={downloading}
-              style={{ display: "inline-flex", alignItems: "center", gap: "10px", background: "#5F8F8A", color: "#fff", padding: "13px 28px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", border: "none", borderRadius: "2px", cursor: "pointer", marginBottom: "40px", opacity: downloading ? 0.7 : 1 }}>
-              {downloading ? "Membuka..." : "↓ Unduh Artikel (PDF)"}
-              <span style={{ fontSize: "11px", opacity: 0.6 }}>· {journal.downloadCount || 0}</span>
-            </button>
+            <a
+              href={journal.pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                publicationsApi.download(journal.slug).catch(() => {});
+              }}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "10px",
+                background: "#5F8F8A",
+                color: "#fff",
+                padding: "13px 28px",
+                fontSize: "13px",
+                fontWeight: 500,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                borderRadius: "2px",
+                textDecoration: "none",
+                marginBottom: "40px",
+              }}
+            >
+              ↓ Unduh Artikel (PDF)
+              <span style={{ fontSize: "11px", opacity: 0.6 }}>
+                · {journal.downloadCount || 0}
+              </span>
+            </a>
           )}
 
           {/* Abstract */}

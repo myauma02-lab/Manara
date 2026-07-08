@@ -20,7 +20,7 @@ const createStorage = (folder) => new multer_storage_cloudinary_1.CloudinaryStor
         folder: `manara/${folder}`,
         allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
         transformation: [{ quality: 'auto', fetch_format: 'auto' }],
-        public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, "-")}`,
+        public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
     }),
 });
 const pdfStorage = new multer_storage_cloudinary_1.CloudinaryStorage({
@@ -29,7 +29,7 @@ const pdfStorage = new multer_storage_cloudinary_1.CloudinaryStorage({
         folder: 'manara/papers',
         allowed_formats: ['pdf'],
         resource_type: 'raw',
-        public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, "-")}`,
+        public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
     }),
 });
 const cvStorage = new multer_storage_cloudinary_1.CloudinaryStorage({
@@ -38,7 +38,7 @@ const cvStorage = new multer_storage_cloudinary_1.CloudinaryStorage({
         folder: 'manara/applications',
         allowed_formats: ['pdf', 'doc', 'docx'],
         resource_type: 'raw',
-        public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, "-")}`,
+        public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
     }),
 });
 const fileFilter = (_req, file, cb) => {
