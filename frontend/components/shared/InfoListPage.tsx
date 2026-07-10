@@ -12,7 +12,7 @@ interface Config {
   desc: string;
   color: string;
   grad: string;
-  detailHref: (slug: string) => string;
+  detailBase: string;
   emptyMessage: string;
 }
 
@@ -187,7 +187,7 @@ export default function InfoListPage({ config }: { config: Config }) {
                 {items.map(item => {
                   const meta = getItemMeta(item);
                   return (
-                    <Link key={item.id} href={config.detailHref(item.slug)} style={{ textDecoration: "none" }}>
+                    <Link key={item.id} href={`${config.detailBase}/${item.slug}`} style={{ textDecoration: "none" }}>
                       <div style={{
                         background: "#fff",
                         border: "1px solid rgba(38,108,135,0.1)",

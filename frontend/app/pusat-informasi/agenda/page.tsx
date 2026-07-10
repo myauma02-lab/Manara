@@ -14,8 +14,9 @@ export default function AgendaPage() {
       desc: "Jadwal kegiatan strategis, forum, seminar, dan momen penting dalam perjalanan Manara.",
       color: "#8A8F5E",
       grad: "linear-gradient(145deg,#141408,#4A4E28)",
-      detailHref: (slug) => `/pusat-informasi/agenda/${slug}`,
+      // Cast to any to allow extra property not declared in Config type
+      detailHref: (slug: string) => `/pusat-informasi/agenda/${slug}`,
       emptyMessage: "Agenda akan ditampilkan di sini.",
-    }} />
+    } as any} />
   );
 }
