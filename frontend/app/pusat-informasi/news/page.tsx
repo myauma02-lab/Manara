@@ -14,7 +14,7 @@ export default function NewsPage() {
       desc: "Perkembangan terkini, liputan kegiatan, dan berita seputar Manara dan isu yang kami pedulikan.",
       color: "#266c87",
       grad: "linear-gradient(145deg,#0F2830,#266c87)",
-      detailHref: (slug) => `/pusat-informasi/news/${slug}`,
+      detailBase: "/pusat-informasi/news",
       emptyMessage: "Belum ada berita yang dipublikasikan.",
     } as any} />
   );
