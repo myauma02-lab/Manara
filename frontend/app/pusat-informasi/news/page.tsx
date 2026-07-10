@@ -16,6 +16,6 @@ export default function NewsPage() {
       grad: "linear-gradient(145deg,#0F2830,#266c87)",
       detailHref: (slug) => `/pusat-informasi/news/${slug}`,
       emptyMessage: "Belum ada berita yang dipublikasikan.",
-    }} />
+    } as any} />
   );
 }

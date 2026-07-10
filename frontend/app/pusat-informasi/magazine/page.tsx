@@ -14,7 +14,7 @@ export default function MagazinePage() {
       desc: "Publikasi berkala Manara dalam format majalah — kumpulan gagasan, wawancara, dan analisis mendalam.",
       color: "#5F8F8A",
       grad: "linear-gradient(145deg,#0A1F1E,#2A5E59)",
-      detailHref: (slug) => `/pusat-informasi/magazine/${slug}`,
+      detailBase: "/pusat-informasi/magazine",
       emptyMessage: "Edisi majalah pertama segera hadir.",
     }} />
   );
