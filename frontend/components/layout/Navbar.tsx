@@ -24,10 +24,15 @@ const NAV = [
     ],
   },
 
-  {
-    label: "Proyek",
-    href: "/proyek",
-    children: null, // tidak perlu dropdown
+ {
+    label: "Pusat Informasi",
+    href: "/pusat-informasi",
+    children: [
+      { label: "News", href: "/pusat-informasi/news", desc: "Berita & artikel terbaru Manara" },
+      { label: "Awards", href: "/pusat-informasi/awards", desc: "Penghargaan & pencapaian" },
+      { label: "Magazine", href: "/pusat-informasi/magazine", desc: "Majalah & edisi digital Manara" },
+      { label: "Key Agenda", href: "/pusat-informasi/agenda", desc: "Jadwal & highlights strategis" },
+    ],
   },
 
   {

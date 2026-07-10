@@ -7,6 +7,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: "◎" },
   { href: "/admin/publikasi", label: "Publikasi", icon: "✦" },
+  { href: "/admin/pusat-informasi", label: "Pusat Informasi", icon: "◈" },
   { href: "/admin/layanan", label: "Layanan", icon: "◇" },
   { href: "/admin/fellows", label: "Fellows", icon: "◉" },
   { href: "/admin/recruitment", label: "Manapeople", icon: "+" },

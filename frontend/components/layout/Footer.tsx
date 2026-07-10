@@ -21,8 +21,19 @@ const FOOTER_NAV = [
       { label: "Manara Journal", href: "/publikasi/journal" },
     ],
   },
+
   {
-    title: "Proyek & Layanan",  // ← Gabungkan jadi 1 kolom
+    title: "Pusat Informasi",
+    links: [
+      { label: "News", href: "/pusat-informasi/news" },
+      { label: "Awards", href: "/pusat-informasi/awards" },
+      { label: "Magazine", href: "/pusat-informasi/magazine" },
+      { label: "Key Agenda", href: "/pusat-informasi/agenda" },
+    ],
+  },
+
+  {
+    title: "Layanan",  // ← Gabungkan jadi 1 kolom
     links: [
       { label: "Semua Proyek", href: "/proyek" },
       { label: "Layanan Research", href: "/layanan/research" },

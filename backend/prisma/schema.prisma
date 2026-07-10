@@ -410,3 +410,61 @@ model Fellow {
 
   @@map("fellows")
 }
+
+// ─── ENUM ────────────────────────────────────────────
+enum InfoType {
+  NEWS
+  AWARD
+  MAGAZINE
+  AGENDA
+}
+
+enum InfoStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// ─── MODEL ───────────────────────────────────────────
+model InfoItem {
+  id          String     @id @default(cuid())
+  type        InfoType
+  status      InfoStatus @default(DRAFT)
+  title       String
+  slug        String     @unique
+  excerpt     String?    @db.Text
+  content     String?    @db.Text
+  coverImage  String?
+  fileUrl     String?    // untuk magazine (PDF)
+  isFeatured  Boolean    @default(false)
+  publishedAt DateTime?
+
+  // NEWS
+  source      String?    // sumber berita
+  externalUrl String?    // link berita eksternal
+
+  // AWARD
+  awardGiver  String?    // pemberi penghargaan
+  awardYear   Int?
+  awardCategory String?
+
+  // MAGAZINE
+  issueNumber String?    // "Vol. 1 No. 2"
+  issueYear   Int?
+
+  // AGENDA
+  eventDate   DateTime?
+  eventEndDate DateTime?
+  eventLocation String?
+  eventType   String?    // "Seminar", "Workshop", "Forum"
+  isHighlight Boolean    @default(false)
+
+  // Meta
+  tags        String[]
+  viewCount   Int        @default(0)
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("info_items")
+}

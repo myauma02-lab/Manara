@@ -139,3 +139,30 @@ export const fellowsApi = {
   update: (id: string, data: FormData) => api.put(`/fellows/${id}`, data),
   delete: (id: string) => api.delete(`/fellows/${id}`),
 };
+
+export const infoApi = {
+  // Public
+  list: (params?: {
+    type?: "NEWS" | "AWARD" | "MAGAZINE" | "AGENDA";
+    search?: string;
+    featured?: boolean;
+    limit?: number;
+    page?: number;
+  }) => api.get("/info", { params }),
+
+  counts: () => api.get("/info/counts"),
+  detail: (slug: string) => api.get(`/info/${slug}`),
+
+  // Admin
+  adminList: (params?: {
+    type?: string;
+    status?: string;
+    search?: string;
+    limit?: number;
+    page?: number;
+  }) => api.get("/info/admin/all", { params }),
+
+  create: (data: FormData) => api.post("/info", data),
+  update: (id: string, data: FormData) => api.put(`/info/${id}`, data),
+  delete: (id: string) => api.delete(`/info/${id}`),
+};
