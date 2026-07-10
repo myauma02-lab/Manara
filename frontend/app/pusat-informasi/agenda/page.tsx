@@ -15,7 +15,7 @@ export default function AgendaPage() {
       color: "#8A8F5E",
       grad: "linear-gradient(145deg,#141408,#4A4E28)",
       // Cast to any to allow extra property not declared in Config type
-      detailHref: (slug: string) => `/pusat-informasi/agenda/${slug}`,
+      detailBase: "/pusat-informasi/agenda",
       emptyMessage: "Agenda akan ditampilkan di sini.",
     } as any} />
   );
