@@ -76,10 +76,14 @@ export const recruitmentApi = {
 };
 
 export const settingsApi = {
-  get: () => api.get("/settings"),
-  update: (key: string, value: any) => api.put(`/settings/${key}`, { value }),
-  stats: () => api.get("/settings/admin/stats"),
+  get: (key?: string) =>
+    key ? api.get("/settings", { params: { key } }) : api.get("/settings"),
+  update: (key: string, value: string) =>
+    api.post("/settings", { key, value }),
+  bulkUpdate: (settings: Record<string, string>) =>
+    api.post("/settings/bulk", { settings }),
 };
+
 export const contactApi = {
   send: (data: { name: string; email: string; purpose?: string; message: string }) =>
     api.post("/contact", data),

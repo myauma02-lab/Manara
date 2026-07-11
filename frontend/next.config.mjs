@@ -50,25 +50,21 @@ const nextConfig = {
       },
 
       // ─── Layanan ────────────────────────────────────────────
+      // Redirect URL lama layanan ke format tab baru
       {
-        source: "/proyek",
-        destination: "/layanan/research",
-        permanent: true,
+        source: "/layanan/research",
+        destination: "/layanan?tab=legal-opinion",
+        permanent: false,
       },
       {
-        source: "/proyek/:slug",
-        destination: "/layanan/research/:slug",
-        permanent: true,
+        source: "/layanan/policy-brief",
+        destination: "/layanan?tab=legal-drafting",
+        permanent: false,
       },
       {
-        source: "/media",
-        destination: "/layanan/media",
-        permanent: true,
-      },
-      {
-        source: "/media/:channel",
-        destination: "/layanan/media/:channel",
-        permanent: true,
+        source: "/layanan/training",
+        destination: "/layanan?tab=event",
+        permanent: false,
       },
 
       // ─── Kategori ────────────────────────────────────────────

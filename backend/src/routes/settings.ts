@@ -5,6 +5,60 @@ import { authenticate, requireAdmin } from '../middleware/auth';
 
 const router = Router();
 
+router.get("/", async (req, res) => {
+  try {
+    const { key } = req.query as any;
+    if (key) {
+      const setting = await prisma.siteSetting.findUnique({ where: { key } });
+      return res.json({ success: true, data: setting?.value || null });
+    }
+    const settings = await prisma.siteSetting.findMany();
+    const map: Record<string, string> = {};
+    settings.forEach(s => { map[s.key] = s.value; });
+    res.json({ success: true, data: map });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// POST /api/settings — upsert satu key
+router.post("/", authenticate, async (req, res) => {
+  try {
+    const { key, value } = req.body;
+    if (!key) return res.status(400).json({ message: "Key wajib diisi" });
+    const setting = await prisma.siteSetting.upsert({
+      where: { key },
+      update: { value: String(value) },
+      create: { key, value: String(value) },
+    });
+    res.json({ success: true, data: setting });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// POST /api/settings/bulk — upsert banyak key sekaligus
+router.post("/bulk", authenticate, async (req, res) => {
+  try {
+    const { settings } = req.body; // { key: value, key2: value2 }
+    if (!settings || typeof settings !== "object") {
+      return res.status(400).json({ message: "Format tidak valid" });
+    }
+    const results = await Promise.all(
+      Object.entries(settings).map(([key, value]) =>
+        prisma.siteSetting.upsert({
+          where: { key },
+          update: { value: String(value) },
+          create: { key, value: String(value) },
+        })
+      )
+    );
+    res.json({ success: true, data: results.length });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.get('/', async (_req, res) => {
   const settings = await prisma.siteSetting.findMany();
   const map = Object.fromEntries(settings.map((s: any) => [s.key, s.value]));

@@ -36,17 +36,17 @@ const NAV = [
   },
 
   {
-    label: "Layanan",
-    href: "/layanan",
-    children: [
-      { label: "Research", href: "/layanan/research", desc: "Riset kebijakan berbasis bukti" },
-      { label: "Policy Brief", href: "/layanan/policy-brief", desc: "Dokumen kebijakan yang actionable" },
-      { label: "Training", href: "/layanan/training", desc: "Pelatihan riset dan penulisan" },
-      { label: "Media", href: "/layanan/media", desc: "Ekosistem media Manara" },
-      { label: "Consulting", href: "/layanan/consulting", desc: "Konsultasi kebijakan dan strategi" },
-      { label: "Event", href: "/layanan/event", desc: "Forum dan diskusi publik" },
-    ],
-  },
+  label: "Layanan",
+  href: "/layanan",
+  children: [
+    { label: "Legal Opinion", href: "/layanan?tab=legal-opinion", desc: "Opini hukum resmi dari advokat" },
+    { label: "Legal Drafting", href: "/layanan?tab=legal-drafting", desc: "Penyusunan perjanjian & kontrak" },
+    { label: "Legal Review", href: "/layanan?tab=legal-review", desc: "Review dokumen sebelum tanda tangan" },
+    { label: "Event", href: "/layanan?tab=event", desc: "Webinar, seminar, workshop & sertifikasi" },
+    { label: "Consulting", href: "/layanan?tab=consulting", desc: "Segera Hadir — Konsultasi strategis" },
+    { label: "Pendaftaran Hukum", href: "/layanan?tab=pendaftaran-hukum", desc: "Segera Hadir — Pendirian & perizinan" },
+  ],
+},
   {
     label: "Insight",
     href: "/insight",
