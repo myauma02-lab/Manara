@@ -45,7 +45,7 @@ export interface LayananData {
 }
 
 // ─── NOMOR WHATSAPP ─────────────────────────────────────────
-export const WHATSAPP_NUMBER = "6282140000000"; // Ganti dengan nomor Manara
+export const WHATSAPP_NUMBER = "6285748957368"; // Ganti dengan nomor Manara
 
 // ─── DATA LEGAL OPINION ─────────────────────────────────────
 export const LEGAL_OPINION_DATA: LayananData = {
