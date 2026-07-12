@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import ShareButtons from "@/components/shared/ShareButtons";
+import { convertGDriveLink } from "@/lib/utils";
 
 export default function PaperDetailPage() {
   const { slug } = useParams();
@@ -42,6 +43,11 @@ const handleDownload = async () => {
     setDownloading(false);
   }
 };
+
+<a href={convertGDriveLink(paper.pdfUrl)} target="_blank" rel="noopener noreferrer">
+  ↓ Unduh / Baca PDF
+</a>
+
 
   if (loading) return (
     <main>
@@ -115,7 +121,7 @@ const handleDownload = async () => {
           {/* Download button */}
           {paper.pdfUrl && (
               <a
-              href={paper.pdfUrl}
+              href={convertGDriveLink(paper.pdfUrl)}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => {
