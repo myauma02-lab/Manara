@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const messages = body.messages ?? [];
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-3.5-flash",
       contents: [
         {
           role: "user",

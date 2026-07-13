@@ -1,0 +1,38 @@
+[1mdiff --git a/backend/.env.example b/backend/.env.example[m
+[1mindex 80e7a7f..e8e33e9 100644[m
+[1m--- a/backend/.env.example[m
+[1m+++ b/backend/.env.example[m
+[36m@@ -30,6 +30,4 @@[m [mSMTP_PORT=587[m
+ SMTP_USER=manararesearch@gmail.com[m
+ SMTP_PASS=srvuayjutgzgpmcw[m
+ EMAIL_FROM="Manara <manararesearch@gmail.com>"[m
+[31m-ADMIN_EMAIL=manararesearch@gmail.com[m
+[31m-[m
+[31m-NEXT_PUBLIC_ANTHROPIC_API_KEY=sk-ant-09712[m
+\ No newline at end of file[m
+[32m+[m[32mADMIN_EMAIL=manararesearch@gmail.com[m
+\ No newline at end of file[m
+[1mdiff --git a/frontend/.env.example b/frontend/.env.example[m
+[1mdeleted file mode 100644[m
+[1mindex 3ca9abd..0000000[m
+[1m--- a/frontend/.env.example[m
+[1m+++ /dev/null[m
+[36m@@ -1,14 +0,0 @@[m
+[31m-# ─── MANARA FRONTEND — Environment Variables ──────────────────────[m
+[31m-# Copy this file to .env.local and fill in your values[m
+[31m-[m
+[31m-# ─── Backend API ──────────────────────────────────────────────────[m
+[31m-NEXT_PUBLIC_API_URL=http://localhost:5000/api[m
+[31m-[m
+[31m-# Production:[m
+[31m-# NEXT_PUBLIC_API_URL=https://api.manara.id/api[m
+[31m-[m
+[31m-# ─── Site ─────────────────────────────────────────────────────────[m
+[31m-NEXT_PUBLIC_SITE_URL=http://localhost:3000[m
+[31m-NEXT_PUBLIC_SITE_NAME=Manara[m
+[31m-[m
+[31m-GEMINI_API_KEY=AIzaSyDCumISJC2yMdAUBtjnwZL-nFTjDhwxPVo[m
+\ No newline at end of file[m
+[1mdiff --git a/frontend/.gitignore b/frontend/.gitignore[m
+[1mindex e6c1448..27947f2 100644[m
+Binary files a/frontend/.gitignore and b/frontend/.gitignore differ
