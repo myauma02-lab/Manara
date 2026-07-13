@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/genai": "^2.11.0",
     "@types/quill": "^2.0.14",
     "axios": "^1.7.2",
     "clsx": "^2.1.1",
