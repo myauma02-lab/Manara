@@ -170,8 +170,9 @@ export async function POST(req: NextRequest) {
 
     // ── 7. Handle Anthropic error ──
     if (!anthropicRes.ok) {
-      const errData = await anthropicRes.json().catch(() => ({}));
-      console.error("Anthropic API error:", anthropicRes.status, errData);
+      const errText = await anthropicRes.text();
+        console.error("Anthropic Status:", anthropicRes.status);
+        console.error("Anthropic Body:", errText);      
 
       if (anthropicRes.status === 429) {
         return NextResponse.json(
