@@ -7,62 +7,6 @@ interface Message {
   timestamp: Date;
 }
 
-const SYSTEM_PROMPT = `Kamu adalah AI Asisten Manara — asisten virtual resmi dari Manara, sebuah kolektif intelektual dan inisiatif media kreatif berbasis di Surabaya dan Sidoarjo, Jawa Timur.
-
-TENTANG MANARA:
-- Manara adalah ruang intelektual, kreatif, dan berpengetahuan yang berfokus pada kebermanfaatan sosial
-- Tagline: "Shaping Ideas for the Public Sphere"
-- Website: manara.my.id
-- Email: manararesearch@gmail.com
-- Didirikan tahun 2024 oleh 5 co-founder
-
-CO-FOUNDERS:
-- Mutamimul Yhauma
-- Oca Aulia Putri Nofianti
-- Shalsa Bila Agustina
-- Firstamarya Diffa Oktavinanti
-- Sultan Isjad Ubaidillah
-
-LAYANAN MANARA:
-1. Legal Opinion — Opini hukum resmi dari advokat (mulai Rp 2.500.000)
-2. Legal Drafting — Penyusunan perjanjian & kontrak bawah tangan (mulai Rp 990.000)
-3. Legal Review — Review dokumen sebelum tanda tangan (mulai Rp 1.500.000, est. 3-5 jam)
-4. Event — Webinar, seminar, workshop, diskusi, sertifikasi (hubungi untuk penawaran)
-5. Consulting — Coming Soon
-6. Pendaftaran Hukum — Coming Soon
-
-PUBLIKASI:
-- Artikel: Opini, esai, analisis, dan commentary untuk pembaca umum
-- Manara Paper: Policy paper, working paper, policy brief untuk pemerintah dan akademisi
-- Manara Journal: Publikasi ilmiah dengan volume, nomor, dan DOI
-
-PUSAT INFORMASI:
-- News: Berita dan perkembangan terbaru Manara
-- Awards: Penghargaan dan pencapaian
-- Magazine: Majalah digital berkala
-- Key Agenda: Jadwal kegiatan strategis
-
-MANAPEOPLE:
-- Program rekrutmen dan onboarding terbuka
-- Untuk individu yang ingin bergabung sebagai kontributor Manara
-
-INSIGHT:
-- Newsletter "Surat Manara" — mingguan, gratis
-- Suara Manara — video pendek di Instagram
-- Podcast — percakapan mendalam di YouTube
-
-PROYEK:
-- Manara mengelola proyek riset, kajian, dan inisiatif kebijakan aktif
-
-PANDUAN MENJAWAB:
-- Gunakan bahasa Indonesia yang ramah, hangat, namun tetap intelektual
-- Jawab dengan ringkas tapi informatif (maks 3-4 paragraf kecuali diminta detail)
-- Untuk pertanyaan layanan, selalu sebutkan cara menghubungi via WhatsApp
-- Jika tidak tahu sesuatu yang spesifik, jujur dan arahkan ke kontak langsung
-- Jangan buat angka atau fakta yang tidak ada di atas
-- Untuk konsultasi hukum, selalu arahkan ke layanan resmi dan ingatkan ini hanya informasi umum
-- Sertakan emoji sesekali agar lebih ramah tapi jangan berlebihan`;
-
 const QUICK_QUESTIONS = [
   "Apa itu Manara?",
   "Layanan apa yang tersedia?",
@@ -77,21 +21,19 @@ export default function AIChatFloat() {
   const [loading, setLoading] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [hasGreeted, setHasGreeted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto scroll ke bawah
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Focus input saat dibuka
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 300);
       if (!hasGreeted) {
         setHasGreeted(true);
-        // Greeting otomatis
         setTimeout(() => {
           setMessages([{
             role: "assistant",
@@ -104,9 +46,12 @@ export default function AIChatFloat() {
     }
   }, [isOpen, hasGreeted]);
 
+  // ── sendMessage sekarang pakai /api/chat ──────────────
   const sendMessage = async (text?: string) => {
     const messageText = text || input.trim();
     if (!messageText || loading) return;
+
+    setErrorMsg(null);
 
     const userMessage: Message = {
       role: "user",
@@ -114,44 +59,44 @@ export default function AIChatFloat() {
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInput("");
     setLoading(true);
     setShowWelcome(false);
 
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY || "",
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 1000,
-          system: SYSTEM_PROMPT,
-          messages: [
-            ...messages.map(m => ({
-              role: m.role,
-              content: m.content,
-            })),
-            { role: "user", content: messageText },
-          ],
+          messages: updatedMessages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
         }),
       });
 
-      if (!response.ok) throw new Error("API error");
+      const data = await res.json();
 
-      const data = await response.json();
-      const assistantText = data.content?.[0]?.text || "Maaf, saya tidak bisa merespons saat ini. Coba lagi dalam beberapa saat.";
+      if (!res.ok) {
+        // Tampilkan pesan error yang user-friendly
+        const errText = data.error || "Terjadi kesalahan. Coba lagi.";
+        setErrorMsg(errText);
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: `Maaf, ${errText} 🙏`,
+          timestamp: new Date(),
+        }]);
+        return;
+      }
 
       setMessages(prev => [...prev, {
         role: "assistant",
-        content: assistantText,
+        content: data.content,
         timestamp: new Date(),
       }]);
+
     } catch {
       setMessages(prev => [...prev, {
         role: "assistant",
@@ -173,21 +118,17 @@ export default function AIChatFloat() {
   const formatTime = (date: Date) =>
     date.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
 
-  const formatText = (text: string) => {
-    // Buat teks lebih readable — bold, newlines
-    return text
-      .split("\n")
-      .map((line, i) => (
-        <span key={i}>
-          {line.split(/(\*\*.*?\*\*)/).map((part, j) =>
-            part.startsWith("**") && part.endsWith("**")
-              ? <strong key={j} style={{ fontWeight: 600, color: "#0F2830" }}>{part.slice(2, -2)}</strong>
-              : part
-          )}
-          {i < text.split("\n").length - 1 && <br />}
-        </span>
-      ));
-  };
+  const formatText = (text: string) =>
+    text.split("\n").map((line, i) => (
+      <span key={i}>
+        {line.split(/(\*\*.*?\*\*)/).map((part, j) =>
+          part.startsWith("**") && part.endsWith("**")
+            ? <strong key={j} style={{ fontWeight: 600, color: "#0F2830" }}>{part.slice(2, -2)}</strong>
+            : part
+        )}
+        {i < text.split("\n").length - 1 && <br />}
+      </span>
+    ));
 
   return (
     <>
@@ -223,7 +164,6 @@ export default function AIChatFloat() {
           gap: "12px",
           flexShrink: 0,
         }}>
-          {/* Avatar AI */}
           <div style={{
             width: "40px",
             height: "40px",
@@ -243,21 +183,42 @@ export default function AIChatFloat() {
               AI Asisten Manara
             </p>
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#4ade80", animation: "pulse-green 2s infinite" }} />
+              <div style={{
+                width: "6px",
+                height: "6px",
+                borderRadius: "50%",
+                background: loading ? "#f59e0b" : "#4ade80",
+                transition: "background 0.3s",
+              }} />
               <p style={{ fontSize: "11px", color: "rgba(134,175,170,0.7)" }}>
                 {loading ? "Sedang mengetik..." : "Siap membantu Anda"}
               </p>
             </div>
           </div>
+          {/* Clear chat */}
+          {messages.length > 0 && (
+            <button
+              onClick={() => {
+                setMessages([]);
+                setShowWelcome(true);
+                setHasGreeted(false);
+                setErrorMsg(null);
+              }}
+              title="Hapus riwayat chat"
+              style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(134,175,170,0.4)", fontSize: "13px", padding: "4px 8px" }}
+            >
+              Bersihkan
+            </button>
+          )}
           <button
             onClick={() => setIsOpen(false)}
-            style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(134,175,170,0.6)", fontSize: "20px", padding: "4px", lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(134,175,170,0.6)", fontSize: "22px", padding: "4px", lineHeight: 1 }}
           >
             ×
           </button>
         </div>
 
-        {/* Messages area */}
+        {/* Messages */}
         <div style={{
           flex: 1,
           overflowY: "auto",
@@ -267,42 +228,64 @@ export default function AIChatFloat() {
           gap: "12px",
           background: "#F8FAFA",
           scrollbarWidth: "thin",
-          scrollbarColor: "rgba(38,108,135,0.2) transparent",
+          scrollbarColor: "rgba(38,108,135,0.15) transparent",
         }}>
 
-          {/* Welcome state */}
+          {/* Welcome */}
           {showWelcome && messages.length === 0 && (
-            <div style={{ textAlign: "center", padding: "20px 0" }}>
-              <div style={{ width: "56px", height: "56px", borderRadius: "50%", background: "linear-gradient(135deg,#0F2830,#266c87)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", fontSize: "24px" }}>
+            <div style={{ textAlign: "center", padding: "24px 0" }}>
+              <div style={{
+                width: "60px",
+                height: "60px",
+                borderRadius: "50%",
+                background: "linear-gradient(135deg,#0F2830,#266c87)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 14px",
+                fontSize: "26px",
+                boxShadow: "0 4px 20px rgba(38,108,135,0.3)",
+              }}>
                 ✦
               </div>
-              <p style={{ fontFamily: "Georgia,serif", fontSize: "16px", fontWeight: 300, color: "#0F2830", marginBottom: "4px" }}>
+              <p style={{ fontFamily: "Georgia,serif", fontSize: "16px", fontWeight: 300, color: "#0F2830", marginBottom: "6px" }}>
                 AI Asisten Manara
               </p>
-              <p style={{ fontSize: "12px", color: "#7A9AA5" }}>
-                Tanyakan apapun tentang Manara
+              <p style={{ fontSize: "12px", color: "#7A9AA5", lineHeight: 1.6 }}>
+                Tanyakan apapun tentang layanan,<br />publikasi, atau Manara secara umum.
               </p>
             </div>
           )}
 
-          {/* Messages */}
+          {/* Message list */}
           {messages.map((msg, i) => (
             <div key={i} style={{
               display: "flex",
               flexDirection: "column",
               alignItems: msg.role === "user" ? "flex-end" : "flex-start",
             }}>
-              {/* Avatar + name row untuk assistant */}
               {msg.role === "assistant" && (
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px", paddingLeft: "4px" }}>
-                  <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "linear-gradient(135deg,#0F2830,#266c87)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#fff", flexShrink: 0 }}>
+                  <div style={{
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                    background: "linear-gradient(135deg,#0F2830,#266c87)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "9px",
+                    color: "#fff",
+                    flexShrink: 0,
+                  }}>
                     ✦
                   </div>
-                  <p style={{ fontSize: "11px", fontWeight: 500, color: "#266c87" }}>AI Asisten Manara</p>
+                  <p style={{ fontSize: "11px", fontWeight: 500, color: "#266c87" }}>
+                    AI Asisten Manara
+                  </p>
                 </div>
               )}
 
-              {/* Bubble */}
               <div style={{
                 maxWidth: "85%",
                 padding: "10px 14px",
@@ -326,7 +309,6 @@ export default function AIChatFloat() {
                 {formatText(msg.content)}
               </div>
 
-              {/* Timestamp */}
               <p style={{
                 fontSize: "10px",
                 color: "#B8CDD2",
@@ -339,16 +321,24 @@ export default function AIChatFloat() {
             </div>
           ))}
 
-          {/* Loading indicator */}
+          {/* Typing indicator */}
           {loading && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px", paddingLeft: "4px" }}>
-                <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "linear-gradient(135deg,#0F2830,#266c87)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#fff" }}>
+                <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "linear-gradient(135deg,#0F2830,#266c87)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", color: "#fff" }}>
                   ✦
                 </div>
-                <p style={{ fontSize: "11px", fontWeight: 500, color: "#266c87" }}>AI Asisten Manara</p>
+                <p style={{ fontSize: "11px", fontWeight: 500, color: "#266c87" }}>
+                  AI Asisten Manara
+                </p>
               </div>
-              <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px 16px 16px 16px", padding: "12px 16px", boxShadow: "0 1px 4px rgba(15,40,48,0.08)" }}>
+              <div style={{
+                background: "#fff",
+                border: "1px solid rgba(38,108,135,0.1)",
+                borderRadius: "4px 16px 16px 16px",
+                padding: "12px 16px",
+                boxShadow: "0 1px 4px rgba(15,40,48,0.08)",
+              }}>
                 <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
                   {[0, 1, 2].map(i => (
                     <div key={i} style={{
@@ -356,7 +346,7 @@ export default function AIChatFloat() {
                       height: "6px",
                       borderRadius: "50%",
                       background: "#266c87",
-                      opacity: 0.4,
+                      opacity: 0.5,
                       animation: `typingDot 1.2s infinite ${i * 0.2}s`,
                     }} />
                   ))}
@@ -368,7 +358,7 @@ export default function AIChatFloat() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Quick questions — muncul setelah greeting */}
+        {/* Quick questions */}
         {messages.length <= 1 && !loading && (
           <div style={{
             padding: "8px 14px",
@@ -396,7 +386,7 @@ export default function AIChatFloat() {
                   whiteSpace: "nowrap",
                 }}
                 onMouseOver={e => {
-                  (e.currentTarget as HTMLElement).style.background = "rgba(38,108,135,0.12)";
+                  (e.currentTarget as HTMLElement).style.background = "rgba(38,108,135,0.14)";
                 }}
                 onMouseOut={e => {
                   (e.currentTarget as HTMLElement).style.background = "rgba(38,108,135,0.06)";
@@ -408,7 +398,7 @@ export default function AIChatFloat() {
           </div>
         )}
 
-        {/* Input area */}
+        {/* Input */}
         <div style={{
           padding: "12px 14px",
           background: "#fff",
@@ -431,6 +421,7 @@ export default function AIChatFloat() {
               onKeyDown={handleKeyDown}
               placeholder="Ketik pertanyaan Anda..."
               disabled={loading}
+              maxLength={500}
               style={{
                 flex: 1,
                 border: "none",
@@ -450,7 +441,7 @@ export default function AIChatFloat() {
                 borderRadius: "50%",
                 background: input.trim() && !loading
                   ? "linear-gradient(135deg, #266c87, #1a4f63)"
-                  : "rgba(38,108,135,0.15)",
+                  : "rgba(38,108,135,0.12)",
                 border: "none",
                 cursor: input.trim() && !loading ? "pointer" : "not-allowed",
                 display: "flex",
@@ -461,15 +452,12 @@ export default function AIChatFloat() {
               }}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path
-                  d="M14 8L2 2L5 8L2 14L14 8Z"
-                  fill={input.trim() && !loading ? "#fff" : "#B8CDD2"}
-                />
+                <path d="M14 8L2 2L5 8L2 14L14 8Z" fill={input.trim() && !loading ? "#fff" : "#B8CDD2"} />
               </svg>
             </button>
           </div>
           <p style={{ fontSize: "10px", color: "#B8CDD2", textAlign: "center", marginTop: "6px" }}>
-            Powered by AI · Untuk pertanyaan mendesak, hubungi via WhatsApp
+            AI · Untuk konsultasi resmi, hubungi via WhatsApp
           </p>
         </div>
       </div>
@@ -481,7 +469,7 @@ export default function AIChatFloat() {
         style={{
           position: "fixed",
           bottom: "24px",
-          right: "92px", // Di sebelah kiri tombol WA
+          right: "92px",
           width: "56px",
           height: "56px",
           borderRadius: "50%",
@@ -505,20 +493,19 @@ export default function AIChatFloat() {
           (e.currentTarget as HTMLElement).style.transform = isOpen ? "scale(0.9)" : "scale(1)";
         }}
       >
-        {/* Icon toggle */}
         <div style={{
           transition: "all 0.25s ease",
           transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
+          color: "#fff",
+          fontSize: isOpen ? "24px" : "20px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "#fff",
-          fontSize: isOpen ? "24px" : "20px",
         }}>
           {isOpen ? "×" : "✦"}
         </div>
 
-        {/* Notif dot — muncul kalau chat belum dibuka */}
+        {/* Notif dot */}
         {!hasGreeted && (
           <div style={{
             position: "absolute",
@@ -528,31 +515,30 @@ export default function AIChatFloat() {
             height: "14px",
             borderRadius: "50%",
             background: "#ef4444",
-            border: "2px solid #fff",
+            border: "2px solid #F4F7F7",
             animation: "pulse-red 2s infinite",
           }} />
         )}
       </button>
 
-      {/* Tooltip label */}
+      {/* Tooltip */}
       {!isOpen && !hasGreeted && (
         <div style={{
           position: "fixed",
           bottom: "34px",
-          right: "156px",
+          right: "158px",
           background: "#0F2830",
           color: "#EEF4F6",
           fontSize: "12px",
-          fontWeight: 400,
           padding: "7px 14px",
           borderRadius: "6px",
           zIndex: 998,
           whiteSpace: "nowrap",
           pointerEvents: "none",
           boxShadow: "0 4px 16px rgba(15,40,48,0.2)",
-          animation: "fadeInLeft 0.4s ease 1s both",
+          animation: "fadeInLeft 0.4s ease 1.5s both",
         }}>
-          Tanya AI Asisten Manara
+          Tanya AI Asisten Manara ✦
           <div style={{
             position: "absolute",
             right: "-6px",
@@ -572,16 +558,12 @@ export default function AIChatFloat() {
           0%, 60%, 100% { opacity: 0.4; transform: translateY(0); }
           30% { opacity: 1; transform: translateY(-3px); }
         }
-        @keyframes pulse-green {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(0.8); }
-        }
         @keyframes pulse-red {
           0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.2); }
+          50% { transform: scale(1.25); }
         }
         @keyframes fadeInLeft {
-          from { opacity: 0; transform: translateX(10px); }
+          from { opacity: 0; transform: translateX(8px); }
           to { opacity: 1; transform: translateX(0); }
         }
       `}</style>
