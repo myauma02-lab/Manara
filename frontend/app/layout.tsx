@@ -2,12 +2,27 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import { DM_Sans, Cormorant_Garamond } from "next/font/google";
+import AIChatFloat from "@/components/shared/AIChatFloat";
+import WhatsAppFloat from "@/components/shared/WhatsAppFloat";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-dm-sans",
   display: "swap",
 });
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="id">
+      <body>
+        {children}
+        <AIChatFloat />   {/* ← AI Asisten (kiri dari WA) */}
+        <WhatsAppFloat /> {/* ← WhatsApp (paling kanan) */}
+      </body>
+    </html>
+  );
+}
+
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -56,17 +71,4 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html
-  lang="id"
-  className={`${dmSans.variable} ${cormorant.variable}`}
->
-  <body>
-    <ErrorBoundary>
-      {children}
-    </ErrorBoundary>
-  </body>
-</html>
-  );
-}
+
