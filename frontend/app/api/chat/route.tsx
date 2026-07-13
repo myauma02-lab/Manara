@@ -1,39 +1,54 @@
 import { GoogleGenAI } from "@google/genai";
-import { NextResponse } from "next/dist/server/web/spec-extension/response";
+import { NextResponse } from "next/server";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY!,
 });
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const SYSTEM_PROMPT = body.SYSTEM_PROMPT ?? "";
-  const validMessages = body.validMessages ?? [];
+  try {
+    console.log("=== GEMINI ROUTE ===");
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: [
-      {
-        role: "user",
-        parts: [
-          {
-            text: `
+    const body = await request.json();
+
+    const SYSTEM_PROMPT = body.SYSTEM_PROMPT ?? "";
+    const messages = body.messages ?? [];
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              text: `
 ${SYSTEM_PROMPT}
 
-Riwayat percakapan:
+Riwayat Percakapan:
 
-${validMessages
+${messages
   .map((m: { role: string; content: string }) => `${m.role}: ${m.content}`)
   .join("\n")}
 `,
-          },
-        ],
-      },
-    ],
-  });
+            },
+          ],
+        },
+      ],
+    });
 
-  const text = response.text;
-  return NextResponse.json({
-    content: text,
-  });
+    return NextResponse.json({
+      content: response.text,
+    });
+  } catch (error) {
+    console.error("Gemini Error:", error);
+
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
 }
