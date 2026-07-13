@@ -21,13 +21,14 @@ router.post("/",
       await prisma.siteSetting.create({
         data: {
           key: id,
-          value: {
-            name, email,
+          value: JSON.stringify({
+            name,
+            email,
             purpose: purpose || "Umum",
             message,
             createdAt: new Date().toISOString(),
             read: false,
-          },
+          }),
         },
       });
 
