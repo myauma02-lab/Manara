@@ -37,13 +37,15 @@ router.post("/", (0, express_validator_1.body)("name").notEmpty().withMessage("N
 });
 router.get("/", auth_1.authenticate, auth_1.requireAdmin, async (_req, res) => {
     try {
-        const messages = await prisma_1.prisma.siteSetting.findMany({
-            where: { key: { startsWith: "contact_" } },
-            orderBy: { updatedAt: "desc" },
+        const messages = await prisma.contactMessage.findMany({
+        orderBy: {
+        createdAt: "desc",
+        },
         });
+
         res.json({
-            success: true,
-            data: messages.map((m) => ({ id: m.key, ...m.value })),
+        success: true,
+        data: messages,
         });
     }
     catch {
@@ -51,7 +53,7 @@ router.get("/", auth_1.authenticate, auth_1.requireAdmin, async (_req, res) => {
     }
 });
 router.delete("/:key", auth_1.authenticate, auth_1.requireAdmin, async (req, res) => {
-    await prisma_1.prisma.siteSetting.delete({ where: { key: req.params.key } }).catch(() => { });
+    await prisma.contactMessage.delete({ where: { id: req.params.key } }).catch(() => { });
     res.json({ success: true, message: "Pesan dihapus" });
 });
 exports.default = router;

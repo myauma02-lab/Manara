@@ -18,17 +18,14 @@ router.post("/",
       const { name, email, purpose, message } = req.body;
       const id = `contact_${Date.now()}`;
 
-      await prisma.siteSetting.create({
+      const client: any = prisma;
+      await client.contactMessage.create({
         data: {
-          key: id,
-          value: JSON.stringify({
-            name,
-            email,
-            purpose: purpose || "Umum",
-            message,
-            createdAt: new Date().toISOString(),
-            read: false,
-          }),
+          id,
+          name,
+          email,
+          purpose: purpose || "Umum",
+          message,
         },
       });
 
@@ -47,21 +44,34 @@ router.post("/",
 
 router.get("/", authenticate, requireAdmin, async (_req, res) => {
   try {
-    const messages = await prisma.siteSetting.findMany({
-      where: { key: { startsWith: "contact_" } },
-      orderBy: { updatedAt: "desc" },
+    // prisma.contactMessage may not be typed on the generated client in some setups;
+    // cast to any to avoid TS errors while still using the runtime client.
+    const client: any = prisma;
+    const messages = await client.contactMessage.findMany({
+      orderBy: { createdAt: "desc" },
     });
+
     res.json({
       success: true,
-      data: messages.map((m: any) => ({ id: m.key, ...(m.value as any) })),
+      data: messages.map((m: any) => ({
+        id: m.id,
+        name: m.name,
+        email: m.email,
+        purpose: m.purpose,
+        message: m.message,
+        createdAt: m.createdAt,
+        updatedAt: m.updatedAt,
+      })),
     });
-  } catch {
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-router.delete("/:key", authenticate, requireAdmin, async (req, res) => {
-  await prisma.siteSetting.delete({ where: { key: req.params.key } }).catch(() => {});
+router.delete("/:id", authenticate, requireAdmin, async (req, res) => {
+  const client: any = prisma;
+  await client.contactMessage.delete({ where: { id: req.params.id } }).catch(() => {});
   res.json({ success: true, message: "Pesan dihapus" });
 });
 
