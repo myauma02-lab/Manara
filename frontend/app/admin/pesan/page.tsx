@@ -92,8 +92,6 @@ export default function AdminPesanPage() {
                       <button onClick={() => handleDelete(msg.id)} style={{ fontSize: "12px", color: "#f87171", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                         Hapus
                       </button>
-                      <button onClick={() => {setReplyOpen(true);setSubject("Re: Pesan dari Website Manara")}}>Balas
-                      </button>
                     </div>
                   </td>
                 </tr>
@@ -131,9 +129,9 @@ export default function AdminPesanPage() {
                 {selected.createdAt ? format(new Date(selected.createdAt), "d MMMM yyyy · HH:mm", { locale: localeId }) : ""}
               </p>
               <div style={{ display: "flex", gap: "10px" }}>
-                <a href={`mailto:${selected.email}`} style={{ fontSize: "13px", fontWeight: 500, color: "#fff", background: "#266c87", border: "none", borderRadius: "2px", padding: "9px 20px", cursor: "pointer", textDecoration: "none" }}>
+                <button onClick={() => {setReplyOpen(true);setSubject("Re: Pesan dari Website Manara")}} style={{ fontSize: "13px", fontWeight: 500, color: "#fff", background: "#266c87", border: "none", borderRadius: "2px", padding: "9px 20px", cursor: "pointer", textDecoration: "none" }}>
                   Balas via Email
-                </a>
+                </button>
                 <button onClick={() => handleDelete(selected.id)} style={{ fontSize: "13px", color: "#f87171", background: "none", border: "1px solid rgba(248,113,113,0.2)", borderRadius: "2px", padding: "9px 20px", cursor: "pointer" }}>
                   Hapus
                 </button>
