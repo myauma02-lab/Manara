@@ -13,7 +13,7 @@ TENTANG MANARA:
 - Tagline: "Shaping Ideas for the Public Sphere"
 - Website: manarainstitute.id
 - Email: manararesearch@gmail.com
-- Didirikan tahun 2024 oleh 5 co-founder
+- Didirikan tahun 2025 oleh 5 co-founder
 
 CO-FOUNDERS:
 - Mutamimul Yhauma

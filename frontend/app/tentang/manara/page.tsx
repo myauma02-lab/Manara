@@ -69,7 +69,7 @@ export default function TentangPage() {
                 Kami adalah sebagian think tank, sebagian studio kreatif, sebagian platform wacana anak muda. Kami tidak memproduksi kebisingan — kami membangun sinyal.
               </p>
               <p style={{ fontSize: "16px", fontWeight: 300, color: "#3A5560", lineHeight: 1.9 }}>
-                Berbasis di Surabaya dan Sidoarjo, Jawa Timur, Manara bergerak dengan keyakinan bahwa perubahan ruang publik dimulai dari perubahan cara berpikir.
+                Berbasis di Malang, Jawa Timur, Manara bergerak dengan keyakinan bahwa perubahan ruang publik dimulai dari perubahan cara berpikir.
               </p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>

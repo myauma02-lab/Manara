@@ -76,7 +76,7 @@ export default function TentangManaraPage() {
                 Kami adalah sebagian think tank, sebagian studio kreatif, sebagian platform wacana anak muda. Kami tidak memproduksi kebisingan. Kami membangun sinyal.
               </p>
               <p style={{ fontSize: "16px", fontWeight: 300, color: "#3A5560", lineHeight: 1.9, marginBottom: "32px" }}>
-                Berbasis di Surabaya dan Sidoarjo, Jawa Timur, Manara bergerak dengan keyakinan bahwa perubahan ruang publik dimulai dari perubahan cara berpikir.
+                Berbasis di Malang, Jawa Timur, Manara bergerak dengan keyakinan bahwa perubahan ruang publik dimulai dari perubahan cara berpikir.
               </p>
               <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                 <Link href="/tentang/manifesto" style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#266c87", color: "#fff", padding: "11px 24px", borderRadius: "2px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", textDecoration: "none" }}>
