@@ -1,5 +1,12 @@
 import nodemailer from "nodemailer";
 
+console.log({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: process.env.SMTP_SECURE,
+  user: process.env.SMTP_USER,
+});
+
 // Buat transporter — akan null kalau SMTP belum dikonfigurasi
 export const createTransporter = () => {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return null;
