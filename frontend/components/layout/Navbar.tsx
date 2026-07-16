@@ -340,17 +340,21 @@ export default function Navbar() {
               textTransform: "uppercase",
               transition: "all 0.2s",
             }}>
-              Terhubung
+              Hubungi Kami
             </Link>
 
             <Link href="/admin" style={{
-              fontSize: "11px",
-              fontWeight: 300,
+              marginLeft: "8px",
+              fontSize: "12px",
+              fontWeight: 500,
+              border: `1px solid ${isDark ? "rgba(238,244,246,0.2)" : "rgba(38,108,135,0.2)"}`,
+              padding: "8px 20px",
+              borderRadius: "2px",
               color: isDark ? "rgba(238,244,246,0.25)" : "rgba(38,108,135,0.3)",
               textDecoration: "none",
-              letterSpacing: "0.04em",
-              marginLeft: "4px",
-              transition: "color 0.2s",
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              transition: "all 0.2s",
             }}>
               Admin
               </Link>
