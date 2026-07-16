@@ -89,6 +89,13 @@ export const contactApi = {
     api.post("/contact", data),
   list: () => api.get("/contact"),
   delete: (key: string) => api.delete(`/contact/${key}`),
+  reply: (
+    id: string,
+    data: {
+        subject: string;
+        message: string;
+    }
+) => api.post(`/contact/reply/${id}`, data),
 };
 export const categoriesApi = {
   list: () => api.get("/categories"),

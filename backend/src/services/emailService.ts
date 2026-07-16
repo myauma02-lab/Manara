@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 
 // Buat transporter — akan null kalau SMTP belum dikonfigurasi
-const createTransporter = () => {
+export const createTransporter = () => {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return null;
   return nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp.gmail.com",

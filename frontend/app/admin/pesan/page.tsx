@@ -25,6 +25,13 @@ export default function AdminPesanPage() {
     setSelected(null);
   };
 
+
+  const [replyOpen, setReplyOpen] = useState(false);
+
+  const [subject, setSubject] = useState("");
+
+  const [reply, setReply] = useState("");
+
   return (
     <div style={{ padding: "40px" }}>
       <div style={{ marginBottom: "32px" }}>
@@ -84,6 +91,8 @@ export default function AdminPesanPage() {
                       </button>
                       <button onClick={() => handleDelete(msg.id)} style={{ fontSize: "12px", color: "#f87171", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                         Hapus
+                      </button>
+                      <button onClick={() => {setReplyOpen(true);setSubject("Re: Pesan dari Website Manara")}}>Balas
                       </button>
                     </div>
                   </td>

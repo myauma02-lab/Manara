@@ -15,6 +15,8 @@ interface Stats {
   loaded: boolean;
 }
 
+
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats>({
     totalPubikasi: 0, totalArtikel: 0, totalPaper: 0, totalJournal: 0,

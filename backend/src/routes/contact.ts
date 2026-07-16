@@ -4,9 +4,10 @@ import { body } from "express-validator";
 import { prisma } from "../utils/prisma";
 import { validate } from "../middleware/validate";
 import { authenticate, requireAdmin } from "../middleware/auth";
-import { sendContactConfirmation, sendContactNotification } from "../services/emailService";
+import { sendContactConfirmation, sendContactNotification, createTransporter } from "../services/emailService";
 
 const router = Router();
+const transporter = createTransporter();
 
 router.post("/",
   body("name").notEmpty().withMessage("Nama wajib diisi"),
@@ -74,5 +75,65 @@ router.delete("/:id", authenticate, requireAdmin, async (req, res) => {
   await client.contactMessage.delete({ where: { id: req.params.id } }).catch(() => {});
   res.json({ success: true, message: "Pesan dihapus" });
 });
+
+router.post(
+  "/reply/:key",
+  authenticate,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const { subject, message } = req.body;
+      const client: any = prisma;
+
+      const item = await client.contactMessage.findUnique({
+        where: {
+          id: req.params.key,
+        },
+      });
+
+      if (!item) {
+        return res.status(404).json({
+          message: "Pesan tidak ditemukan",
+        });
+      }
+
+      if (!transporter) {
+        return res.status(500).json({
+          message: "Layanan email tidak tersedia",
+        });
+      }
+
+      await transporter.sendMail({
+        from: process.env.EMAIL_FROM,
+        to: item.email,
+        subject,
+        html: `
+          <p>Halo <strong>${item.name}</strong>,</p>
+
+          <p>${message}</p>
+
+          <br/>
+
+          <p>
+            Salam hangat,<br/>
+            <strong>Tim Manara</strong>
+          </p>
+        `,
+      });
+
+      res.json({
+        success: true,
+        message: "Email berhasil dikirim",
+      });
+
+    } catch (err) {
+      console.error(err);
+
+      res.status(500).json({
+        message: "Gagal mengirim email",
+      });
+    }
+  }
+);
 
 export default router;
