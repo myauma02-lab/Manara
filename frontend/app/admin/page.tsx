@@ -264,10 +264,10 @@ export default function AdminDashboard() {
 
           {/* Link ke website publik */}
           <div style={{ marginTop: "4px", paddingTop: "14px", borderTop: "1px solid rgba(38,108,135,0.08)" }}>
-            <a href="https://manara.my.id" target="_blank" rel="noopener noreferrer"
+            <a href="https://manarainstitute.id" target="_blank" rel="noopener noreferrer"
               style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#7A9AA5", textDecoration: "none" }}>
               <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#3F6F6A", display: "inline-block" }} />
-              manara.my.id — Lihat Website Publik ↗
+              manarainstitute.id — Lihat Website Publik ↗
             </a>
           </div>
         </div>

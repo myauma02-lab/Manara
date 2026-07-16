@@ -42,7 +42,9 @@ app.use((0, cors_1.default)({
         "https://manara-n72q1osg2-yhauma-s-projects.vercel.app",
         "https://manara-jet.vercel.app",
         "https://www.manara.my.id",
-        "https://manara.my.id"
+        "https://manara.my.id",
+        "https://manarainstitute.id/",
+        "https://www.manarainstitute.id",
     ],
     credentials: true,
 }));
@@ -57,6 +59,8 @@ const allowedOrigins = [
   "https://www.manara.my.id",
   "https://manara-jet.vercel.app",
   "https://manara-n72q1osg2-yhauma-s-projects.vercel.app",
+  "https://manarainstitute.id/",
+  "https://www.manarainstitute.id",
 ];
 
 app.use(

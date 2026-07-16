@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Manara",
     description: "Shaping Ideas for the Public Sphere",
-    url: "https://manara.my.id",
+    url: "https://manarainstitute.id",
     siteName: "Manara",
     type: "website",
   },

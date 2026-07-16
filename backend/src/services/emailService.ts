@@ -48,7 +48,7 @@ const template = (title: string, content: string) => `
 
     <div style="padding:20px 36px;border-top:1px solid rgba(38,108,135,0.08);background:rgba(38,108,135,0.02);">
       <p style="font-size:12px;color:rgba(134,175,170,0.4);margin:0;font-style:italic;">
-        "Shaping Ideas for the Public Sphere" — manara.my.id
+        "Shaping Ideas for the Public Sphere" — manarainstitute.id
       </p>
     </div>
   </div>
@@ -109,7 +109,7 @@ export const sendContactConfirmation = async (data: {
     <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
       Pesan kamu telah kami terima. Tim Manara akan merespons dalam 1–3 hari kerja.
     </p>
-    ${btn("Kunjungi Manara", "https://manara.my.id")}
+    ${btn("Kunjungi Manara", "https://manarainstitute.id/")}
   `;
   await send(data.email, "[Manara] Pesan kamu telah kami terima", template("Konfirmasi Pesan", content));
 };
@@ -131,7 +131,7 @@ export const sendNewsletterConfirmation = async (data: {
         "Kami tidak mengangkat suara untuk didengar — kami mendalamkannya."
       </p>
     </div>
-    ${btn("Baca Artikel Terbaru", "https://manara.my.id/artikel")}
+    ${btn("Baca Artikel Terbaru", "https://manarainstitute.id/artikel")}
   `;
   await send(data.email, "[Manara] Selamat datang di Surat Manara", template("Langganan Newsletter", content));
 };
@@ -149,7 +149,7 @@ export const sendApplicationNotification = async (data: {
     ${infoBox("Posisi", data.position)}
     ${infoBox("Batch", data.batchName)}
     ${infoBox("ID Lamaran", data.appId)}
-    ${btn("Tinjau di Dashboard", `https://manara.my.id/admin/recruitment`)}
+    ${btn("Tinjau di Dashboard", `https://manarainstitute.id/admin/recruitment`)}
   `;
   await send(
     ADMIN,
@@ -174,7 +174,7 @@ export const sendApplicationConfirmation = async (data: {
     <p style="font-size:13px;color:#7A9AA5;margin:16px 0 20px;line-height:1.7;">
       Simpan ID ini sebagai referensi. Proses seleksi biasanya memakan waktu 7–14 hari.
     </p>
-    ${btn("Tentang Manara", "https://manara.my.id/tentang")}
+    ${btn("Tentang Manara", "https://manarainstitute.id/tentang")}
   `;
   await send(
     data.email,
@@ -227,7 +227,7 @@ export const sendStatusUpdateEmail = async (data: {
       ${info.pesan}
     </p>
     ${data.adminNotes ? infoBox("Catatan dari Tim Manara", data.adminNotes) : ""}
-    ${btn("Kunjungi Manara", "https://manara.my.id")}
+    ${btn("Kunjungi Manara", "https://manarainstitute.id")}
   `;
 
   await send(
@@ -247,7 +247,7 @@ export const sendNewSubscriberNotification = async (data: {
     </p>
     ${infoBox("Email", data.email)}
     ${data.name ? infoBox("Nama", data.name) : ""}
-    ${btn("Lihat Semua Subscriber", "https://manara.my.id/admin/newsletter")}
+    ${btn("Lihat Semua Subscriber", "https://manarainstitute.id/admin/newsletter")}
   `;
   await send(ADMIN, `[Manara] Subscriber baru — ${data.email}`, template("Subscriber Newsletter Baru", content));
 };
