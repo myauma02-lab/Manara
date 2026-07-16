@@ -8,6 +8,11 @@ export default function ContactSection() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
 
+  const socialLinks = [
+  { label: "IG", href: "https://instagram.com/manara_institute" },
+  { label: "YT", href: "https://youtube.com/@ManaraInstitute" },
+];
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
@@ -79,9 +84,9 @@ export default function ContactSection() {
 
             {/* Social links */}
             <div style={{ display: "flex", gap: "10px" }}>
-              {["IG", "X", "YT", "SP"].map(s => (
-                <a key={s} href="#" style={{ width: "44px", height: "44px", borderRadius: "50%", border: "1px solid rgba(38,108,135,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 500, color: "#7A9AA5", textDecoration: "none" }}>
-                  {s}
+              {socialLinks.map(s => (
+                <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" style={{ width: "44px", height: "44px", borderRadius: "50%", border: "1px solid rgba(38,108,135,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 500, color: "#7A9AA5", textDecoration: "none" }}>
+                  {s.label}
                 </a>
               ))}
             </div>

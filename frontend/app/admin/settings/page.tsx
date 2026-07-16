@@ -8,11 +8,11 @@ const WEBSITE_FIELDS = [
   { key: "hero_headline", label: "Headline Hero Homepage", type: "text", placeholder: "Di mana gagasan menemukan cahayanya." },
   { key: "hero_subheadline", label: "Sub-headline Hero", type: "textarea", placeholder: "Ruang intelektual..." },
   { key: "contact_email", label: "Email Kontak", type: "text", placeholder: "manararesearch@gmail.com" },
-  { key: "social_instagram", label: "Instagram URL", type: "text", placeholder: "https://instagram.com/manara_research" },
-  { key: "social_twitter", label: "Twitter/X URL", type: "text", placeholder: "https://x.com/manara" },
-  { key: "social_youtube", label: "YouTube URL", type: "text", placeholder: "https://youtube.com/@manara" },
+  { key: "social_instagram", label: "Instagram URL", type: "text", placeholder: "https://instagram.com/manara_institute" },
+  { key: "social_twitter", label: "Twitter/X URL", type: "text", placeholder: "https://x.com/manara_institute" },
+  { key: "social_youtube", label: "YouTube URL", type: "text", placeholder: "https://youtube.com/@ManaraInstitute" },
   { key: "youtube_podcast_playlist", label: "YouTube Playlist ID (Podcast)", type: "text", placeholder: "PLxxxxxxxxx" },
-  { key: "instagram_username", label: "Username Instagram (Suara Manara)", type: "text", placeholder: "https://instagram.com/manara_research" },
+  { key: "instagram_username", label: "Username Instagram (Suara Manara)", type: "text", placeholder: "https://instagram.com/manara_institute" },
 ];
 
 const SERVICE_FIELDS = [

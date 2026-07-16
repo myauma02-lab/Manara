@@ -71,9 +71,9 @@ async function main() {
         { key: 'hero_headline', value: 'Di mana gagasan menemukan cahayanya.' },
         { key: 'hero_subheadline', value: 'Ruang intelektual, kreatif, dan berpengetahuan — dibangun oleh dan untuk generasi yang berpikir dengan kedalaman.' },
         { key: 'contact_email', value: 'manararesearch@gmail.com' },
-        { key: 'social_instagram', value: 'https://instagram.com/manara_research' },
-        { key: 'social_twitter', value: 'https://x.com/manara' },
-        { key: 'social_youtube', value: 'https://youtube.com/@manara' },
+        { key: 'social_instagram', value: 'https://instagram.com/manara_institute' },
+        { key: 'social_twitter', value: 'https://x.com/manara_institute' },
+        { key: 'social_youtube', value: 'https://youtube.com/@ManaraInstitute' },
     ];
     for (const s of defaultSettings) {
         await prisma.siteSetting.upsert({
