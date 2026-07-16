@@ -51,6 +51,9 @@ const allowedOrigins = [
   "https://manara-n72q1osg2-yhauma-s-projects.vercel.app",
   "https://manara.my.id",
   "https://www.manara.my.id",
+  // Domain baru
+  "https://manarainstitute.id",
+  "https://www.manarainstitute.id",
 ];
 
 app.use(
