@@ -4,6 +4,7 @@ import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import { DM_Sans, Cormorant_Garamond } from "next/font/google";
 import AIChatFloat from "@/components/shared/AIChatFloat";
 import WhatsAppFloat from "@/components/shared/WhatsAppFloat";
+import { Analytics } from "@vercel/analytics/next";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <AIChatFloat />   {/* ← AI Asisten (kiri dari WA) */}
         <WhatsAppFloat /> {/* ← WhatsApp (paling kanan) */}
+        <Analytics />
       </body>
     </html>
   );
