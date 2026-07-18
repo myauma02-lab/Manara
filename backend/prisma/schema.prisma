@@ -233,52 +233,6 @@ enum SubscriberStatus {
   UNSUBSCRIBED
 }
 
-// ─── MANAPEOPLE RECRUITMENT ─────────────────────────────────────
-model Recruitment {
-  id              String            @id @default(uuid())
-  batchName       String
-  description     String?
-  isOpen          Boolean           @default(true)
-  openDate        DateTime?
-  closeDate       DateTime?
-  positions       Json              // array of position objects
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-
-  applications    Application[]
-
-  @@map("recruitments")
-}
-
-model Application {
-  id              String            @id @default(uuid())
-  recruitmentId   String
-  recruitment     Recruitment       @relation(fields: [recruitmentId], references: [id])
-  fullName        String
-  email           String
-  phone           String?
-  position        String
-  motivation      String            @db.Text
-  cvUrl           String?
-  portfolioUrl    String?
-  portfolioLink   String?
-  status          ApplicationStatus @default(PENDING)
-  adminNotes      String?
-  reviewedAt      DateTime?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-
-  @@map("applications")
-}
-
-enum ApplicationStatus {
-  PENDING
-  REVIEWING
-  SHORTLISTED
-  ACCEPTED
-  REJECTED
-}
-
 // ─── SITE SETTINGS ──────────────────────────────────────────────
 model SiteSetting {
   id        String   @id @default(cuid())
@@ -483,15 +437,71 @@ model ContactMessage {
   @@map("contact_messages")
 }
 
-model Interest {
-  id            String   @id @default(cuid())
-  fullName      String
-  email         String   @unique
-  phone         String?
-  expertise     String?
-  linkedin      String?
-  portfolioLink String?
-  motivation    String
+// ─── WAITLIST (saat tidak ada batch) ──────────────────
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  interest  String?  // minat/bidang yang diminati
+  message   String?  @db.Text
+  source    String?  // dari mana tahu Manara
+  createdAt DateTime @default(now())
 
-  createdAt     DateTime @default(now())
+  @@map("waitlist_entries")
+}
+
+// ─── PASTIKAN model Recruitment seperti ini ───────────
+model Recruitment {
+  id          String        @id @default(cuid())
+  batchName   String
+  description String?       @db.Text
+  isActive    Boolean       @default(false)
+  startDate   DateTime?
+  endDate     DateTime?     // deadline pendaftaran
+  positions   Position[]
+  applications Application[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("recruitments")
+}
+
+model Position {
+  id            String      @id @default(cuid())
+  name          String
+  description   String?     @db.Text
+  requirements  String[]
+  slots         Int?        // kuota (null = unlimited)
+  recruitmentId String
+  recruitment   Recruitment @relation(fields: [recruitmentId], references: [id], onDelete: Cascade)
+
+  @@map("positions")
+}
+
+model Application {
+  id            String            @id @default(cuid())
+  recruitmentId String
+  recruitment   Recruitment       @relation(fields: [recruitmentId], references: [id])
+  fullName      String
+  email         String
+  phone         String?
+  position      String
+  motivation    String            @db.Text
+  portfolioLink String?
+  cvUrl         String?
+  status        ApplicationStatus @default(PENDING)
+  adminNotes    String?           @db.Text
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@map("applications")
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWING
+  SHORTLISTED
+  ACCEPTED
+  REJECTED
 }

@@ -65,30 +65,34 @@ export const newsletterApi = {
   subscribers: () => api.get("/newsletter/subscribers"),
 };
 
-export const recruitmentApi = {
-  active: () => api.get("/recruitment/active"),
+// ── Waitlist ──────────────────────────────────────────
+export const waitlistApi = {
+  join: (data: {
+    name: string;
+    email: string;
+    phone?: string;
+    interest?: string;
+    message?: string;
+    source?: string;
+  }) => api.post("/waitlist", data),
 
-  createBatch: (data: any) =>
-    api.post("/recruitment", data),
-
-  apply: (data: FormData) =>
-    api.post("/recruitment/apply", data),
-
-  list: () => api.get("/recruitment"),
-
-  applications: (id: string, status?: string) =>
-    api.get(`/recruitment/${id}/applications`, {
-      params: { status },
-    }),
-
-  updateApplication: (id: string, data: any) =>
-    api.put(`/recruitment/applications/${id}`, data),
+  list: () => api.get("/waitlist"),
+  delete: (id: string) => api.delete(`/waitlist/${id}`),
 };
 
-export const interestApi = {
-  create: (data: any) => api.post("/interest", data),
-  list: () => api.get("/interest"),
-  delete: (id: string) => api.delete(`/interest/${id}`),
+// ── Recruitment ───────────────────────────────────────
+export const recruitmentApi = {
+  active: () => api.get("/recruitment/active"),
+  list: () => api.get("/recruitment"),
+  create: (data: any) => api.post("/recruitment", data),
+  update: (id: string, data: any) => api.put(`/recruitment/${id}`, data),
+  delete: (id: string) => api.delete(`/recruitment/${id}`),
+  apply: (batchId: string, data: FormData) =>
+    api.post(`/recruitment/${batchId}/apply`, data),
+  applications: (batchId: string) =>
+    api.get(`/recruitment/${batchId}/applications`),
+  updateApplication: (appId: string, data: { status: string; adminNotes?: string }) =>
+    api.put(`/recruitment/applications/${appId}`, data),
 };
 
 export const settingsApi = {
