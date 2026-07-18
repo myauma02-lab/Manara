@@ -143,7 +143,7 @@ export default function NewProjectPage() {
               <div>
                 <label style={labelStyle}>Lokasi Penelitian</label>
                 <input value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
-                  placeholder="Surabaya, Jawa Timur / Nasional" style={inputStyle} />
+                  placeholder="Malang, Jawa Timur / Nasional" style={inputStyle} />
               </div>
 
               <div>

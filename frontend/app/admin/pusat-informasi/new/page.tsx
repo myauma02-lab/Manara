@@ -264,7 +264,7 @@ export default function NewInfoItemPage() {
                 <div>
                   <label style={labelStyle}>Lokasi</label>
                   <input value={form.eventLocation} onChange={e => setForm(f => ({ ...f, eventLocation: e.target.value }))}
-                    placeholder="Surabaya / Online / Hybrid" style={inputStyle} />
+                    placeholder="Malang / Online / Hybrid" style={inputStyle} />
                 </div>
                 <div>
                   <label style={labelStyle}>Tipe Event</label>

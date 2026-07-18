@@ -202,7 +202,7 @@ function WaitlistMode() {
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }} className="hero-stats">
               {[
                 { num: "5", label: "Co-Founders", sub: "Mendirikan Manara dari nol" },
-                { num: "2024", label: "Tahun Berdiri", sub: "Berbasis di Surabaya & Sidoarjo" },
+                { num: "2026", label: "Tahun Berdiri", sub: "Berbasis di Malang" },
                 { num: "∞", label: "Peluang", sub: "Terbuka untuk semua disiplin" },
               ].map((s, i) => (
                 <div key={i} style={{ background: "rgba(38,108,135,0.08)", border: "1px solid rgba(38,108,135,0.15)", borderRadius: "8px", padding: "18px 22px", display: "flex", gap: "16px", alignItems: "center" }}>

@@ -6,7 +6,7 @@ const ai = new GoogleGenAI({
 });
 
 // 1. Pindahkan SYSTEM_PROMPT ke atas agar bisa dibaca oleh fungsi di bawahnya
-const SYSTEM_PROMPT = `Kamu adalah AI Asisten Manara — asisten virtual resmi dari Manara, sebuah kolektif intelektual dan inisiatif media kreatif berbasis di Surabaya dan Sidoarjo, Jawa Timur.
+const SYSTEM_PROMPT = `Kamu adalah AI Asisten Manara — asisten virtual resmi dari Manara, sebuah kolektif intelektual dan inisiatif media kreatif berbasis di Malang, Jawa Timur.
 
 TENTANG MANARA:
 - Manara adalah ruang intelektual, kreatif, dan berpengetahuan yang berfokus pada kebermanfaatan sosial
