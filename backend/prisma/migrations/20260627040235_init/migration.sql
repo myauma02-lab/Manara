@@ -166,7 +166,7 @@ CREATE TABLE "recruitments" (
     "id" TEXT NOT NULL,
     "batchName" TEXT NOT NULL,
     "description" TEXT,
-    "isOpen" BOOLEAN NOT NULL DEFAULT true,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "openDate" TIMESTAMP(3),
     "closeDate" TIMESTAMP(3),
     "positions" JSONB NOT NULL,

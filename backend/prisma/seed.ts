@@ -51,18 +51,47 @@ async function main() {
     where: { id: 'manapeople-2026' },
     update: {},
     create: {
-      id: 'manapeople-2026',
-      batchName: 'Manapeople 2026 — Batch Pertama',
-      description: 'Bergabunglah dengan kolektif intelektual Manara. Kami membuka ruang bagi individu yang percaya gagasan dapat mengubah ruang publik.',
-      isOpen: true,
-      positions: [
-        { id: 'peneliti', name: 'Peneliti & Analis', quota:5 },
-        { id: 'konten', name: 'Kreator Konten & Editor', quota: 5 },
-        { id: 'desainer', name: 'Desainer Visual & Media', quota: 5 },
-        { id: 'koordinator', name: 'Koordinator Program', quota: 5 },
-        { id: 'kontributor', name: 'Kontributor Esai & Opini', quota: 5 },
-      ],
-    },
+  id: "manapeople-2026",
+  batchName: "Manapeople 2026 — Batch Pertama",
+  description:
+    "Bergabunglah dengan kolektif intelektual Manara.",
+  isActive: true,
+
+  positions: {
+    create: [
+      {
+        name: "Peneliti & Analis",
+        description: "",
+        requirements: [],
+        slots: 5,
+      },
+      {
+        name: "Kreator Konten & Editor",
+        description: "",
+        requirements: [],
+        slots: 5,
+      },
+      {
+        name: "Desainer Visual & Media",
+        description: "",
+        requirements: [],
+        slots: 5,
+      },
+      {
+        name: "Koordinator Program",
+        description: "",
+        requirements: [],
+        slots: 5,
+      },
+      {
+        name: "Kontributor Esai & Opini",
+        description: "",
+        requirements: [],
+        slots: 5,
+      },
+    ],
+  },
+}
   }).catch(() => {});
   console.log('✅ Recruitment seeded');
 

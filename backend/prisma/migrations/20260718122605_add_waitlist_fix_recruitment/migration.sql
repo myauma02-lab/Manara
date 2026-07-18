@@ -4,7 +4,7 @@
   - You are about to drop the column `portfolioUrl` on the `applications` table. All the data in the column will be lost.
   - You are about to drop the column `reviewedAt` on the `applications` table. All the data in the column will be lost.
   - You are about to drop the column `closeDate` on the `recruitments` table. All the data in the column will be lost.
-  - You are about to drop the column `isOpen` on the `recruitments` table. All the data in the column will be lost.
+  - You are about to drop the column `isActive` on the `recruitments` table. All the data in the column will be lost.
   - You are about to drop the column `openDate` on the `recruitments` table. All the data in the column will be lost.
   - You are about to drop the column `positions` on the `recruitments` table. All the data in the column will be lost.
   - You are about to drop the `Interest` table. If the table is not empty, all the data it contains will be lost.
@@ -16,7 +16,7 @@ DROP COLUMN "reviewedAt";
 
 -- AlterTable
 ALTER TABLE "recruitments" DROP COLUMN "closeDate",
-DROP COLUMN "isOpen",
+DROP COLUMN "isActive",
 DROP COLUMN "openDate",
 DROP COLUMN "positions",
 ADD COLUMN     "endDate" TIMESTAMP(3),

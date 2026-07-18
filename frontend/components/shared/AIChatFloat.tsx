@@ -15,7 +15,7 @@ const QUICK_QUESTIONS = [
 ];
 
 export default function AIChatFloat() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isActive, setisActive] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,7 +30,7 @@ export default function AIChatFloat() {
   }, [messages]);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isActive) {
       setTimeout(() => inputRef.current?.focus(), 300);
       if (!hasGreeted) {
         setHasGreeted(true);
@@ -44,7 +44,7 @@ export default function AIChatFloat() {
         }, 500);
       }
     }
-  }, [isOpen, hasGreeted]);
+  }, [isActive, hasGreeted]);
 
   // ── sendMessage sekarang pakai /api/chat ──────────────
   const sendMessage = async (text?: string) => {
@@ -148,9 +148,9 @@ export default function AIChatFloat() {
         flexDirection: "column",
         overflow: "hidden",
         zIndex: 997,
-        opacity: isOpen ? 1 : 0,
-        transform: isOpen ? "scale(1) translateY(0)" : "scale(0.85) translateY(20px)",
-        pointerEvents: isOpen ? "all" : "none",
+        opacity: isActive ? 1 : 0,
+        transform: isActive ? "scale(1) translateY(0)" : "scale(0.85) translateY(20px)",
+        pointerEvents: isActive ? "all" : "none",
         transition: "all 0.3s cubic-bezier(0.34,1.56,0.64,1)",
         transformOrigin: "bottom right",
       }}>
@@ -211,7 +211,7 @@ export default function AIChatFloat() {
             </button>
           )}
           <button
-            onClick={() => setIsOpen(false)}
+            onClick={() => setisActive(false)}
             style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(134,175,170,0.6)", fontSize: "22px", padding: "4px", lineHeight: 1 }}
           >
             ×
@@ -464,7 +464,7 @@ export default function AIChatFloat() {
 
       {/* ── FLOATING BUTTON ── */}
       <button
-        onClick={() => setIsOpen(o => !o)}
+        onClick={() => setisActive(o => !o)}
         aria-label="Buka AI Asisten Manara"
         style={{
           position: "fixed",
@@ -473,7 +473,7 @@ export default function AIChatFloat() {
           width: "56px",
           height: "56px",
           borderRadius: "50%",
-          background: isOpen
+          background: isActive
             ? "#0F2830"
             : "linear-gradient(135deg, #266c87, #0F2830)",
           border: "none",
@@ -484,25 +484,25 @@ export default function AIChatFloat() {
           boxShadow: "0 4px 20px rgba(15,40,48,0.3), 0 2px 8px rgba(0,0,0,0.15)",
           zIndex: 999,
           transition: "all 0.3s cubic-bezier(0.34,1.56,0.64,1)",
-          transform: isOpen ? "scale(0.9)" : "scale(1)",
+          transform: isActive ? "scale(0.9)" : "scale(1)",
         }}
         onMouseOver={e => {
-          if (!isOpen) (e.currentTarget as HTMLElement).style.transform = "scale(1.1)";
+          if (!isActive) (e.currentTarget as HTMLElement).style.transform = "scale(1.1)";
         }}
         onMouseOut={e => {
-          (e.currentTarget as HTMLElement).style.transform = isOpen ? "scale(0.9)" : "scale(1)";
+          (e.currentTarget as HTMLElement).style.transform = isActive ? "scale(0.9)" : "scale(1)";
         }}
       >
         <div style={{
           transition: "all 0.25s ease",
-          transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
+          transform: isActive ? "rotate(45deg)" : "rotate(0deg)",
           color: "#fff",
-          fontSize: isOpen ? "24px" : "20px",
+          fontSize: isActive ? "24px" : "20px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
         }}>
-          {isOpen ? "×" : "✦"}
+          {isActive ? "×" : "✦"}
         </div>
 
         {/* Notif dot */}
@@ -522,7 +522,7 @@ export default function AIChatFloat() {
       </button>
 
       {/* Tooltip */}
-      {!isOpen && !hasGreeted && (
+      {!isActive && !hasGreeted && (
         <div style={{
           position: "fixed",
           bottom: "34px",

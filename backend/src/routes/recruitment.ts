@@ -228,7 +228,7 @@ router.post(
         where: { id: req.params.id },
       });
 
-      if (!batch || !batch.isOpen) {
+      if (!batch || !batch.isActive) {
         return res.status(400).json({
           message: "Batch rekrutmen tidak aktif atau tidak ditemukan",
         });
