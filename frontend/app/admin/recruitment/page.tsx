@@ -68,20 +68,23 @@ export default function AdminRecruitmentPage() {
     if (!batchForm.batchName.trim()) { alert("Nama batch wajib diisi"); return; }
     setCreatingBatch(true);
     try {
-      const formData = new FormData();
-      formData.append("batchName", batchForm.batchName);
-      formData.append("description", batchForm.description);
-      formData.append("openDate", batchForm.openDate || "");
-      formData.append("closeDate", batchForm.closeDate || "");
-      formData.append("isOpen", String(batchForm.isOpen));
-      formData.append("positions", JSON.stringify(positions));
-      await recruitmentApi.apply(formData);
-      alert("Batch rekrutmen berhasil dibuat!");
-      setShowNewBatch(false);
-      setBatchForm({ batchName: "", description: "", openDate: "", closeDate: "", isOpen: true });
-      load();
-    } catch (err: any) {
-      alert(err.response?.data?.message || "Gagal membuat batch");
+      const payload = {
+        ...batchForm,   
+        positions,
+      };
+      const res = await recruitmentApi.createBatch(payload);
+      const newBatch = res.data?.data;
+      if (newBatch) {
+        setRecruitments(prev => [newBatch, ...prev]);
+        setActiveRec(newBatch);
+        setBatchForm({ batchName: "", description: "", openDate: "", closeDate: "", isOpen: true });
+        setPositions(DEFAULT_POSITIONS);
+        setShowNewBatch(false);
+        loadApplications(newBatch.id);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Gagal membuat batch. Silakan coba lagi.");
     } finally {
       setCreatingBatch(false);
     }

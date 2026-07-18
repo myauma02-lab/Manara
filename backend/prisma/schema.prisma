@@ -482,3 +482,16 @@ model ContactMessage {
 
   @@map("contact_messages")
 }
+
+model Interest {
+  id            String   @id @default(cuid())
+  fullName      String
+  email         String   @unique
+  phone         String?
+  expertise     String?
+  linkedin      String?
+  portfolioLink String?
+  motivation    String
+
+  createdAt     DateTime @default(now())
+}

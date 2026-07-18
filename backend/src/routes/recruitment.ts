@@ -18,7 +18,20 @@ router.get("/active", async (_req, res) => {
     where: { isOpen: true },
     orderBy: { createdAt: "desc" },
   });
-  res.json({ success: true, data: recruitment });
+
+  if (!recruitment) {
+    return res.json({
+      success: true,
+      mode: "INTEREST",
+      data: null,
+    });
+  }
+
+  return res.json({
+    success: true,
+    mode: "RECRUITMENT",
+    data: recruitment,
+  });
 });
 
 // Public: apply

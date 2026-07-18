@@ -67,12 +67,28 @@ export const newsletterApi = {
 
 export const recruitmentApi = {
   active: () => api.get("/recruitment/active"),
-  apply: (data: FormData) => api.post("/recruitment/apply", data),
+
+  createBatch: (data: any) =>
+    api.post("/recruitment", data),
+
+  apply: (data: FormData) =>
+    api.post("/recruitment/apply", data),
+
   list: () => api.get("/recruitment"),
+
   applications: (id: string, status?: string) =>
-    api.get(`/recruitment/${id}/applications`, { params: { status } }),
+    api.get(`/recruitment/${id}/applications`, {
+      params: { status },
+    }),
+
   updateApplication: (id: string, data: any) =>
     api.put(`/recruitment/applications/${id}`, data),
+};
+
+export const interestApi = {
+  create: (data: any) => api.post("/interest", data),
+  list: () => api.get("/interest"),
+  delete: (id: string) => api.delete(`/interest/${id}`),
 };
 
 export const settingsApi = {
