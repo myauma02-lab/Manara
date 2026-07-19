@@ -1,5 +1,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import HeroBackground from "@/components/shared/HeroBackground";
+import { HERO_BG_KEYS } from "@/lib/hero-settings";
 import Link from "next/link";
 
 const CHANNELS = [
@@ -32,6 +34,14 @@ const CHANNELS = [
 export default function InsightPage() {
   return (
     <main>
+      <HeroBackground
+                  settingKey={HERO_BG_KEYS.layanan}
+                  fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+                  gradientDirection="to-right"
+                  gradientColor="#0F2830"
+                  gradientOpacity={0.90}
+                  style={{ paddingTop: "140px", minHeight: "320px" }}
+                >
       <Navbar />
       <div style={{ paddingTop: "120px", paddingBottom: "120px", background: "#F4F7F7", minHeight: "100vh" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
@@ -48,7 +58,6 @@ export default function InsightPage() {
               Manara hadir di berbagai format. Dipilih agar gagasan bisa menjangkau siapa saja, di manapun mereka berada.
             </p>
           </div>
-
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "20px" }}>
             {CHANNELS.map(ch => (
               <Link key={ch.href} href={ch.href} style={{ textDecoration: "none" }}>
@@ -74,6 +83,7 @@ export default function InsightPage() {
           </div>
         </div>
       </div>
+    </HeroBackground>
       <Footer />
     </main>
   );

@@ -6,6 +6,8 @@ import Footer from "@/components/layout/Footer";
 import { settingsApi } from "@/lib/api";
 import { ALL_LAYANAN, WHATSAPP_NUMBER } from "@/lib/layanan-data";
 import type { LayananData, PricingItem } from "@/lib/layanan-data";
+import HeroBackground from "@/components/shared/HeroBackground";
+import { HERO_BG_KEYS } from "@/lib/hero-settings";
 
 // Format harga ke IDR
 const formatPrice = (price: number) =>
@@ -63,6 +65,14 @@ export default function LayananClient() {
 
   return (
     <main style={{ background: "#F4F7F7" }}>
+      <HeroBackground
+            settingKey={HERO_BG_KEYS.layanan}
+            fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+            gradientDirection="to-right"
+            gradientColor="#0F2830"
+            gradientOpacity={0.90}
+            style={{ paddingTop: "140px", minHeight: "320px" }}
+          >
       <Navbar />
 
       {/* ── HERO PER LAYANAN ── */}
@@ -141,7 +151,7 @@ export default function LayananClient() {
           </div>
         </div>
       </section>
-
+</HeroBackground>
       <div ref={contentRef} />
 
       {/* ── COMING SOON STATE ── */}
