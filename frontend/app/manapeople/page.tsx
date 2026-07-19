@@ -43,7 +43,14 @@ export default function ManapeoplePage() {
       return (
           <main style={{ background: "#F4F7F7" }}>
             <Navbar />
-
+            <HeroBackground
+          settingKey={HERO_BG_KEYS.manapeople}
+          fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+          gradientDirection="to-right"
+          gradientColor="#0F2830"
+          gradientOpacity={0.88}
+          style={{ padding: "80px clamp(20px,5vw,40px) 0" }}
+        >
             {loading ? (
               <LoadingSkeleton />
             ) : batch ? (
@@ -51,7 +58,7 @@ export default function ManapeoplePage() {
             ) : (
               <WaitlistMode />
             )}
-
+          </HeroBackground>
             <Footer />
           </main>
   
@@ -163,14 +170,6 @@ function WaitlistMode() {
 
   return (
     <div style={{ paddingTop: "80px" }}>
-        <HeroBackground
-          settingKey={HERO_BG_KEYS.manapeople}
-          fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
-          gradientDirection="to-right"
-          gradientColor="#0F2830"
-          gradientOpacity={0.88}
-          style={{ padding: "80px clamp(20px,5vw,40px) 0" }}
-        >
       {/* ── HERO ── */}
       <section style={{ padding: "80px clamp(20px,5vw,40px) 0", background: "#0F2830", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 60% at 20% 60%, rgba(38,108,135,0.2) 0%, transparent 60%)", pointerEvents: "none" }} />
@@ -228,7 +227,6 @@ function WaitlistMode() {
           </div>
         </div>
       </section>
-    </HeroBackground>
 
       {/* ── TENTANG MANAPEOPLE ── */}
       <section style={{ padding: "80px clamp(20px,5vw,40px)", background: "#F8FAFA" }}>

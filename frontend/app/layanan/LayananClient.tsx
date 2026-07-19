@@ -65,17 +65,16 @@ export default function LayananClient() {
 
   return (
     <main style={{ background: "#F4F7F7" }}>
-      <HeroBackground
-            settingKey={HERO_BG_KEYS.layanan}
-            fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
-            gradientDirection="to-right"
-            gradientColor="#0F2830"
-            gradientOpacity={0.90}
-            style={{ paddingTop: "140px", minHeight: "320px" }}
-          >
       <Navbar />
-
       {/* ── HERO PER LAYANAN ── */}
+      <HeroBackground
+        settingKey={HERO_BG_KEYS.layanan}
+        fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+        gradientDirection="to-right"
+        gradientColor="#0F2830"
+        gradientOpacity={0.90}
+        style={{ paddingTop: "140px", minHeight: "320px" }}
+          >
       <section style={{
         paddingTop: "140px",
         paddingBottom: "0",

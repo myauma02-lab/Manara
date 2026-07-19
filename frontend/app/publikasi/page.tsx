@@ -57,18 +57,17 @@ export default function PublikasiPage() {
   return (
     <main>
       <Navbar />
-      <HeroBackground
-        settingKey={HERO_BG_KEYS.publikasi}
-        fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
-        gradientDirection="to-right"
-        gradientColor="#0F2830"
-        gradientOpacity={0.9}
-        style={{ paddingTop: "140px", paddingBottom: "80px" }}
-      >
+      
         <div style={{ paddingTop: "120px", paddingBottom: "120px", background: "#F4F7F7", minHeight: "100vh" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
-
-            <div style={{ marginBottom: "64px" }}>
+            <HeroBackground
+            settingKey={HERO_BG_KEYS.publikasi}
+            fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+            gradientDirection="to-right"
+            gradientColor="#0F2830"
+            gradientOpacity={0.9}
+            style={{ paddingTop: "140px", paddingBottom: "80px" }}
+      ><div style={{ marginBottom: "64px" }}>
               <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#266c87", marginBottom: "16px" }}>
                 Publikasi
               </p>
@@ -80,6 +79,7 @@ export default function PublikasiPage() {
                 Tiga format publikasi - dari tulisan populer hingga jurnal ilmiah - dirancang untuk menjangkau pembaca yang berbeda dengan kedalaman yang berbeda.
               </p>
             </div>
+      </HeroBackground>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "20px" }}>
               {TYPES.map(item => (
@@ -142,7 +142,6 @@ export default function PublikasiPage() {
             </div>
           </div>
         </div>
-      </HeroBackground>
       <Footer />
     </main>
   );
