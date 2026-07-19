@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import { projectsApi } from "@/lib/api";
+import HeroBackground from "@/components/shared/HeroBackground";
+import { HERO_BG_KEYS } from "@/lib/hero-settings";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
@@ -73,7 +75,14 @@ export default function ProyekPage() {
   return (
     <main>
       <Navbar />
-
+<HeroBackground
+  settingKey={HERO_BG_KEYS.proyek}
+  fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+  gradientDirection="to-left"
+  gradientColor="#0F2830"
+  gradientOpacity={0.88}
+  style={{ paddingTop: "140px", paddingBottom: "80px" }}
+>
       {/* ── HERO ── */}
       <section style={{
         paddingTop: "140px",
@@ -116,6 +125,7 @@ export default function ProyekPage() {
           </div>
         </div>
       </section>
+</HeroBackground>
 
       {/* ── CONTENT ── */}
       <div style={{ background: "#F4F7F7", padding: "56px 0 120px" }}>

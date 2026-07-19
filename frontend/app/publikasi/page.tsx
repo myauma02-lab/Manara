@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { publicationsApi } from "@/lib/api";
+import HeroBackground from "@/components/shared/HeroBackground";
+import { HERO_BG_KEYS } from "@/lib/hero-settings";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
@@ -55,6 +57,17 @@ export default function PublikasiPage() {
   return (
     <main>
       <Navbar />
+      <HeroBackground
+        settingKey={HERO_BG_KEYS.publikasi}
+        fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+        gradientDirection="to-right"
+        gradientColor="#0F2830"
+        gradientOpacity={0.90}
+        style={{ paddingTop: "140px", paddingBottom: "80px" }}
+      >
+        {/* konten hero */}
+      </HeroBackground>
+
       <div style={{ paddingTop: "120px", paddingBottom: "120px", background: "#F4F7F7", minHeight: "100vh" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
 

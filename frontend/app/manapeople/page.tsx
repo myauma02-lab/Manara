@@ -1,6 +1,8 @@
 ﻿"use client";
 import { useEffect, useState } from "react";
 import { recruitmentApi, waitlistApi } from "@/lib/api";
+import HeroBackground from "@/components/shared/HeroBackground";
+import { HERO_BG_KEYS } from "@/lib/hero-settings";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
@@ -36,24 +38,33 @@ export default function ManapeoplePage() {
       .then(r => setBatch(r.data.data))
       .catch(() => setBatch(null))
       .finally(() => setLoading(false));
-  }, []);
+      }, []);
 
-  return (
-    <main style={{ background: "#F4F7F7" }}>
-      <Navbar />
+      return (
+        <HeroBackground
+          settingKey={HERO_BG_KEYS.manapeople}
+          fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+          gradientDirection="to-right"
+          gradientColor="#0F2830"
+          gradientOpacity={0.88}
+          style={{ padding: "80px clamp(20px,5vw,40px) 0" }}
+        >
+          <main style={{ background: "#F4F7F7" }}>
+            <Navbar />
 
-      {loading ? (
-        <LoadingSkeleton />
-      ) : batch ? (
-        <BatchMode batch={batch} />
-      ) : (
-        <WaitlistMode />
-      )}
+            {loading ? (
+              <LoadingSkeleton />
+            ) : batch ? (
+              <BatchMode batch={batch} />
+            ) : (
+              <WaitlistMode />
+            )}
 
-      <Footer />
-    </main>
-  );
-}
+            <Footer />
+          </main>
+        </HeroBackground>
+      );
+    }
 
 // ─────────────────────────────────────────────────────
 // MODE 1: Tidak ada batch → Waitlist

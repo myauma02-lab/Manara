@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { infoApi } from "@/lib/api";
+import HeroBackground from "@/components/shared/HeroBackground";
+import { HERO_BG_KEYS } from "@/lib/hero-settings";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
@@ -112,13 +114,14 @@ export default function PusatInformasiPage() {
       <Navbar />
 
       {/* ── HERO ── */}
-      <section style={{
-        paddingTop: "140px",
-        paddingBottom: "80px",
-        background: "#0F2830",
-        position: "relative",
-        overflow: "hidden",
-      }}>
+      <HeroBackground
+          settingKey={HERO_BG_KEYS.pusatInformasi}
+          fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+          gradientDirection="overlay"
+          gradientColor="#0F2830"
+          gradientOpacity={0.88}
+          style={{ paddingTop: "140px", paddingBottom: "80px" }}
+      >
         {/* Dekorasi background */}
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 60% at 20% 60%, rgba(38,108,135,0.18) 0%, transparent 60%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", top: 0, right: "200px", width: "1px", height: "100%", background: "linear-gradient(to bottom, transparent, rgba(38,108,135,0.08) 50%, transparent)" }} />
@@ -135,7 +138,7 @@ export default function PusatInformasiPage() {
             Satu tempat untuk mengikuti perkembangan, pencapaian, publikasi, dan agenda strategis Manara.
           </p>
         </div>
-      </section>
+      </HeroBackground>
 
       {/* ── 4 KARTU KATEGORI ── */}
       <section style={{ padding: "0 0 80px", background: "#F4F7F7" }}>

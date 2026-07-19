@@ -1,5 +1,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import HeroBackground from "@/components/shared/HeroBackground";
+import { HERO_BG_KEYS } from "@/lib/hero-settings";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -28,7 +30,7 @@ export default function TentangPage() {
       <Navbar />
 
       {/* Hero */}
-      <section style={{ paddingTop: "140px", paddingBottom: "100px", background: "#0F2830", position: "relative", overflow: "hidden" }}>
+      <HeroBackground settingKey={HERO_BG_KEYS.tentang} fallbackGradient="linear-gradient(135deg, #0F2830, #1a4f63)" gradientDirection="to-left" gradientColor="#0F2830" gradientOpacity={0.90} style={{ paddingTop: "140px", paddingBottom: "80px" }} >
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 60% at 20% 80%, rgba(38,108,135,0.2) 0%, transparent 60%)", pointerEvents: "none" }} />
         <div style={{ maxWidth: "860px", margin: "0 auto", padding: "0 40px", position: "relative", zIndex: 2 }}>
           <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.7)", marginBottom: "24px" }}>
@@ -42,7 +44,7 @@ export default function TentangPage() {
             Manara adalah kolektif intelektual dan inisiatif media kreatif yang lahir dari keyakinan bahwa diskursus yang bermakna dimulai dari mereka yang berani berpikir mendalam.
           </p>
         </div>
-      </section>
+      </HeroBackground>
 
       {/* Doctrine banner */}
       <div style={{ background: "#266c87", padding: "20px 40px", textAlign: "center" }}>

@@ -2,6 +2,7 @@
 import { Router } from 'express';
 import { prisma } from '../utils/prisma';
 import { authenticate, requireAdmin } from '../middleware/auth';
+import { uploadImage } from "../middleware/upload";
 
 const router = Router();
 
@@ -21,7 +22,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// POST /api/settings — upsert satu key
+/// POST /api/settings — upsert satu key (JSON/text)
 router.post("/", authenticate, async (req, res) => {
   try {
     const { key, value } = req.body;
@@ -37,10 +38,10 @@ router.post("/", authenticate, async (req, res) => {
   }
 });
 
-// POST /api/settings/bulk — upsert banyak key sekaligus
+// POST /api/settings/bulk — upsert banyak key
 router.post("/bulk", authenticate, async (req, res) => {
   try {
-    const { settings } = req.body; // { key: value, key2: value2 }
+    const { settings } = req.body;
     if (!settings || typeof settings !== "object") {
       return res.status(400).json({ message: "Format tidak valid" });
     }
@@ -59,10 +60,40 @@ router.post("/bulk", authenticate, async (req, res) => {
   }
 });
 
-router.get('/', async (_req, res) => {
-  const settings = await prisma.siteSetting.findMany();
-  const map = Object.fromEntries(settings.map((s: any) => [s.key, s.value]));
-  res.json({ success: true, data: map });
+router.post(
+  "/upload-image",
+  authenticate,
+  uploadImage("hero-backgrounds").single("image"),
+  async (req: any, res) => {
+    try {
+      const { key } = req.body;
+      if (!key) return res.status(400).json({ message: "Key wajib diisi" });
+      if (!req.file) return res.status(400).json({ message: "File gambar wajib diupload" });
+
+      const imageUrl = req.file.path || req.file.filename || (req.file as any).location;
+      if (!imageUrl) return res.status(500).json({ message: "Gagal upload gambar" });
+
+      const setting = await prisma.siteSetting.upsert({
+        where: { key },
+        update: { value: imageUrl },
+        create: { key, value: imageUrl },
+      });
+
+      res.json({ success: true, data: { key, url: imageUrl } });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+);
+
+// DELETE /api/settings/:key — hapus setting
+router.delete("/:key", authenticate, async (req, res) => {
+  try {
+    await prisma.siteSetting.delete({ where: { key: req.params.key } });
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 router.put('/:key', authenticate, requireAdmin, async (req, res) => {

@@ -97,12 +97,28 @@ export const recruitmentApi = {
 
 export const settingsApi = {
   get: (key?: string) =>
-    key ? api.get("/settings", { params: { key } }) : api.get("/settings"),
+    key
+      ? api.get("/settings", { params: { key } })
+      : api.get("/settings"),
+
   update: (key: string, value: string) =>
     api.post("/settings", { key, value }),
+
   bulkUpdate: (settings: Record<string, string>) =>
     api.post("/settings/bulk", { settings }),
+
+  // Upload gambar hero
+  uploadHeroImage: (key: string, file: File) => {
+    const fd = new FormData();
+    fd.append("key", key);
+    fd.append("image", file);
+    return api.post("/settings/upload-image", fd);
+  },
+
+  deleteKey: (key: string) =>
+    api.delete(`/settings/${key}`),
 };
+
 
 export const contactApi = {
   send: (data: { name: string; email: string; purpose?: string; message: string }) =>

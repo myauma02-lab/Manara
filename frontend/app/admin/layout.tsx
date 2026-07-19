@@ -1,5 +1,7 @@
 ﻿"use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { settingsApi } from "@/lib/api";
+import { HERO_BG_KEYS, HERO_BG_LABELS, type HeroBgKey } from "@/lib/hero-settings";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
