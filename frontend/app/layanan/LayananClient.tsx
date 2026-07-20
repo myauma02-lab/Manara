@@ -73,12 +73,12 @@ export default function LayananClient() {
         gradientDirection="to-right"
         gradientColor="#0F2830"
         gradientOpacity={0.90}
-        style={{ paddingTop: "140px", minHeight: "320px" }}
+        style={{ minHeight: "320px" }}
           >
       <section style={{
-        paddingTop: "140px",
+        paddingTop: "0",
         paddingBottom: "0",
-        background: "#0F2830",
+        background: "transparent",
         position: "relative",
         overflow: "hidden",
         minHeight: "320px",
@@ -102,7 +102,7 @@ export default function LayananClient() {
             {current.status === "active" && (
               <button
                 onClick={() => openWhatsApp(`Halo Manara, saya ingin konsultasi tentang layanan ${current.title}`)}
-                style={{ display: "inline-flex", alignItems: "center", gap: "10px", background: "#25D366", color: "#fff", padding: "13px 28px", borderRadius: "4px", border: "none", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}
+                style={{ display: "flex", alignItems: "center", gap: "10px", background: "#25D366", color: "#fff", padding: "13px 28px", borderRadius: "4px", border: "none", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}
               >
                 <svg width="20" height="20" viewBox="0 0 30 30" fill="none">
                   <path d="M15 2.5C8.096 2.5 2.5 8.096 2.5 15c0 2.28.617 4.415 1.692 6.247L2.5 27.5l6.427-1.667A12.431 12.431 0 0015 27.5c6.904 0 12.5-5.596 12.5-12.5S21.904 2.5 15 2.5zm6.22 17.193c-.26.73-1.517 1.393-2.077 1.48-.53.08-1.2.113-1.934-.121a17.61 17.61 0 01-1.749-.647c-3.082-1.332-5.09-4.453-5.244-4.66-.152-.206-1.245-1.658-1.245-3.163 0-1.505.788-2.247 1.067-2.553.28-.306.61-.382.814-.382.205 0 .408.002.587.01.188.01.44-.071.688.524.26.62.882 2.125.959 2.278.078.154.13.332.026.537-.105.205-.157.332-.312.511-.154.18-.325.4-.463.537-.154.153-.315.318-.135.624.18.305.8 1.315 1.716 2.13 1.178 1.052 2.173 1.38 2.479 1.533.305.153.484.128.663-.077.18-.205.766-.894 1.97-.894z" fill="white"/>
@@ -560,7 +560,7 @@ function ComingSoonSection({ data, onWhatsApp }: { data: LayananData; onWhatsApp
         <div style={{ background: "#0F2830", borderRadius: "4px", padding: "64px 48px", border: "1px solid rgba(38,108,135,0.1)", position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 60% 60% at 50% 50%, ${data.accentColor}10 0%, transparent 70%)`, pointerEvents: "none" }} />
           <div style={{ position: "relative", zIndex: 2 }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid rgba(38,108,135,0.25)", padding: "7px 18px", borderRadius: "2px", color: "#86AFAA", fontSize: "11px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "28px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", border: "1px solid rgba(38,108,135,0.25)", padding: "7px 18px", borderRadius: "2px", color: "#86AFAA", fontSize: "11px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "28px" }}>
               <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#5F8F8A", display: "inline-block", animation: "pulse 2s infinite" }} />
               Segera Hadir
             </div>
@@ -575,7 +575,7 @@ function ComingSoonSection({ data, onWhatsApp }: { data: LayananData; onWhatsApp
             </p>
             <button
               onClick={() => onWhatsApp(`Halo Manara, saya tertarik dengan layanan ${data.title} yang akan segera hadir. Mohon informasi lebih lanjut.`)}
-              style={{ display: "inline-flex", alignItems: "center", gap: "10px", background: "#25D366", color: "#fff", padding: "12px 28px", borderRadius: "4px", border: "none", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}
+              style={{ display: "flex", alignItems: "center", gap: "10px", background: "#25D366", color: "#fff", padding: "12px 28px", borderRadius: "4px", border: "none", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}
             >
               <svg width="18" height="18" viewBox="0 0 30 30" fill="none">
                 <path d="M15 2.5C8.096 2.5 2.5 8.096 2.5 15c0 2.28.617 4.415 1.692 6.247L2.5 27.5l6.427-1.667A12.431 12.431 0 0015 27.5c6.904 0 12.5-5.596 12.5-12.5S21.904 2.5 15 2.5zm6.22 17.193c-.26.73-1.517 1.393-2.077 1.48-.53.08-1.2.113-1.934-.121a17.61 17.61 0 01-1.749-.647c-3.082-1.332-5.09-4.453-5.244-4.66-.152-.206-1.245-1.658-1.245-3.163 0-1.505.788-2.247 1.067-2.553.28-.306.61-.382.814-.382.205 0 .408.002.587.01.188.01.44-.071.688.524.26.62.882 2.125.959 2.278.078.154.13.332.026.537-.105.205-.157.332-.312.511-.154.18-.325.4-.463.537-.154.153-.315.318-.135.624.18.305.8 1.315 1.716 2.13 1.178 1.052 2.173 1.38 2.479 1.533.305.153.484.128.663-.077.18-.205.766-.894 1.97-.894z" fill="white"/>
