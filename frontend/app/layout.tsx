@@ -22,35 +22,80 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: {
-    default: "Manara",
-    template: "%s | Manara",
+    default: "ManaraInstitute",
+    template: "%s | ManaraInstitute",
   },
+  
   description:
-    "Manara adalah kolektif intelektual dan inisiatif media kreatif yang mewujudkan ruang intelektual, kreatif, berpengetahuan guna menciptakan kebermanfaatan sosial.",
+    "Manara adalah kolektif intelektual dan media kreatif berbasis Jawa Timur. Publikasi, riset, layanan hukum, dan gagasan yang tidak mengorbankan kedalaman.",
+
   keywords: [
-    "manara",
-    "intelektual",
-    "media",
-    "kebijakan publik",
-    "youth discourse",
-    "indonesia",
+    "Manara",
+    "kolektif intelektual",
+    "media kreatif",
+    "riset kebijakan",
+    "legal opinion",
+    "Surabaya",
+    "Jawa Timur",
+    "publikasi ilmiah",
+    "think tank Indonesia",
   ],
-  authors: [{ name: "Manara Collective" }],
-  icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-  },
+
+  authors: [{ name: "Manara", url: "https://manarainstitute.id" }],
+  creator: "Manara",
+  publisher: "Manara",
+  
+    // Open Graph default
   openGraph: {
     type: "website",
     locale: "id_ID",
+    url: "https://manarainstitute.id",
     siteName: "Manara",
-    title: "Manara",
+    title: "Manara — Kolektif Intelektual & Media Kreatif",
     description:
-      "Ruang intelektual, kreatif, dan berpengetahuan untuk generasi yang berpikir mendalam.",
+      "Ruang intelektual dan media kreatif berbasis Jawa Timur. Shaping ideas for the public sphere.",
+    images: [
+      {
+        url: "/og-default.png", // buat file ini (1200x630px)
+        width: 1200,
+        height: 630,
+        alt: "Manara — Kolektif Intelektual",
+      },
+    ],
   },
+  
+  // Robots
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+
+  // Canonical
+  alternates: {
+    canonical: "https://manarainstitute.id",
+  },
+
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icon-32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180" }],
+  },
+  
+  // Manifest
+  manifest: "/manifest.json",
+
+  verification: {
+    google: "GOOGLE_VERIFICATION_CODE", // ganti ini
   },
 };
 
