@@ -83,8 +83,7 @@ export default function LayananClient() {
         overflow: "hidden",
         minHeight: "320px",
       }}>
-        <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 70% 60% at 20% 50%, ${current.accentColor}25 0%, transparent 60%)`, pointerEvents: "none" }} />
-
+      
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
           <div style={{ paddingBottom: "48px" }}>
             <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: current.accentColor, marginBottom: "14px", opacity: 0.9 }}>
@@ -102,7 +101,7 @@ export default function LayananClient() {
             {current.status === "active" && (
               <button
                 onClick={() => openWhatsApp(`Halo Manara, saya ingin konsultasi tentang layanan ${current.title}`)}
-                style={{ display: "flex", alignItems: "center", gap: "10px", background: "#25D366", color: "#fff", padding: "13px 28px", borderRadius: "4px", border: "none", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}
+                style={{ display: "flex", alignItems: "center", gap: "10px", background: "transparent", color: "#fff", padding: "13px 28px", borderRadius: "4px", border: "none", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}
               >
                 <svg width="20" height="20" viewBox="0 0 30 30" fill="none">
                   <path d="M15 2.5C8.096 2.5 2.5 8.096 2.5 15c0 2.28.617 4.415 1.692 6.247L2.5 27.5l6.427-1.667A12.431 12.431 0 0015 27.5c6.904 0 12.5-5.596 12.5-12.5S21.904 2.5 15 2.5zm6.22 17.193c-.26.73-1.517 1.393-2.077 1.48-.53.08-1.2.113-1.934-.121a17.61 17.61 0 01-1.749-.647c-3.082-1.332-5.09-4.453-5.244-4.66-.152-.206-1.245-1.658-1.245-3.163 0-1.505.788-2.247 1.067-2.553.28-.306.61-.382.814-.382.205 0 .408.002.587.01.188.01.44-.071.688.524.26.62.882 2.125.959 2.278.078.154.13.332.026.537-.105.205-.157.332-.312.511-.154.18-.325.4-.463.537-.154.153-.315.318-.135.624.18.305.8 1.315 1.716 2.13 1.178 1.052 2.173 1.38 2.479 1.533.305.153.484.128.663-.077.18-.205.766-.894 1.97-.894z" fill="white"/>
