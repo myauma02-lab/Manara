@@ -35,7 +35,7 @@ export default function InsightPage() {
   return (
     <main>
       <Navbar />
-      <div style={{ paddingTop: "120px", paddingBottom: "120px", background: "#F4F7F7", minHeight: "100vh" }}>
+      <div style={{ paddingTop: "120px", paddingBottom: "120px", background: "none", minHeight: "100vh" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
         <HeroBackground
                   settingKey={HERO_BG_KEYS.layanan}
