@@ -18,7 +18,8 @@ const NAV = [
   { href: "/admin/newsletter", label: "Newsletter", icon: "@" },
   { href: "/admin/settings", label: "Pengaturan", icon: "⚙" },
   // Divider
-  { href: "/admin/users", label: "Kelola Pengguna", icon: "👥", divider: true },
+  { href: "/admin/users", label: "Kelola Pengguna", icon: "👥" },
+  { divider: true },
   // Link ke sub-dashboard
   { href: "/dashboard/hr", label: "→ HR Dashboard", icon: "△" },
   { href: "/dashboard/finance", label: "→ Finance Dashboard", icon: "◆" },
