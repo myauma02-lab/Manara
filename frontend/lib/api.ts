@@ -138,6 +138,17 @@ export const hrApi = {
   updateInterview: (id: string, data: any) => api.put(`/hr/interviews/${id}`, data),
   deleteInterview: (id: string) => api.delete(`/hr/interviews/${id}`),
 
+ // Applications (Pelamar)
+  applications: (params?: {
+    status?: string; position?: string; search?: string;
+    recruitmentId?: string; page?: number; limit?: number;
+  }) => api.get("/hr/applications", { params }),
+ 
+  application: (id: string) => api.get(`/hr/applications/${id}`),
+ 
+  updateApplicationStatus: (id: string, status: string) =>
+    api.put(`/hr/applications/${id}/status`, { status }),
+
   // Pipeline overview
   pipeline: () => api.get("/hr/pipeline"),
 };

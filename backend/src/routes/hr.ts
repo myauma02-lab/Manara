@@ -293,5 +293,94 @@ router.get("/pipeline", authenticate, requireHR, async (_req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+// ═══════════════════════════════════════════════════════
+// TEMPEL BLOK INI KE backend/src/routes/hr.ts
+// Taruh SEBELUM baris terakhir `export default router;`
+// (Butuh ini karena halaman /dashboard/hr/applicants perlu
+//  list + detail + update-status yang belum ada di route lama)
+// ═══════════════════════════════════════════════════════
 
+// ─────────────────────────────────────────────────────
+// APPLICATIONS (Pelamar) — list, detail, update status
+// ─────────────────────────────────────────────────────
+
+router.get("/applications", authenticate, requireHR, async (req, res) => {
+  try {
+    const {
+      status, position, search,
+      recruitmentId,
+      page = "1", limit = "20",
+    } = req.query as any;
+
+    const where: any = {};
+    if (status) where.status = status;
+    if (position) where.position = position;
+    if (recruitmentId) where.recruitmentId = recruitmentId;
+    if (search) where.OR = [
+      { fullName: { contains: search, mode: "insensitive" } },
+      { email: { contains: search, mode: "insensitive" } },
+      { phone: { contains: search, mode: "insensitive" } },
+    ];
+
+    const take = Math.min(parseInt(limit), 100);
+    const skip = (parseInt(page) - 1) * take;
+
+    const [data, total] = await Promise.all([
+      prisma.application.findMany({
+        where, take, skip,
+        orderBy: { createdAt: "desc" },
+        include: {
+          recruitment: { select: { batchName: true } },
+          interviews: {
+            select: { id: true, scheduledAt: true, result: true },
+            orderBy: { scheduledAt: "desc" },
+            take: 1,
+          },
+        },
+      }),
+      prisma.application.count({ where }),
+    ]);
+
+    res.json({
+      success: true,
+      data,
+      pagination: { total, page: parseInt(page), pages: Math.ceil(total / take) },
+    });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get("/applications/:id", authenticate, requireHR, async (req, res) => {
+  try {
+    const app = await prisma.application.findUnique({
+      where: { id: req.params.id },
+      include: {
+        recruitment: { select: { batchName: true } },
+        interviews: { orderBy: { scheduledAt: "desc" } },
+      },
+    });
+    if (!app) return res.status(404).json({ message: "Pelamar tidak ditemukan" });
+    res.json({ success: true, data: app });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.put("/applications/:id/status", authenticate, requireHR, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const allowed = ["PENDING", "REVIEWING", "SHORTLISTED", "ACCEPTED", "REJECTED"];
+    if (!allowed.includes(status)) {
+      return res.status(400).json({ message: "Status tidak valid" });
+    }
+    const updated = await prisma.application.update({
+      where: { id: req.params.id },
+      data: { status },
+    });
+    res.json({ success: true, data: updated });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+});
 export default router;
