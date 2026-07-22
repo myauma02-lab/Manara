@@ -1,6 +1,5 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import { authApi } from "@/lib/api";
+import { persist } from "zustand/middleware";
 
 interface AuthUser {
   id: string;

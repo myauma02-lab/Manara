@@ -1,31 +1,17 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/lib/store/authStore';
-import { authApi } from "@/lib/api";
-
-const login = async (email: string, password: string) => {
-  const { data } = await authApi.login(email, password);
-
-  localStorage.setItem("manara_token", data.token);
-
-  return data;
-};
+import { authApi } from '@/lib/api';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const login = async (email: string, password: string) => {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    if (!response.ok) throw new Error('Login failed');
+    const res = await authApi.login(email, password);
+    localStorage.setItem('token', res.data.token);
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
