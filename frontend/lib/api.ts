@@ -77,6 +77,7 @@ export const authApi = {
 
   deleteUser: (id: string) => api.delete(`/auth/users/${id}`),
 };
+
 // ── Finance API ───────────────────────────────────────
 export const financeApi = {
   summary: (period?: string) =>
@@ -109,6 +110,7 @@ export const financeApi = {
   updateBudget: (id: string, data: any) => api.put(`/finance/budgets/${id}`, data),
   deleteBudget: (id: string) => api.delete(`/finance/budgets/${id}`),
 };
+
 
 // ── HR API ────────────────────────────────────────────
 export const hrApi = {

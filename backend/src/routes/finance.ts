@@ -3,35 +3,6 @@ import { prisma } from "../utils/prisma";
 import { authenticate, requireKeuangan } from "../middleware/auth";
 import { uploadPDF } from "../middleware/upload";
 
-// Local fallback for handling file uploads. Returns mapping of field -> url
-// This replaces missing ../utils/handleUpload module.
-async function handleFileUploads(req: any, folders: Record<string, string>) {
-  const result: Record<string, string> = {};
-  // If multer placed a single file on req.file
-  if (req.file) {
-    const field = Object.keys(folders)[0] || 'attachment';
-    // Attempt to derive a public URL; adjust as needed by your app
-    result[field] = req.file.path || `/uploads/${req.file.filename}`;
-  }
-  // If multiple files were uploaded into req.files (object or array)
-  if (req.files) {
-    if (Array.isArray(req.files)) {
-      req.files.forEach((f: any, idx: number) => {
-        const key = Object.keys(folders)[idx] || `file${idx}`;
-        result[key] = f.path || `/uploads/${f.filename}`;
-      });
-    } else {
-      for (const key of Object.keys(req.files)) {
-        const f = (req.files as any)[key];
-        if (Array.isArray(f)) result[key] = f[0].path || `/uploads/${f[0].filename}`;
-        else result[key] = f.path || `/uploads/${f.filename}`;
-      }
-    }
-  }
-
-  return result;
-}
-
 const router = Router();
 
 // ── GET /api/finance/summary ──────────────────────────
@@ -317,3 +288,18 @@ router.delete("/budgets/:id", authenticate, requireKeuangan, async (req, res) =>
 });
 
 export default router;
+
+async function handleFileUploads(req: any, arg1: { attachment: string; }) {
+  if (!req.file) {
+    throw new Error("No file uploaded");
+  }
+
+  const fileUrl = req.file.path || req.file.secure_url || req.file.location || req.file.url;
+  if (!fileUrl) {
+    throw new Error("Uploaded file does not contain a valid URL");
+  }
+
+  return {
+    attachment: fileUrl,
+  };
+}

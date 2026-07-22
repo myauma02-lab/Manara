@@ -30,10 +30,10 @@ export const authenticate = async (
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { id: true, email: true, name: true, role: true,},
+      select: { id: true, email: true, name: true, role: true, isActive: true },
     });
 
-    if (!user) {
+    if (!user || !user.isActive) {
       return res.status(401).json({ message: "Akun tidak aktif atau tidak ditemukan" });
     }
 
