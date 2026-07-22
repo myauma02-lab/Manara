@@ -3,41 +3,81 @@ import axios from "axios";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 console.log("API_URL =", API_URL);
 
-export const api = axios.create({ baseURL: API_URL, timeout: 30000 });
-
-api.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("manara_token");
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+export const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL ||
+    "https://postgres-production-e4294.up.railway.app/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401 && typeof window !== "undefined") {
-      localStorage.removeItem("manara_token");
-      if (window.location.pathname.startsWith("/admin")) {
-        window.location.href = "/admin/login";
+api.interceptors.request.use(
+  (config) => {
+    // Ambil token dari localStorage (Zustand persist)
+    try {
+      const stored = localStorage.getItem("manara-auth");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const token = parsed?.state?.token;
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
       }
+    } catch {
+      // localStorage tidak tersedia (SSR), skip
     }
-    return Promise.reject(err);
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired atau invalid → clear auth + redirect login
+      try {
+        localStorage.removeItem("manara-auth");
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
+        }
+      } catch { }
+    }
+    return Promise.reject(error);
   }
 );
 
 export const authApi = {
-  login: (email: string, password: string) => api.post("/auth/login", { email, password }),
-  me: () => api.get("/auth/me"),
-changePassword: (data: {
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
-}) => api.post("/auth/change-password", data),
-resetPassword: (userId: string, newPassword: string) =>
-  api.post(`/auth/reset-password/${userId}`, { newPassword }),
-};
+  login: (email: string, password: string) =>
+    api.post("/auth/login", { email, password }),
 
+  me: () => api.get("/auth/me"),
+
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    api.post("/auth/change-password", data),
+
+  resetPassword: (userId: string, newPassword: string) =>
+    api.post(`/auth/reset-password/${userId}`, { newPassword }),
+
+  users: () => api.get("/auth/users"),
+
+  createUser: (data: {
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+  }) => api.post("/auth/users", data),
+
+  updateUser: (
+    id: string,
+    data: Partial<{ name: string; role: string; isActive: boolean }>
+  ) => api.put(`/auth/users/${id}`, data),
+
+  resetPasswordUser: (id: string, newPassword: string) =>
+    api.post(`/auth/users/${id}/reset-password`, { newPassword }),
+
+  deleteUser: (id: string) => api.delete(`/auth/users/${id}`),
+};
 // ── Finance API ───────────────────────────────────────
 export const financeApi = {
   summary: (period?: string) =>

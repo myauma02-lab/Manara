@@ -10,23 +10,19 @@ datasource db {
 
 // ─── USERS / ADMIN ──────────────────────────────────────────────
 model User {
-  id String @id @default(cuid())
-
-  email    String   @unique
-  password String
-  name     String
-  role     UserRole
-  avatar   String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String    @id @default(cuid())
+  email       String    @unique
+  password    String
+  name        String
+  role        UserRole  @default(PUBLIKASI_WRITER)
+  avatar      String?
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime? // ← pastikan field ini ada
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   transactions Transaction[]
   hrNotes      HRNote[]
-
-  articles       Article[]
-  researchPapers ResearchPaper[]
-  publications   Publication[]
 
   @@map("users")
 }

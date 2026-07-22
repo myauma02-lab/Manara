@@ -20,25 +20,25 @@ export default function LoginPage() {
   }, [isAuthenticated, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.email || !form.password) {
-      setError("Email dan password wajib diisi");
-      return;
-    }
-    setLoading(true);
-    setError("");
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    try {
-      const res = await authApi.login(form.email, form.password);
-      const { token, user: userData } = res.data;
-      setAuth(userData, token);
-      router.replace(getDashboardPath(userData.role));
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Email atau password salah");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const res = await authApi.login(form.email, form.password);
+    const { token, user: userData } = res.data;
+
+    // Simpan ke store (otomatis ke localStorage via Zustand persist)
+    setAuth(userData, token);
+
+    // Redirect ke dashboard sesuai role
+    router.replace(getDashboardPath(userData.role));
+  } catch (err: any) {
+    setError(err.response?.data?.message || "Email atau password salah");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const rc = ROLE_CONFIG["SUPERADMIN"]; // default branding saat belum login
 
