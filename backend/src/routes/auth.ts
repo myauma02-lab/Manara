@@ -90,6 +90,52 @@ router.post(
   }
 );
 
+
+/* ============================================================
+   BOOTSTRAP FIRST SUPERADMIN (HANYA SEKALI)
+============================================================ */
+
+router.post("/bootstrap", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    // Kalau sudah ada user, endpoint ini mati
+    const totalUser = await prisma.user.count();
+
+    if (totalUser > 0) {
+      return res.status(403).json({
+        message: "Bootstrap sudah tidak tersedia.",
+      });
+    }
+
+    const hashed = await bcrypt.hash(password, 12);
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashed,
+        role: "SUPERADMIN",
+      },
+    });
+
+    return res.json({
+      success: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err: any) {
+    console.error(err);
+
+    return res.status(500).json({
+      message: err.message,
+    });
+  }
+});
 /* ============================================================
    GET CURRENT USER
 ============================================================ */
