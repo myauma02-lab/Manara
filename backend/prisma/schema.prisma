@@ -10,19 +10,23 @@ datasource db {
 
 // ─── USERS / ADMIN ──────────────────────────────────────────────
 model User {
-  id          String    @id @default(cuid())
-  email       String    @unique
-  password    String
-  name        String
-  role        UserRole  @default(PUBLIKASI_WRITER)
-  avatar      String?
-  isActive    Boolean   @default(true)
-  lastLoginAt DateTime? // ← pastikan field ini ada
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id String @id @default(cuid())
+
+  email    String   @unique
+  password String
+  name     String
+  role     UserRole
+  avatar   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   transactions Transaction[]
   hrNotes      HRNote[]
+
+  articles       Article[]       @relation("ArticleAuthor")
+  researchPapers ResearchPaper[] @relation("ResearchUploader")
+  publications   Publication[]   @relation("PublicationAuthor")
 
   @@map("users")
 }
@@ -189,7 +193,7 @@ model Article {
   updatedAt     DateTime      @updatedAt
 
   authorId   String
-  author     User         @relation(fields: [authorId], references: [id])
+  author     User         @relation("ArticleAuthor", fields: [authorId], references: [id])
   categoryId String?
   category   Category?    @relation(fields: [categoryId], references: [id])
   tags       ArticleTag[]
@@ -320,7 +324,7 @@ model ResearchPaper {
   updatedAt     DateTime      @updatedAt
 
   uploadedById String
-  uploadedBy   User      @relation(fields: [uploadedById], references: [id])
+  uploadedBy   User      @relation("ResearchUploader", fields: [uploadedById], references: [id])
   categoryId   String?
   category     Category? @relation(fields: [categoryId], references: [id])
 
@@ -419,7 +423,7 @@ model Publication {
 
   // Relasi
   authorId   String
-  author     User             @relation(fields: [authorId], references: [id])
+  author     User             @relation("PublicationAuthor", fields: [authorId], references: [id])
   categoryId String?
   category   Category?        @relation(fields: [categoryId], references: [id])
   tags       PublicationTag[]
