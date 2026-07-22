@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -149,18 +150,36 @@ export default function Navbar() {
       }}>
 
         {/* Logo */}
-        <Link href="/" style={{
-          fontFamily: "Georgia,serif",
-          fontSize: "22px",
-          fontWeight: 500,
-          color: isDark ? "#EEF4F6" : "#0F2830",
-          textDecoration: "none",
-          letterSpacing: "0.06em",
-          flexShrink: 0,
-          transition: "color 0.3s",
-        }}>
-          Manara
-        </Link>
+        <Link
+  href="/"
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    textDecoration: "none",
+    flexShrink: 0,
+  }}
+>
+  <Image
+    src="/public/favicon.png"
+    alt="Manara Logo"
+    width={24}
+    height={24}
+    priority
+  />
+
+  <span
+    style={{
+      fontFamily: "Georgia, serif",
+      fontSize: "22px",
+      fontWeight: 500,
+      color: isDark ? "#EEF4F6" : "#0F2830",
+      letterSpacing: "0.06em",
+    }}
+  >
+    Manara
+  </span>
+</Link>
 
         {/* ── DESKTOP NAV ── */}
         {!isMobile && (
@@ -523,7 +542,7 @@ export default function Navbar() {
                   letterSpacing: "0.08em", textTransform: "uppercase",
                   borderRadius: "2px", textDecoration: "none",
                 }}>
-                  Terhubung
+                  Hubungi Kami
                 </Link>
               </div>
             </div>

@@ -40,7 +40,7 @@ export default function HeroSection() {
       <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 60% at 15% 60%, rgba(38,108,135,0.22) 0%, transparent 60%)", pointerEvents: "none" }} />
       <div style={{ position: "absolute", top: 0, right: "clamp(80px,15vw,200px)", width: "1px", height: "100%", background: "linear-gradient(to bottom, transparent, rgba(38,108,135,0.12) 40%, rgba(38,108,135,0.04) 100%)" }} />
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "120px clamp(20px,5vw,48px) 0", width: "100%", position: "relative", zIndex: 2 }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "60px clamp(20px,5vw,48px) 0", width: "100%", position: "relative", zIndex: 2 }}>
 
         {/* Eyebrow */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
