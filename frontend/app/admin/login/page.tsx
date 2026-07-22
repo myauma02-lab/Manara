@@ -2,6 +2,15 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/authStore';
+import { authApi } from "@/lib/api";
+
+const login = async (email: string, password: string) => {
+  const { data } = await authApi.login(email, password);
+
+  localStorage.setItem("manara_token", data.token);
+
+  return data;
+};
 
 export default function AdminLoginPage() {
   const router = useRouter();
