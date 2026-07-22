@@ -4,11 +4,9 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 console.log("API_URL =", API_URL);
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ||
-    "https://postgres-production-e4294.up.railway.app/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL:
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://api.manarainstitute.id/api",
 });
 
 api.interceptors.request.use(
