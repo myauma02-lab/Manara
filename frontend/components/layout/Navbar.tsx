@@ -161,10 +161,10 @@ export default function Navbar() {
   }}
 >
   <Image
-    src="/public/favicon.png"
+    src="/favicon.png"
     alt="Manara Logo"
-    width={24}
-    height={24}
+    width={18}
+    height={18}
     priority
   />
 
