@@ -10,104 +10,220 @@ datasource db {
 
 // ─── USERS / ADMIN ──────────────────────────────────────────────
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  password      String
-  name          String
-  role          Role      @default(CONTRIBUTOR)
-  avatar        String?
-  bio           String?
-  isActive      Boolean   @default(true)
-  refreshToken  String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id String @id @default(cuid())
 
-  articles      Article[]
+  email    String   @unique
+  password String
+  name     String
+  role     UserRole
+  avatar   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions Transaction[]
+  hrNotes      HRNote[]
+
+  articles       Article[]
   researchPapers ResearchPaper[]
-
-  publications  Publication[]
+  publications   Publication[]
 
   @@map("users")
 }
 
-enum Role {
-  SUPER_ADMIN
-  ADMIN
-  EDITOR
-  CONTRIBUTOR
+enum UserRole {
+  SUPERADMIN
+  SEKJEN
+  PUBLIKASI_ADMIN
+  PUBLIKASI_EDITOR
+  PUBLIKASI_WRITER
+  HR
+  OPERASIONAL
+  KEUANGAN
+}
+
+// ─── FINANCE ─────────────────────────────────────────
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+model Transaction {
+  id          String            @id @default(cuid())
+  type        TransactionType
+  category    String
+  amount      Float
+  description String
+  date        DateTime
+  status      TransactionStatus @default(PENDING)
+  reference   String?
+  attachment  String?
+  notes       String?           @db.Text
+  createdById String
+  createdBy   User              @relation(fields: [createdById], references: [id])
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@map("transactions")
+}
+
+model Budget {
+  id        String   @id @default(cuid())
+  name      String
+  category  String
+  amount    Float
+  spent     Float    @default(0)
+  period    String // format: "2025-07" atau "2025-Q3"
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("budgets")
+}
+
+// ─── HR ENHANCEMENT ──────────────────────────────────
+enum EmployeeStatus {
+  PROBATION
+  ACTIVE
+  INACTIVE
+  RESIGNED
+}
+
+enum InterviewResult {
+  PENDING
+  PASSED
+  FAILED
+  RESCHEDULED
+}
+
+model Employee {
+  id               String         @id @default(cuid())
+  applicationId    String?        @unique
+  fullName         String
+  email            String         @unique
+  phone            String?
+  position         String
+  department       String
+  joinDate         DateTime
+  endDate          DateTime?
+  status           EmployeeStatus @default(PROBATION)
+  photoUrl         String?
+  address          String?
+  emergencyContact String?
+  notes            HRNote[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@map("employees")
+}
+
+model HRNote {
+  id         String   @id @default(cuid())
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  content    String   @db.Text
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@map("hr_notes")
+}
+
+model InterviewSchedule {
+  id              String          @id @default(cuid())
+  applicationId   String
+  application     Application     @relation(fields: [applicationId], references: [id])
+  scheduledAt     DateTime
+  durationMinutes Int             @default(60)
+  location        String?
+  meetLink        String?
+  interviewerName String?
+  notes           String?         @db.Text
+  result          InterviewResult @default(PENDING)
+  resultNotes     String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@map("interview_schedules")
 }
 
 // ─── FOUNDERS / MEMBERS ─────────────────────────────────────────
 model Founder {
-  id          String   @id @default(uuid())
-  name        String
-  slug      String?  @unique
-  role        String
-  bio         String? @db.Text
-  photo       String?
+  id            String  @id @default(uuid())
+  name          String
+  slug          String? @unique
+  role          String
+  bio           String? @db.Text
+  photo         String?
   photoPublicId String?
-  order       Int      @default(0)
-  isActive    Boolean  @default(true)
+  order         Int     @default(0)
+  isActive      Boolean @default(true)
 
   researchInterests String[]
   institution       String?
-  socialLinks Json?    // { instagram, twitter, linkedin }
+  socialLinks       Json? // { instagram, twitter, linkedin }
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("founders")
 }
 
 // ─── ARTICLES ───────────────────────────────────────────────────
 model Article {
-  id            String          @id @default(uuid())
+  id            String        @id @default(uuid())
   title         String
-  slug          String          @unique
+  slug          String        @unique
   excerpt       String?
-  content       String          @db.Text
+  content       String        @db.Text
   coverImage    String?
   coverPublicId String?
-  status        ContentStatus   @default(DRAFT)
-  isFeatured    Boolean         @default(false)
+  status        ContentStatus @default(DRAFT)
+  isFeatured    Boolean       @default(false)
   publishedAt   DateTime?
-  readTime      Int?            // minutes
-  viewCount     Int             @default(0)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  readTime      Int? // minutes
+  viewCount     Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
-  authorId      String
-  author        User            @relation(fields: [authorId], references: [id])
-  categoryId    String?
-  category      Category?       @relation(fields: [categoryId], references: [id])
-  tags          ArticleTag[]
-  mediaType     MediaType       @default(JOURNAL)
+  authorId   String
+  author     User         @relation(fields: [authorId], references: [id])
+  categoryId String?
+  category   Category?    @relation(fields: [categoryId], references: [id])
+  tags       ArticleTag[]
+  mediaType  MediaType    @default(JOURNAL)
 
   @@map("articles")
 }
 
 model Category {
-  id          String    @id @default(uuid())
-  name        String    @unique
-  slug        String    @unique
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
   description String?
   color       String?
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime @default(now())
 
-  articles    Article[]
+  articles       Article[]
   researchPapers ResearchPaper[]
 
-  publications  Publication[]
+  publications Publication[]
 
   @@map("categories")
 }
 
 model Tag {
-  id       String       @id @default(uuid())
-  name     String       @unique
-  slug     String       @unique
-  articles ArticleTag[]
-  publications  PublicationTag[]
+  id           String           @id @default(uuid())
+  name         String           @unique
+  slug         String           @unique
+  articles     ArticleTag[]
+  publications PublicationTag[]
 
   @@map("tags")
 }
@@ -146,35 +262,35 @@ model Project {
   description String?       @db.Text
   coverImage  String?
   status      ProjectStatus @default(UPCOMING)
-  category    String?       // "Kebijakan Publik", "Lingkungan", dll
+  category    String? // "Kebijakan Publik", "Lingkungan", dll
   tags        String[]
   startDate   DateTime?
   endDate     DateTime?
-  progress    Int           @default(0)    // 0-100 persen
+  progress    Int           @default(0) // 0-100 persen
   isFeatured  Boolean       @default(false)
   isPublic    Boolean       @default(true)
 
   // Tim pengerjaan
-  teamMembers String[]      // nama-nama anggota tim
+  teamMembers String[] // nama-nama anggota tim
 
   // Output
-  outputs     String[]      // deliverables / hasil proyek
+  outputs String[] // deliverables / hasil proyek
 
   // Milestones
-  milestones  Json?         // [{title, date, done}]
+  milestones Json? // [{title, date, done}]
 
   // Links
-  reportUrl   String?       // link laporan final
-  dataUrl     String?       // link dataset
-  relatedPubs String[]      // slug publikasi terkait
+  reportUrl   String? // link laporan final
+  dataUrl     String? // link dataset
+  relatedPubs String[] // slug publikasi terkait
 
   // Meta
-  client      String?       // klien / mitra
-  budget      String?       // budget range (opsional, bisa di-hide)
-  location    String?       // lokasi penelitian
+  client   String? // klien / mitra
+  budget   String? // budget range (opsional, bisa di-hide)
+  location String? // lokasi penelitian
 
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("projects")
 }
@@ -207,22 +323,22 @@ model ResearchPaper {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  uploadedById  String
-  uploadedBy    User          @relation(fields: [uploadedById], references: [id])
-  categoryId    String?
-  category      Category?     @relation(fields: [categoryId], references: [id])
+  uploadedById String
+  uploadedBy   User      @relation(fields: [uploadedById], references: [id])
+  categoryId   String?
+  category     Category? @relation(fields: [categoryId], references: [id])
 
   @@map("research_papers")
 }
 
 // ─── NEWSLETTER ─────────────────────────────────────────────────
 model NewsletterSubscriber {
-  id          String              @id @default(cuid())
-  email       String              @unique
+  id          String           @id @default(cuid())
+  email       String           @unique
   name        String?
-  status      SubscriberStatus    @default(ACTIVE)
+  status      SubscriberStatus @default(ACTIVE)
   confirmedAt DateTime?
-  createdAt   DateTime            @default(now())
+  createdAt   DateTime         @default(now())
 
   @@map("newsletter_subscribers")
 }
@@ -246,17 +362,17 @@ model SiteSetting {
 
 // ─── MEDIA / IMAGES ─────────────────────────────────────────────
 model MediaFile {
-  id          String   @id @default(uuid())
-  filename    String
-  url         String
-  publicId    String
-  mimeType    String
-  size        Int
-  width       Int?
-  height      Int?
-  alt         String?
-  folder      String?
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  filename  String
+  url       String
+  publicId  String
+  mimeType  String
+  size      Int
+  width     Int?
+  height    Int?
+  alt       String?
+  folder    String?
+  createdAt DateTime @default(now())
 
   @@map("media_files")
 }
@@ -288,49 +404,49 @@ enum PaperSubtype {
 // ─── MODEL PUBLICATION (menggantikan articles + research) ─
 
 model Publication {
-  id          String          @id @default(cuid())
-  type        PublicationType
-  slug        String          @unique
+  id   String          @id @default(cuid())
+  type PublicationType
+  slug String          @unique
 
   // Field umum
   title       String
-  excerpt     String?         @db.Text
-  content     String?         @db.Text
-  abstract    String?         @db.Text
+  excerpt     String?       @db.Text
+  content     String?       @db.Text
+  abstract    String?       @db.Text
   coverImage  String?
-  status      ContentStatus   @default(DRAFT)
-  isFeatured  Boolean         @default(false)
-  viewCount   Int             @default(0)
+  status      ContentStatus @default(DRAFT)
+  isFeatured  Boolean       @default(false)
+  viewCount   Int           @default(0)
   publishedAt DateTime?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   // Relasi
-  authorId    String
-  author      User            @relation(fields: [authorId], references: [id])
-  categoryId  String?
-  category    Category?       @relation(fields: [categoryId], references: [id])
-  tags        PublicationTag[]
+  authorId   String
+  author     User             @relation(fields: [authorId], references: [id])
+  categoryId String?
+  category   Category?        @relation(fields: [categoryId], references: [id])
+  tags       PublicationTag[]
 
   // Field ARTICLE
-  articleSubtype  ArticleSubtype?
+  articleSubtype ArticleSubtype?
 
   // Field PAPER & JOURNAL (shared)
-  paperSubtype    PaperSubtype?
-  authors         String[]
-  keywords        String[]
-  pdfUrl          String?
-  downloadCount   Int             @default(0)
-  institutions    String[]
+  paperSubtype  PaperSubtype?
+  authors       String[]
+  keywords      String[]
+  pdfUrl        String?
+  downloadCount Int           @default(0)
+  institutions  String[]
 
   // Field JOURNAL only
-  volume      Int?
-  issue       Int?
-  year        Int?
-  doi         String?
-  reviewers   String[]
-  citations   String[]
-  issn        String?
+  volume    Int?
+  issue     Int?
+  year      Int?
+  doi       String?
+  reviewers String[]
+  citations String[]
+  issn      String?
 
   @@map("publications")
 }
@@ -350,14 +466,14 @@ model Fellow {
   id          String   @id @default(cuid())
   name        String
   slug        String   @unique
-  title       String?  // gelar akademik, misal: "S.T., M.T., Ph.D."
-  position    String?  // jabatan, misal: "Peneliti Senior"
+  title       String? // gelar akademik, misal: "S.T., M.T., Ph.D."
+  position    String? // jabatan, misal: "Peneliti Senior"
   expertise   String[] // bidang keahlian
-  institution String?  // afiliasi
+  institution String? // afiliasi
   bio         String?  @db.Text
   photo       String?
   email       String?
-  socialLinks Json?    // { linkedin, twitter, instagram, website }
+  socialLinks Json? // { linkedin, twitter, instagram, website }
   isActive    Boolean  @default(true)
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -390,36 +506,36 @@ model InfoItem {
   excerpt     String?    @db.Text
   content     String?    @db.Text
   coverImage  String?
-  fileUrl     String?    // untuk magazine (PDF)
+  fileUrl     String? // untuk magazine (PDF)
   isFeatured  Boolean    @default(false)
   publishedAt DateTime?
 
   // NEWS
-  source      String?    // sumber berita
-  externalUrl String?    // link berita eksternal
+  source      String? // sumber berita
+  externalUrl String? // link berita eksternal
 
   // AWARD
-  awardGiver  String?    // pemberi penghargaan
-  awardYear   Int?
+  awardGiver    String? // pemberi penghargaan
+  awardYear     Int?
   awardCategory String?
 
   // MAGAZINE
-  issueNumber String?    // "Vol. 1 No. 2"
+  issueNumber String? // "Vol. 1 No. 2"
   issueYear   Int?
 
   // AGENDA
-  eventDate   DateTime?
-  eventEndDate DateTime?
+  eventDate     DateTime?
+  eventEndDate  DateTime?
   eventLocation String?
-  eventType   String?    // "Seminar", "Workshop", "Forum"
-  isHighlight Boolean    @default(false)
+  eventType     String? // "Seminar", "Workshop", "Forum"
+  isHighlight   Boolean   @default(false)
 
   // Meta
-  tags        String[]
-  viewCount   Int        @default(0)
+  tags      String[]
+  viewCount Int      @default(0)
 
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("info_items")
 }
@@ -443,9 +559,9 @@ model WaitlistEntry {
   name      String
   email     String   @unique
   phone     String?
-  interest  String?  // minat/bidang yang diminati
+  interest  String? // minat/bidang yang diminati
   message   String?  @db.Text
-  source    String?  // dari mana tahu Manara
+  source    String? // dari mana tahu Manara
   createdAt DateTime @default(now())
 
   @@map("waitlist_entries")
@@ -453,16 +569,16 @@ model WaitlistEntry {
 
 // ─── PASTIKAN model Recruitment seperti ini ───────────
 model Recruitment {
-  id          String        @id @default(cuid())
-  batchName   String
-  description String?       @db.Text
-  isActive    Boolean       @default(false)
-  startDate   DateTime?
-  endDate     DateTime?     // deadline pendaftaran
-  positions   Position[]
+  id           String        @id @default(cuid())
+  batchName    String
+  description  String?       @db.Text
+  isActive     Boolean       @default(false)
+  startDate    DateTime?
+  endDate      DateTime? // deadline pendaftaran
+  positions    Position[]
   applications Application[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   @@map("recruitments")
 }
@@ -472,7 +588,7 @@ model Position {
   name          String
   description   String?     @db.Text
   requirements  String[]
-  slots         Int?        // kuota (null = unlimited)
+  slots         Int? // kuota (null = unlimited)
   recruitmentId String
   recruitment   Recruitment @relation(fields: [recruitmentId], references: [id], onDelete: Cascade)
 
@@ -480,20 +596,21 @@ model Position {
 }
 
 model Application {
-  id            String            @id @default(cuid())
+  id            String              @id @default(cuid())
   recruitmentId String
-  recruitment   Recruitment       @relation(fields: [recruitmentId], references: [id])
+  recruitment   Recruitment         @relation(fields: [recruitmentId], references: [id])
   fullName      String
   email         String
   phone         String?
   position      String
-  motivation    String            @db.Text
+  motivation    String              @db.Text
+  interviews    InterviewSchedule[]
   portfolioLink String?
   cvUrl         String?
-  status        ApplicationStatus @default(PENDING)
-  adminNotes    String?           @db.Text
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+  status        ApplicationStatus   @default(PENDING)
+  adminNotes    String?             @db.Text
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
 
   @@map("applications")
 }

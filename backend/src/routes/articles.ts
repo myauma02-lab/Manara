@@ -58,7 +58,7 @@ router.get('/:slug', async (req, res) => {
     const article = await prisma.article.findUnique({
       where: { slug: req.params.slug, status: 'PUBLISHED' },
       include: {
-        author: { select: { id: true, name: true, avatar: true, bio: true } },
+        author: { select: { id: true, name: true, avatar: true,} },
         category: true,
         tags: { include: { tag: true } },
       },

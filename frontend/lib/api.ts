@@ -38,6 +38,81 @@ resetPassword: (userId: string, newPassword: string) =>
   api.post(`/auth/reset-password/${userId}`, { newPassword }),
 };
 
+// ── Finance API ───────────────────────────────────────
+export const financeApi = {
+  summary: (period?: string) =>
+    api.get("/finance/summary", { params: { period } }),
+
+  monthlyChart: (year?: number) =>
+    api.get("/finance/monthly-chart", { params: { year } }),
+
+  transactions: (params?: {
+    type?: string; status?: string; category?: string;
+    search?: string; page?: number; limit?: number;
+    dateFrom?: string; dateTo?: string;
+  }) => api.get("/finance/transactions", { params }),
+
+  createTransaction: (data: FormData) =>
+    api.post("/finance/transactions", data),
+
+  updateTransaction: (id: string, data: FormData) =>
+    api.put(`/finance/transactions/${id}`, data),
+
+  deleteTransaction: (id: string) =>
+    api.delete(`/finance/transactions/${id}`),
+
+  categories: () => api.get("/finance/categories"),
+
+  budgets: (period?: string) =>
+    api.get("/finance/budgets", { params: { period } }),
+
+  createBudget: (data: any) => api.post("/finance/budgets", data),
+  updateBudget: (id: string, data: any) => api.put(`/finance/budgets/${id}`, data),
+  deleteBudget: (id: string) => api.delete(`/finance/budgets/${id}`),
+};
+
+// ── HR API ────────────────────────────────────────────
+export const hrApi = {
+  // Employees
+  employees: (params?: {
+    status?: string; department?: string;
+    search?: string; page?: number; limit?: number;
+  }) => api.get("/hr/employees", { params }),
+
+  employeeStats: () => api.get("/hr/employees/stats"),
+  employee: (id: string) => api.get(`/hr/employees/${id}`),
+  createEmployee: (data: any) => api.post("/hr/employees", data),
+  updateEmployee: (id: string, data: any) => api.put(`/hr/employees/${id}`, data),
+
+  // Notes
+  addNote: (employeeId: string, content: string) =>
+    api.post(`/hr/employees/${employeeId}/notes`, { content }),
+  deleteNote: (noteId: string) =>
+    api.delete(`/hr/employees/notes/${noteId}`),
+
+  // Interviews
+  interviews: (params?: { result?: string; upcoming?: boolean }) =>
+    api.get("/hr/interviews", { params }),
+  createInterview: (data: any) => api.post("/hr/interviews", data),
+  updateInterview: (id: string, data: any) => api.put(`/hr/interviews/${id}`, data),
+  deleteInterview: (id: string) => api.delete(`/hr/interviews/${id}`),
+
+  // Pipeline overview
+  pipeline: () => api.get("/hr/pipeline"),
+};
+
+// ── Users Management (superadmin) ────────────────────
+export const usersApi = {
+  list: () => api.get("/auth/users"),
+  create: (data: { name: string; email: string; password: string; role: string }) =>
+    api.post("/auth/users", data),
+  update: (id: string, data: Partial<{ name: string; role: string; isActive: boolean }>) =>
+    api.put(`/auth/users/${id}`, data),
+  resetPassword: (id: string, newPassword: string) =>
+    api.post(`/auth/users/${id}/reset-password`, { newPassword }),
+  delete: (id: string) => api.delete(`/auth/users/${id}`),
+};
+
 // ── Founder API update ──
 export const foundersApi = {
   list: () => api.get("/founders"),

@@ -15,7 +15,7 @@ async function main() {
       email: 'admin@manara.id',
       password: await bcrypt.hash('Manara@2024!', 12),
       name: 'Super Admin Manara',
-      role: 'SUPER_ADMIN',
+      role: 'SUPERADMIN',
     },
   });
   console.log('✅ Admin user created:', superAdmin.email);

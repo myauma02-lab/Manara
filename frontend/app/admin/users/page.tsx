@@ -1,340 +1,296 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import { useAuthStore } from "@/lib/store/authStore";
-import { authApi } from "@/lib/api";
+import { usersApi } from "@/lib/api";
+import { ROLE_CONFIG, type UserRole } from "@/lib/store/authStore";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  isActive: boolean;
-  createdAt: string;
-  avatar?: string;
-}
-
-const ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTRIBUTOR"];
-const ROLE_LABEL: Record<string, string> = {
-  SUPER_ADMIN: "Super Admin",
-  ADMIN: "Admin",
-  EDITOR: "Editor",
-  CONTRIBUTOR: "Kontributor",
-};
-const ROLE_COLOR: Record<string, { bg: string; color: string }> = {
-  SUPER_ADMIN: { bg: "rgba(38,108,135,0.15)", color: "#266c87" },
-  ADMIN: { bg: "rgba(95,143,138,0.15)", color: "#3F6F6A" },
-  EDITOR: { bg: "rgba(164,170,122,0.2)", color: "#6E7448" },
-  CONTRIBUTOR: { bg: "rgba(184,205,210,0.2)", color: "#7A9AA5" },
-};
+const ROLES = Object.entries(ROLE_CONFIG).map(([key, val]) => ({
+  key,
+  label: val.label,
+  color: val.color,
+}));
 
 export default function AdminUsersPage() {
-  const { user: currentUser } = useAuthStore();
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [form, setForm] = useState({
-    name: "", email: "", password: "", role: "EDITOR",
-  })
-  const [resetTarget, setResetTarget] = useState<User | null>(null);
-  const [resetForm, setResetForm] = useState({ newPassword: "", confirmPassword: "" });
-  const [resetting, setResetting] = useState(false);
-  const [resetError, setResetError] = useState("");
-  const [resetSuccess, setResetSuccess] = useState("");;
-
-  const token = typeof window !== "undefined" ? localStorage.getItem("manara_token") : "";
-  const headers = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
+  const [showCreate, setShowCreate] = useState(false);
+  const [editingUser, setEditingUser] = useState<any | null>(null);
 
   const load = () => {
-    fetch(`${API_URL}/users`, { headers })
-      .then(r => r.json())
-      .then(d => setUsers(d.data || []))
+    setLoading(true);
+    usersApi.list()
+      .then(r => setUsers(r.data.data || []))
       .catch(() => {})
       .finally(() => setLoading(false));
   };
 
   useEffect(() => { load(); }, []);
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleToggleActive = async (u: any) => {
+    await usersApi.update(u.id, { isActive: !u.isActive });
+    load();
+  };
+
+  const handleChangeRole = async (userId: string, role: string) => {
+    await usersApi.update(userId, { role });
+    load();
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`Hapus user "${name}"? Tindakan ini tidak dapat dibatalkan.`)) return;
+    await usersApi.delete(id);
+    load();
+  };
+
+  const getRoleConfig = (role: string) =>
+    ROLE_CONFIG[role as UserRole] || ROLE_CONFIG.PUBLIKASI_WRITER;
+
+  return (
+    <div style={{ padding: "40px" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "28px", flexWrap: "wrap", gap: "16px" }}>
+        <div>
+          <p style={{ fontSize: "11px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "4px" }}>
+            Super Admin
+          </p>
+          <h1 style={{ fontFamily: "Georgia,serif", fontSize: "32px", fontWeight: 300, color: "#0F2830", marginBottom: "4px" }}>
+            Manajemen Pengguna
+          </h1>
+          <p style={{ fontSize: "14px", fontWeight: 300, color: "#7A9AA5" }}>
+            {users.length} pengguna terdaftar · {users.filter(u => u.isActive).length} aktif
+          </p>
+        </div>
+        <button onClick={() => setShowCreate(true)}
+          style={{ padding: "11px 22px", background: "#266c87", color: "#fff", border: "none", borderRadius: "4px", fontSize: "13px", fontWeight: 500, cursor: "pointer" }}>
+          + Tambah Pengguna
+        </button>
+      </div>
+
+      {/* Info */}
+      <div style={{ background: "rgba(38,108,135,0.04)", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "8px", padding: "14px 18px", marginBottom: "20px" }}>
+        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+          {ROLES.map(r => (
+            <div key={r.key} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: r.color }} />
+              <span style={{ fontSize: "12px", color: "#7A9AA5" }}>{r.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Table */}
+      <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "8px", overflow: "hidden" }}>
+        {loading ? (
+          <div style={{ padding: "48px", textAlign: "center" }}>
+            <p style={{ color: "#7A9AA5", fontFamily: "Georgia,serif", fontSize: "16px" }}>Memuat...</p>
+          </div>
+        ) : (
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 160px 200px 80px 200px", borderBottom: "1px solid rgba(38,108,135,0.08)", padding: "12px 20px", background: "rgba(38,108,135,0.02)" }}>
+              {["Pengguna", "Role", "Ubah Role", "Status", "Aksi"].map(h => (
+                <p key={h} style={{ fontSize: "10px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#B8CDD2" }}>{h}</p>
+              ))}
+            </div>
+
+            {users.map(u => {
+              const rc = getRoleConfig(u.role);
+              return (
+                <div key={u.id} style={{ display: "grid", gridTemplateColumns: "1fr 160px 200px 80px 200px", padding: "14px 20px", borderBottom: "1px solid rgba(38,108,135,0.05)", alignItems: "center" }}>
+
+                  {/* User info */}
+                  <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: `${rc.color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", color: rc.color, fontWeight: 500, flexShrink: 0 }}>
+                      {u.name?.charAt(0)}
+                    </div>
+                    <div>
+                      <p style={{ fontSize: "14px", fontWeight: 500, color: "#0F2830" }}>{u.name}</p>
+                      <p style={{ fontSize: "12px", color: "#7A9AA5" }}>{u.email}</p>
+                      {u.lastLoginAt && (
+                        <p style={{ fontSize: "10px", color: "#B8CDD2" }}>
+                          Login: {new Date(u.lastLoginAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Role badge */}
+                  <span style={{ fontSize: "11px", fontWeight: 500, padding: "4px 10px", borderRadius: "4px", background: `${rc.color}15`, color: rc.color, display: "inline-block" }}>
+                    {rc.label}
+                  </span>
+
+                  {/* Change role */}
+                  <select
+                    value={u.role}
+                    onChange={e => handleChangeRole(u.id, e.target.value)}
+                    style={{ fontSize: "12px", padding: "6px 10px", border: "1px solid rgba(38,108,135,0.15)", borderRadius: "4px", outline: "none", color: "#3A5560", background: "#fff", cursor: "pointer" }}
+                  >
+                    {ROLES.map(r => (
+                      <option key={r.key} value={r.key}>{r.label}</option>
+                    ))}
+                  </select>
+
+                  {/* Toggle active */}
+                  <button onClick={() => handleToggleActive(u)}
+                    style={{ fontSize: "11px", fontWeight: 500, padding: "5px 10px", borderRadius: "4px", border: "none", cursor: "pointer", background: u.isActive ? "rgba(63,111,106,0.1)" : "rgba(248,113,113,0.1)", color: u.isActive ? "#3F6F6A" : "#f87171" }}>
+                    {u.isActive ? "Aktif" : "Nonaktif"}
+                  </button>
+
+                  {/* Actions */}
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button onClick={() => setEditingUser(u)}
+                      style={{ fontSize: "12px", color: "#266c87", border: "1px solid rgba(38,108,135,0.2)", borderRadius: "4px", padding: "5px 12px", background: "none", cursor: "pointer" }}>
+                      Edit
+                    </button>
+                    <button onClick={() => {
+                      const newPw = prompt(`Reset password untuk ${u.name}?\nMasukkan password baru:`);
+                      if (newPw && newPw.length >= 6) {
+                        usersApi.resetPassword(u.id, newPw).then(() => alert("Password berhasil direset!")).catch(() => alert("Gagal reset password"));
+                      } else if (newPw) {
+                        alert("Password minimal 6 karakter");
+                      }
+                    }}
+                      style={{ fontSize: "12px", color: "#C6AD8A", border: "1px solid rgba(198,173,138,0.25)", borderRadius: "4px", padding: "5px 12px", background: "none", cursor: "pointer" }}>
+                      Reset PW
+                    </button>
+                    <button onClick={() => handleDelete(u.id, u.name)}
+                      style={{ fontSize: "12px", color: "#f87171", background: "none", border: "none", cursor: "pointer" }}>
+                      Hapus
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        )}
+      </div>
+
+      {/* Create User Modal */}
+      {showCreate && (
+        <CreateUserModal
+          onClose={() => setShowCreate(false)}
+          onSuccess={() => { setShowCreate(false); load(); }}
+        />
+      )}
+    </div>
+  );
+}
+
+function CreateUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [form, setForm] = useState({
+    name: "", email: "", password: "", role: "PUBLIKASI_WRITER",
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.password) {
-      setError("Semua kolom wajib diisi"); return;
+      setError("Semua field wajib diisi"); return;
+    }
+    if (form.password.length < 6) {
+      setError("Password minimal 6 karakter"); return;
     }
     setSaving(true);
-    setError("");
     try {
-      const res = await fetch(`${API_URL}/users`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Gagal membuat user");
-      setUsers(prev => [...prev, data.data]);
-      setForm({ name: "", email: "", password: "", role: "EDITOR" });
-      setShowForm(false);
+      await usersApi.create(form);
+      onSuccess();
     } catch (err: any) {
-      setError(err.message);
+      setError(err.response?.data?.message || "Gagal membuat pengguna");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleToggleActive = async (id: string, isActive: boolean) => {
-    try {
-      await fetch(`${API_URL}/users/${id}`, {
-        method: "PUT",
-        headers,
-        body: JSON.stringify({ isActive: !isActive }),
-      });
-      setUsers(prev => prev.map(u => u.id === id ? { ...u, isActive: !isActive } : u));
-    } catch { alert("Gagal mengubah status"); }
-  };
-
-  const handleResetPassword = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setResetError("");
-  setResetSuccess("");
-  if (resetForm.newPassword !== resetForm.confirmPassword) {
-    setResetError("Password tidak cocok"); return;
-  }
-  if (resetForm.newPassword.length < 8) {
-    setResetError("Minimal 8 karakter"); return;
-  }
-  setResetting(true);
-  try {
-    await authApi.resetPassword(resetTarget!.id, resetForm.newPassword);
-    setResetSuccess(`Password ${resetTarget!.name} berhasil direset`);
-    setResetForm({ newPassword: "", confirmPassword: "" });
-    setTimeout(() => { setResetTarget(null); setResetSuccess(""); }, 2500);
-  } catch (err: any) {
-    setResetError(err.response?.data?.message || "Gagal mereset password");
-  } finally {
-    setResetting(false);
-  }
-};
-
-  const handleChangeRole = async (id: string, role: string) => {
-    try {
-      await fetch(`${API_URL}/users/${id}`, {
-        method: "PUT",
-        headers,
-        body: JSON.stringify({ role }),
-      });
-      setUsers(prev => prev.map(u => u.id === id ? { ...u, role } : u));
-    } catch { alert("Gagal mengubah role"); }
-  };
-
   const inputStyle = {
-    width: "100%", padding: "11px 14px",
-    border: "1px solid rgba(38,108,135,0.15)", borderRadius: "2px",
+    width: "100%", padding: "10px 13px",
+    border: "1px solid rgba(38,108,135,0.15)", borderRadius: "6px",
     fontSize: "14px", outline: "none", color: "#1C3038",
-    fontFamily: "inherit", background: "#fff",
+    fontFamily: "inherit", background: "#fff", boxSizing: "border-box" as const,
   };
 
-  const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
+  const rc = ROLE_CONFIG[form.role as UserRole];
 
   return (
-    <div style={{ padding: "40px", maxWidth: "900px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "32px" }}>
-        <div>
-          <p style={{ fontSize: "11px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "4px" }}>Admin</p>
-          <h1 style={{ fontFamily: "Georgia,serif", fontSize: "32px", fontWeight: 300, color: "#0F2830" }}>
-            Manajemen User
-          </h1>
-          <p style={{ fontSize: "14px", fontWeight: 300, color: "#7A9AA5", marginTop: "6px" }}>
-            Kelola akun admin dan editor Manara
-          </p>
-        </div>
-        {isSuperAdmin && (
-          <button
-            onClick={() => { setShowForm(!showForm); setError(""); }}
-            style={{ background: showForm ? "transparent" : "#266c87", color: showForm ? "#3A5560" : "#fff", border: `1px solid ${showForm ? "rgba(38,108,135,0.2)" : "#266c87"}`, borderRadius: "2px", padding: "11px 24px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", cursor: "pointer" }}>
-            {showForm ? "Batal" : "+ Tambah User"}
-          </button>
-        )}
-      </div>
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", backdropFilter: "blur(4px)" }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: "12px", width: "100%", maxWidth: "460px", overflow: "hidden", boxShadow: "0 24px 80px rgba(0,0,0,0.2)" }}>
 
-      {/* Form tambah user */}
-      {showForm && isSuperAdmin && (
-        <form onSubmit={handleCreate} style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.15)", borderRadius: "4px", padding: "28px", marginBottom: "24px" }}>
-          <p style={{ fontFamily: "Georgia,serif", fontSize: "20px", fontWeight: 300, color: "#0F2830", marginBottom: "20px" }}>
-            User Baru
-          </p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-            <div>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#7A9AA5", marginBottom: "7px" }}>
-                Nama Lengkap *
-              </label>
-              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                required placeholder="Nama lengkap" style={inputStyle} />
-            </div>
-            <div>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#7A9AA5", marginBottom: "7px" }}>
-                Email *
-              </label>
-              <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                required placeholder="user@manara.id" style={inputStyle} />
-            </div>
-            <div>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#7A9AA5", marginBottom: "7px" }}>
-                Password *
-              </label>
-              <input type="password" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                required placeholder="Min. 8 karakter" minLength={8} style={inputStyle} />
-            </div>
-            <div>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#7A9AA5", marginBottom: "7px" }}>
-                Role
-              </label>
-              <select value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}
-                style={{ ...inputStyle, appearance: "none" }}>
-                {ROLES.filter(r => r !== "SUPER_ADMIN").map(r => (
-                  <option key={r} value={r}>{ROLE_LABEL[r]}</option>
-                ))}
-              </select>
+        <div style={{ background: "linear-gradient(135deg,#0F2830,#266c87)", padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h2 style={{ fontFamily: "Georgia,serif", fontSize: "20px", fontWeight: 300, color: "#EEF4F6" }}>
+            Tambah Pengguna Baru
+          </h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.5)", fontSize: "22px", cursor: "pointer" }}>×</button>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "14px" }}>
+          <div>
+            <label style={{ display: "block", fontSize: "11px", fontWeight: 500, color: "#7A9AA5", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "5px" }}>
+              Nama Lengkap *
+            </label>
+            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              placeholder="Nama lengkap" required style={inputStyle} />
+          </div>
+
+          <div>
+            <label style={{ display: "block", fontSize: "11px", fontWeight: 500, color: "#7A9AA5", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "5px" }}>
+              Email *
+            </label>
+            <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+              placeholder="nama@manara.id" required style={inputStyle} />
+          </div>
+
+          <div>
+            <label style={{ display: "block", fontSize: "11px", fontWeight: 500, color: "#7A9AA5", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "5px" }}>
+              Password *
+            </label>
+            <input type="password" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+              placeholder="Min. 6 karakter" required minLength={6} style={inputStyle} />
+          </div>
+
+          <div>
+            <label style={{ display: "block", fontSize: "11px", fontWeight: 500, color: "#7A9AA5", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "8px" }}>
+              Role *
+            </label>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              {ROLES.map(r => (
+                <label key={r.key} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", border: `1px solid ${form.role === r.key ? r.color : "rgba(38,108,135,0.12)"}`, borderRadius: "6px", cursor: "pointer", background: form.role === r.key ? `${r.color}08` : "transparent", transition: "all 0.15s" }}>
+                  <input type="radio" checked={form.role === r.key} onChange={() => setForm(f => ({ ...f, role: r.key }))}
+                    style={{ accentColor: r.color }} />
+                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: r.color, flexShrink: 0 }} />
+                  <span style={{ fontSize: "13px", fontWeight: form.role === r.key ? 500 : 300, color: form.role === r.key ? r.color : "#3A5560" }}>
+                    {r.label}
+                  </span>
+                </label>
+              ))}
             </div>
           </div>
 
           {/* Role description */}
-          <div style={{ background: "rgba(38,108,135,0.04)", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "2px", padding: "16px", marginTop: "16px" }}>
-            <p style={{ fontSize: "12px", fontWeight: 500, color: "#7A9AA5", marginBottom: "8px" }}>Keterangan Role:</p>
-            {[
-              { role: "ADMIN", desc: "Akses penuh kecuali manage user" },
-              { role: "EDITOR", desc: "Buat & edit artikel, proyek, riset" },
-              { role: "CONTRIBUTOR", desc: "Buat konten saja (draft)" },
-            ].map(r => (
-              <div key={r.role} style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "4px" }}>
-                <span style={{ fontSize: "10px", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", padding: "2px 8px", borderRadius: "2px", background: ROLE_COLOR[r.role].bg, color: ROLE_COLOR[r.role].color }}>
-                  {ROLE_LABEL[r.role]}
-                </span>
-                <span style={{ fontSize: "12px", color: "#7A9AA5" }}>{r.desc}</span>
-              </div>
-            ))}
-          </div>
-
-          {error && (
-            <p style={{ fontSize: "13px", color: "#f87171", background: "rgba(248,113,113,0.08)", padding: "10px 14px", borderRadius: "2px", marginTop: "12px" }}>
-              {error}
-            </p>
+          {rc && (
+            <div style={{ background: `${rc.color}08`, border: `1px solid ${rc.color}20`, borderRadius: "6px", padding: "10px 14px" }}>
+              <p style={{ fontSize: "12px", color: "#7A9AA5" }}>
+                Dashboard: <strong style={{ color: rc.color }}>
+                  {ROLE_CONFIG[form.role as UserRole]?.dashboard || "/dashboard"}
+                </strong>
+              </p>
+            </div>
           )}
 
-          <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
-            <button type="submit" disabled={saving}
-              style={{ background: "#266c87", color: "#fff", border: "none", borderRadius: "2px", padding: "12px 28px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", cursor: "pointer", opacity: saving ? 0.6 : 1 }}>
-              {saving ? "Membuat..." : "Buat User"}
-            </button>
-            <button type="button" onClick={() => { setShowForm(false); setError(""); }}
-              style={{ background: "transparent", color: "#3A5560", border: "1px solid rgba(38,108,135,0.2)", borderRadius: "2px", padding: "12px 24px", fontSize: "13px", cursor: "pointer" }}>
+          {error && (
+            <div style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.2)", borderRadius: "6px", padding: "10px 14px" }}>
+              <p style={{ fontSize: "13px", color: "#f87171" }}>{error}</p>
+            </div>
+          )}
+
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button type="button" onClick={onClose}
+              style={{ flex: 1, padding: "12px", border: "1px solid rgba(38,108,135,0.15)", borderRadius: "6px", background: "transparent", color: "#7A9AA5", fontSize: "13px", cursor: "pointer" }}>
               Batal
+            </button>
+            <button type="submit" disabled={saving}
+              style={{ flex: 2, padding: "12px", background: saving ? "#B8CDD2" : "#266c87", color: "#fff", border: "none", borderRadius: "6px", fontSize: "13px", fontWeight: 500, cursor: saving ? "not-allowed" : "pointer" }}>
+              {saving ? "Membuat..." : "Buat Pengguna"}
             </button>
           </div>
         </form>
-      )}
-
-      {/* User list */}
-      {loading ? (
-        <p style={{ color: "#7A9AA5" }}>Memuat users...</p>
-      ) : (
-        <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", overflow: "hidden" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid rgba(38,108,135,0.08)" }}>
-                {["User", "Email", "Role", "Status", "Bergabung", ...(isSuperAdmin ? ["Aksi"] : [])].map(h => (
-                  <th key={h} style={{ textAlign: "left", padding: "13px 20px", fontSize: "10px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#B8CDD2" }}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(u => {
-                const isMe = u.id === currentUser?.id;
-                const rc = ROLE_COLOR[u.role] || ROLE_COLOR.CONTRIBUTOR;
-                return (
-                  <tr key={u.id} style={{ borderBottom: "1px solid rgba(38,108,135,0.05)" }}>
-                    <td style={{ padding: "14px 20px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                        <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: u.avatar ? `url(${u.avatar}) center/cover` : "rgba(38,108,135,0.12)", display: "flex", alignItems: "center", justifyContent: "center", color: "#266c87", fontSize: "14px", fontWeight: 500, flexShrink: 0 }}>
-                          {u.name.charAt(0)}
-                        </div>
-                        <div>
-                          <p style={{ fontSize: "14px", fontWeight: 500, color: "#0F2830" }}>
-                            {u.name} {isMe && <span style={{ fontSize: "10px", color: "#266c87", background: "rgba(38,108,135,0.08)", padding: "1px 6px", borderRadius: "2px" }}>Kamu</span>}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td style={{ padding: "14px 20px", fontSize: "13px", color: "#7A9AA5" }}>{u.email}</td>
-                    <td style={{ padding: "14px 20px" }}>
-                      {isSuperAdmin && !isMe ? (
-                        <select
-                          value={u.role}
-                          onChange={e => handleChangeRole(u.id, e.target.value)}
-                          style={{ fontSize: "11px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", padding: "4px 8px", borderRadius: "2px", background: rc.bg, color: rc.color, border: "none", cursor: "pointer", outline: "none" }}
-                        >
-                          {ROLES.map(r => (
-                            <option key={r} value={r}>{ROLE_LABEL[r]}</option>
-                          ))}
-                        </select>
-                      ) : (
-                        <span style={{ fontSize: "11px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", padding: "4px 10px", borderRadius: "2px", background: rc.bg, color: rc.color }}>
-                          {ROLE_LABEL[u.role]}
-                        </span>
-                      )}
-                    </td>
-                    <td style={{ padding: "14px 20px" }}>
-                      <span style={{ fontSize: "11px", fontWeight: 500, padding: "3px 10px", borderRadius: "2px", background: u.isActive ? "rgba(95,143,138,0.15)" : "rgba(248,113,113,0.1)", color: u.isActive ? "#3F6F6A" : "#f87171" }}>
-                        {u.isActive ? "Aktif" : "Nonaktif"}
-                      </span>
-                    </td>
-                    <td style={{ padding: "14px 20px", fontSize: "12px", color: "#B8CDD2" }}>
-                      {new Date(u.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
-                    </td>
-                    {isSuperAdmin && (
-                      <td style={{ padding: "14px 20px" }}>
-                        {!isMe && (
-                          <>
-                            <button
-                              onClick={() => handleToggleActive(u.id, u.isActive)}
-                              style={{ fontSize: "12px", color: u.isActive ? "#f87171" : "#3F6F6A", background: "none", border: "none", cursor: "pointer", fontWeight: 500, padding: 0 }}
-                            >
-                              {u.isActive ? "Nonaktifkan" : "Aktifkan"}
-                            </button>
-                            <button
-                              onClick={() => {
-                                setResetTarget(u);
-                                setResetForm({ newPassword: "", confirmPassword: "" });
-                                setResetError("");
-                                setResetSuccess("");
-                              }}
-                              style={{ fontSize: "12px", color: "#266c87", background: "none", border: "none", cursor: "pointer", padding: 0 }}
-                            >
-                              Reset Password
-                            </button>
-                          </>
-                        )}
-                      </td>
-                    )}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {!isSuperAdmin && (
-        <div style={{ marginTop: "16px", padding: "14px 18px", background: "rgba(38,108,135,0.04)", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px" }}>
-          <p style={{ fontSize: "12px", fontWeight: 300, color: "#7A9AA5" }}>
-            💡 Hanya Super Admin yang dapat menambah, mengubah role, atau menonaktifkan user.
-          </p>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

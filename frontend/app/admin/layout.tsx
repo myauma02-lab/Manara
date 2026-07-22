@@ -7,44 +7,41 @@ import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
 
 const NAV = [
-  { href: "/admin", label: "Dashboard", icon: "◎" },
+  { href: "/admin", label: "Dashboard", icon: "◎", exact: true },
   { href: "/admin/publikasi", label: "Publikasi", icon: "✦" },
   { href: "/admin/pusat-informasi", label: "Pusat Informasi", icon: "◈" },
   { href: "/admin/layanan", label: "Layanan", icon: "◇" },
   { href: "/admin/fellows", label: "Fellows", icon: "◉" },
-  { href: "/admin/recruitment", label: "Manapeople", icon: "+" },
-  { href: "/admin/project", label: "Proyek/", icon: "△" },
-  { href: "/admin/media", label: "Media Library", icon: "⊞" },
-  { href: "/admin/pesan", label: "Pesan Masuk", icon: "✉" },
+  { href: "/admin/founder", label: "Founder", icon: "△" },
+  { href: "/admin/recruitment", label: "Rekrutmen", icon: "□" },
+  { href: "/admin/pesan", label: "Pesan", icon: "○" },
   { href: "/admin/newsletter", label: "Newsletter", icon: "@" },
-  { href: "/admin/founder", label: "Founders", icon: "○" },
-  { href: "/admin/kategori", label: "Kategori", icon: "◇" },
-  { href: "/admin/users", label: "Users", icon: "⊕" },
   { href: "/admin/settings", label: "Pengaturan", icon: "⚙" },
-  { href: "/admin/profile", label: "Profil", icon: "👤" },
+  // Divider
+  { href: "/admin/users", label: "Kelola Pengguna", icon: "👥", divider: true },
+  // Link ke sub-dashboard
+  { href: "/dashboard/hr", label: "→ HR Dashboard", icon: "△" },
+  { href: "/dashboard/finance", label: "→ Finance Dashboard", icon: "◆" },
+  { href: "/dashboard/ops", label: "→ Ops Dashboard", icon: "□" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, token, logout, fetchMe } = useAuthStore();
+  const { user, token, logout } = useAuthStore();
   const [checked, setChecked] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isLoginPage = pathname === "/admin/login";
 
   useEffect(() => {
     if (isLoginPage) { setChecked(true); return; }
-    const { token, fetchMe } = useAuthStore.getState();
-    if (!token) { router.push("/admin/login"); return; }
-    fetchMe()
-    .then(() => {
-      const { token: currentToken } = useAuthStore.getState();
-      if (!currentToken) {
-        router.push("/admin/login");
-      }
-    })
-    .finally(() => setChecked(true));
-}, [isLoginPage]);
+    const { token } = useAuthStore.getState();
+    if (!token) {
+      router.push("/admin/login");
+      return;
+    }
+    setChecked(true);
+  }, [isLoginPage]);
 
   // Close sidebar on route change (mobile)
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
@@ -89,7 +86,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Nav */}
       <nav style={{ flex: 1, padding: "10px 8px", overflowY: "auto" }}>
-        {NAV.map(({ href, label, icon }) => {
+        {NAV.map(({ href, label, icon, divider }) => {
+          if (divider) {
+            return <div key={href} style={{ height: "1px", background: "rgba(38,108,135,0.1)", margin: "10px 0" }} />;
+          }
           const active = pathname === href || (href !== "/admin" && pathname.startsWith(href));
           return (
             <Link key={href} href={href} style={{

@@ -2,30 +2,21 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/authStore';
-import { authApi } from '@/lib/api';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { setToken, fetchMe } = useAuthStore();
+  useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const login = async (email: string, password: string) => {
-    const res = await authApi.login(email, password);
-      setToken(res.data.token); // pakai store, bukan localStorage langsung
-      await fetchMe(); // fetch user data
-      router.push("/admin");
     const response = await fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
     if (!response.ok) throw new Error('Login failed');
-    const data = await response.json();
-    if (!data?.token) throw new Error('Login failed');
-    setToken(data.token);
-    await fetchMe();
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

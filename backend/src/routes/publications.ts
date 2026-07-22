@@ -67,7 +67,7 @@ router.get("/", async (req, res) => {
         ],
         include: {
           author: {
-            select: { id: true, name: true, avatar: true, bio: true },
+            select: { id: true, name: true, avatar: true, },
           },
           category: {
             select: { id: true, name: true, slug: true, color: true },
@@ -136,7 +136,7 @@ router.get("/:slug", async (req, res) => {
     const pub = await prisma.publication.findUnique({
       where: { slug: req.params.slug },
       include: {
-        author: { select: { id: true, name: true, avatar: true, bio: true, } },
+        author: { select: { id: true, name: true, avatar: true, } },
         category: { select: { id: true, name: true, slug: true, color: true } },
         tags: { include: { tag: { select: { id: true, name: true, slug: true } } } },
       },

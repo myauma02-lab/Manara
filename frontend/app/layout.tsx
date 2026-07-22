@@ -21,6 +21,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://manarainstitute.id"),
   title: {
     default: "ManaraInstitute",
     template: "%s | ManaraInstitute",
@@ -59,7 +60,7 @@ export const metadata: Metadata = {
         url: "/og-default.png", // buat file ini (1200x630px)
         width: 1200,
         height: 630,
-        alt: "Manara — Kolektif Intelektual",
+        alt: "Manara : Kolektif Intelektual",
       },
     ],
   },
@@ -83,13 +84,15 @@ export const metadata: Metadata = {
   },
 
   icons: {
-    icon: [
-      { url: "public/favicon.png" },
-      { url: "public/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "public/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-    ],
-    apple: [{ url: "public/favicon/apple-icon.png", sizes: "180x180" }],
-  },
+  icon: [
+    { url: "/favicon.png" },
+    { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+  ],
+  apple: [
+    { url: "/apple-icon.png", sizes: "180x180" }
+  ],
+},
   
   // Manifest
   manifest: "/manifest.json",

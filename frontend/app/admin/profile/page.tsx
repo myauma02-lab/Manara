@@ -59,7 +59,7 @@ export default function AdminProfilePage() {
   };
 
   const ROLE_LABEL: Record<string, string> = {
-    SUPER_ADMIN: "Super Admin",
+    SUPERADMIN: "Super Admin",
     ADMIN: "Admin",
     EDITOR: "Editor",
     CONTRIBUTOR: "Kontributor",

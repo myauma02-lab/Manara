@@ -34,7 +34,7 @@ router.post(
 
       console.log("LOGIN STEP 3", !!user);
 
-      if (!user || !user.isActive) {
+      if (!user) {
         return res.status(401).json({
           message: "Email atau password salah",
         });
@@ -106,7 +106,6 @@ router.get("/me", authenticate, async (req: AuthRequest, res) => {
         email: true,
         role: true,
         avatar: true,
-        bio: true,
         createdAt: true,
       },
     });
@@ -131,7 +130,7 @@ router.get("/me", authenticate, async (req: AuthRequest, res) => {
 
 router.put("/profile", authenticate, async (req: AuthRequest, res) => {
   try {
-    const { name, bio } = req.body;
+    const { name } = req.body;
 
     const user = await prisma.user.update({
       where: {
@@ -139,7 +138,6 @@ router.put("/profile", authenticate, async (req: AuthRequest, res) => {
       },
       data: {
         name,
-        bio,
       },
       select: {
         id: true,
@@ -147,7 +145,6 @@ router.put("/profile", authenticate, async (req: AuthRequest, res) => {
         email: true,
         role: true,
         avatar: true,
-        bio: true,
       },
     });
 
@@ -221,7 +218,7 @@ router.post("/reset-password/:userId",
   async (req: any, res: any) => {
     try {
       // Hanya Super Admin & Admin yang boleh
-      if (!["SUPER_ADMIN", "ADMIN"].includes(req.user.role)) {
+      if (!["SUPERADMIN", "ADMIN"].includes(req.user.role)) {
         return res.status(403).json({ message: "Tidak memiliki akses" });
       }
 
@@ -235,7 +232,7 @@ router.post("/reset-password/:userId",
       }
 
       // Admin tidak bisa reset password Super Admin lain
-      if (targetUser.role === "SUPER_ADMIN" && req.user.role !== "SUPER_ADMIN") {
+      if (targetUser.role === "SUPERADMIN" && req.user.role !== "SUPERADMIN") {
         return res.status(403).json({ message: "Tidak dapat mereset password Super Admin" });
       }
 
@@ -301,7 +298,7 @@ router.post("/reset-password/:userId",
   validate,
   async (req: any, res: any) => {
     try {
-      if (!["SUPER_ADMIN", "ADMIN"].includes(req.user.role)) {
+      if (!["SUPERADMIN", "ADMIN"].includes(req.user.role)) {
         return res.status(403).json({ message: "Tidak memiliki akses" });
       }
 
@@ -314,7 +311,7 @@ router.post("/reset-password/:userId",
         return res.status(404).json({ message: "User tidak ditemukan" });
       }
 
-      if (targetUser.role === "SUPER_ADMIN" && req.user.role !== "SUPER_ADMIN") {
+      if (targetUser.role === "SUPERADMIN" && req.user.role !== "SUPERADMIN") {
         return res.status(403).json({ message: "Tidak dapat mereset password Super Admin" });
       }
 
