@@ -23,8 +23,8 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   metadataBase: new URL("https://manarainstitute.id"),
   title: {
-    default: "ManaraInstitute",
-    template: "%s | ManaraInstitute",
+    default: "Manara Institute",
+    template: "%s | Manara Institute",
   },
   
   description:
