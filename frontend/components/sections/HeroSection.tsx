@@ -32,7 +32,6 @@ export default function HeroSection() {
       flexDirection: "column",
       justifyContent: "flex-end",
       paddingBottom: "80px",
-      background: "#0F2830",
       position: "relative",
       overflow: "hidden",
       width: "100%",

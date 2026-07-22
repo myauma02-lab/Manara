@@ -12,7 +12,7 @@ import { HERO_BG_KEYS } from "@/lib/hero-settings";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Manara — Kolektif Intelektual & Media Kreatif",
+  title: "Manara : Kolektif Intelektual & Media Kreatif",
   description: "Manara adalah ruang intelektual dan media kreatif berbasis Jawa Timur. Publikasi, riset, dan gagasan yang tidak mengorbankan kedalaman.",
   openGraph: {
     title: "Manara",
