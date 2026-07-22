@@ -1,12 +1,13 @@
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://api.manarainstitute.id/api";
+
 console.log("API_URL =", API_URL);
 
 export const api = axios.create({
-  baseURL:
-    process.env.NEXT_PUBLIC_API_URL ||
-    "https://api.manarainstitute.id/api",
+  baseURL: API_URL,
 });
 
 api.interceptors.request.use(
