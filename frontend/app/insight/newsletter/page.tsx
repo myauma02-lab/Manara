@@ -3,6 +3,8 @@ import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import NewsletterForm from "@/components/shared/NewsletterForm";
 import type { Metadata } from "next";
+import HeroBackground from "@/components/shared/HeroBackground";
+import { HERO_BG_KEYS } from "@/lib/hero-settings";
 
 export const metadata: Metadata = {
   title: "Newsletter | Insight Manara",
@@ -13,9 +15,16 @@ export default function NewsletterPage() {
   return (
     <main>
       <Navbar />
-      <div style={{ paddingTop: "120px", paddingBottom: "120px", background: "#F4F7F7", minHeight: "100vh" }}>
+      <div style={{ paddingTop: "120px", paddingBottom: "120px", background: "none", minHeight: "100vh" }}>
         <div style={{ maxWidth: "680px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
-
+        <HeroBackground
+                          settingKey={HERO_BG_KEYS.layanan}
+                          fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+                          gradientDirection="to-right"
+                          gradientColor="#0F2830"
+                          gradientOpacity={0.90}
+                          style={{ paddingTop: "140px", minHeight: "320px" }}
+                  >
           <Link href="/insight" style={{ display: "inline-block", fontSize: "12px", color: "#B8CDD2", textDecoration: "none", marginBottom: "40px" }}>
             ← Insight
           </Link>
@@ -61,6 +70,7 @@ export default function NewsletterPage() {
             <span style={{ color: "#266c87" }}>subscriber</span>
             {" "} yang bergabung.
           </p>
+          </HeroBackground>
         </div>
       </div>
       <Footer />

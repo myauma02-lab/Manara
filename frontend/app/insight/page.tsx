@@ -57,7 +57,7 @@ export default function InsightPage() {
               Manara hadir di berbagai format. Dipilih agar gagasan bisa menjangkau siapa saja, di manapun mereka berada.
             </p>
           </div>
-          </HeroBackground>
+          
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "20px" }}>
             {CHANNELS.map(ch => (
               <Link key={ch.href} href={ch.href} style={{ textDecoration: "none" }}>
@@ -81,6 +81,7 @@ export default function InsightPage() {
               </Link>
             ))}
           </div>
+        </HeroBackground>
         </div>
       </div>
       <Footer />
