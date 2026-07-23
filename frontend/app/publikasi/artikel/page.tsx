@@ -79,7 +79,7 @@ export default function ArtikelPage() {
                   Artikel
                 </p>
                 <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(28px,4vw,48px)", fontWeight: 300, color: "#0F2830", lineHeight: 1.1 }}>
-                  Gagasan dalam <em style={{ color: "#266c87" }}>tulisan.</em>
+                  Gagasan dalam <em style={{ color: "white" }}>tulisan.</em>
                 </h1>
               </div>
               {total > 0 && (
