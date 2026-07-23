@@ -9,7 +9,7 @@ const ACCENT = "#8A8F5E";
 const NAV = [
   { href: "/dashboard/ops", label: "Overview", icon: "◎", exact: true },
   { href: "/dashboard/ops/layanan", label: "Kelola Layanan", icon: "◇" },
-  { href: "/dashboard/ops/proyek", label: "Kelola Proyek", icon: "□" },
+  { href: "/dashboard/ops/project", label: "Kelola Proyek", icon: "□" },
   { href: "/dashboard/ops/harga", label: "Skema Harga", icon: "◆" },
   { href: "/dashboard/ops/pusat-informasi", label: "Pusat Informasi", icon: "◈" },
 ];
