@@ -28,7 +28,7 @@ export default function TentangManaraPage() {
       <Navbar />
 
       {/* Hero */}
-      <section style={{ paddingTop: "140px", paddingBottom: "100px", background: "#0F2830", position: "relative", overflow: "hidden" }}>
+      <section style={{ paddingTop: "120px", paddingBottom: "100px", background: "none", position: "relative", overflow: "hidden" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
           <div style={{ paddingBottom: "48px" }}>
 
