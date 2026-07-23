@@ -16,7 +16,7 @@ export default function NewsletterPage() {
     <main>
       <Navbar />
       <div style={{ paddingTop: "120px", paddingBottom: "120px", background: "none", minHeight: "100vh" }}>
-        <div style={{ maxWidth: "680px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
         <HeroBackground
                           settingKey={HERO_BG_KEYS.layanan}
                           fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"

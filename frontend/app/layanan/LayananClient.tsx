@@ -64,7 +64,7 @@ export default function LayananClient() {
   };
 
   return (
-    <main style={{ background: "#F4F7F7" }}>
+    <main style={{ background: "none" }}>
       <Navbar />
       {/* ── HERO PER LAYANAN ── */}
       <HeroBackground
