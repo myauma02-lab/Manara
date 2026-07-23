@@ -84,16 +84,16 @@ export default function LayananClient() {
           style={{ minHeight: "320px" }}
         >
           
-          <div style={{ width: "100%", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
+          <div style={{ width: "100%", margin: "0 auto", padding: "clamp(64px,10vw,88px) clamp(20px,5vw,40px) 0" }} className="hero-content">
 
             <div style={{ paddingBottom: "48px" }}>
               <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: current.accentColor, marginBottom: "14px", opacity: 0.9 }}>
                 Layanan Manara
               </p>
-              <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(32px,5vw,60px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.1, marginBottom: "8px" }}>
+              <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(32px,5vw,60px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.1, marginBottom: "8px", wordBreak: "break-word" }}>
                 {current.heroTitle}
               </h1>
-              <h2 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(26px,4vw,50px)", fontWeight: 300, fontStyle: "italic", color: current.accentColor, marginBottom: "20px" }}>
+              <h2 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(26px,4vw,50px)", fontWeight: 300, fontStyle: "italic", color: current.accentColor, marginBottom: "20px", wordBreak: "break-word" }}>
                 {current.heroSubtitle}
               </h2>
               <p style={{ fontSize: "clamp(14px,2vw,17px)", fontWeight: 300, color: "rgba(134,175,170,0.6)", lineHeight: 1.85, maxWidth: "560px", marginBottom: "28px" }}>
@@ -121,6 +121,8 @@ export default function LayananClient() {
           overflowX: "auto",
           scrollbarWidth: "none",
           borderTop: "1px solid rgba(38,108,135,0.15)",
+          position: "relative",
+          zIndex: 3,
         }}>
           {ALL_LAYANAN.map(l => (
             <button
@@ -138,7 +140,7 @@ export default function LayananClient() {
                 borderBottom: `3px solid ${activeTab === l.id ? l.accentColor : "transparent"}`,
                 transition: "all 0.2s",
                 whiteSpace: "nowrap",
-                position: "relative",
+                flexShrink: 0,
               }}
             >
               {l.title}
@@ -174,10 +176,10 @@ export default function LayananClient() {
                   {cat.items && (
                     <div
                       onClick={() => setOpenAccordion(openAccordion === cat.id ? null : cat.id)}
-                      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", background: current.accentColor, borderRadius: openAccordion === cat.id ? "4px 4px 0 0" : "4px", cursor: "pointer" }}
+                      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", rowGap: "8px", padding: "18px 24px", background: current.accentColor, borderRadius: openAccordion === cat.id ? "4px 4px 0 0" : "4px", cursor: "pointer" }}
                     >
                       <span style={{ fontSize: "15px", fontWeight: 500, color: "#fff" }}>{cat.title}</span>
-                      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
                         {cat.pricing?.[0] && (
                           <span style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)" }}>
                             Mulai dari{" "}
@@ -194,8 +196,8 @@ export default function LayananClient() {
                   {cat.items && openAccordion === cat.id && (
                     <div style={{ border: `1px solid ${current.accentColor}30`, borderTop: "none", borderRadius: "0 0 4px 4px", overflow: "hidden" }}>
                       {cat.items.map((item, i) => (
-                        <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 24px", borderBottom: i < cat.items!.length - 1 ? "1px solid rgba(38,108,135,0.07)" : "none", background: "#fff" }}>
-                          <div>
+                        <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", rowGap: "8px", padding: "14px 24px", borderBottom: i < cat.items!.length - 1 ? "1px solid rgba(38,108,135,0.07)" : "none", background: "#fff" }}>
+                          <div style={{ minWidth: "0", flex: "1 1 220px" }}>
                             <p style={{ fontSize: "14px", fontWeight: 300, color: "#266c87" }}>{item.name}</p>
                             {item.description && (
                               <p style={{ fontSize: "12px", color: "#B8CDD2", marginTop: "2px" }}>{item.description}</p>
@@ -213,11 +215,11 @@ export default function LayananClient() {
                       {cat.pricing && cat.pricing.length > 0 && (
                         <div style={{ padding: "20px 24px", background: "rgba(38,108,135,0.03)", borderTop: "1px solid rgba(38,108,135,0.07)" }}>
                           <p style={{ fontSize: "12px", color: "#B8CDD2", marginBottom: "12px" }}>Paket Harga:</p>
-                          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                          <div style={{ display: "flex", gap: "12px", rowGap: "28px", flexWrap: "wrap" }}>
                             {cat.pricing.map(p => (
-                              <div key={p.id} style={{ flex: 1, minWidth: "200px", background: "#fff", border: `1px solid ${p.isBestSeller ? current.accentColor : "rgba(38,108,135,0.12)"}`, borderRadius: "4px", padding: "16px", position: "relative" }}>
+                              <div key={p.id} style={{ flex: 1, minWidth: "200px", background: "#fff", border: `1px solid ${p.isBestSeller ? current.accentColor : "rgba(38,108,135,0.12)"}`, borderRadius: "4px", padding: "16px", marginTop: p.isBestSeller ? "14px" : "0", position: "relative" }}>
                                 {p.isBestSeller && (
-                                  <span style={{ position: "absolute", top: "-10px", left: "50%", transform: "translateX(-50%)", background: current.accentColor, color: "#fff", fontSize: "10px", fontWeight: 600, padding: "2px 12px", borderRadius: "2px", letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                                  <span style={{ position: "absolute", top: "-10px", left: "50%", transform: "translateX(-50%)", background: current.accentColor, color: "#fff", fontSize: "10px", fontWeight: 600, padding: "2px 12px", borderRadius: "2px", letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", zIndex: 2 }}>
                                     Best Seller
                                   </span>
                                 )}
@@ -250,7 +252,7 @@ export default function LayananClient() {
 
                   {/* Pricing cards langsung (tanpa accordion — untuk legal opinion & review) */}
                   {!cat.items && cat.pricing && (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: "16px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: "32px 16px" }}>
                       {cat.pricing.map(p => (
                         <PricingCard key={p.id} pricing={p} accentColor={current.accentColor} onWhatsApp={openWhatsApp} />
                       ))}
@@ -290,7 +292,7 @@ export default function LayananClient() {
           <section style={{ padding: "80px clamp(20px,5vw,40px)", background: "#0F2830" }}>
             <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "64px", alignItems: "start" }} className="two-col-grid">
-                <div style={{ position: "sticky", top: "100px" }}>
+                <div className="proses-sticky-col">
                   <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.5)", marginBottom: "14px" }}>Proses</p>
                   <h2 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(24px,3.5vw,36px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.25 }}>
                     Bagaimana cara kerjanya?
@@ -303,10 +305,10 @@ export default function LayananClient() {
                         {step.num}
                       </div>
                       <div>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", rowGap: "6px", marginBottom: "8px" }}>
                           <h3 style={{ fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 400, color: "#EEF4F6" }}>{step.title}</h3>
                           {step.duration && (
-                            <span style={{ fontSize: "11px", color: "rgba(134,175,170,0.35)", border: "1px solid rgba(38,108,135,0.15)", padding: "3px 10px", borderRadius: "2px" }}>
+                            <span style={{ fontSize: "11px", color: "rgba(134,175,170,0.35)", border: "1px solid rgba(38,108,135,0.15)", padding: "3px 10px", borderRadius: "2px", flexShrink: 0 }}>
                               {step.duration}
                             </span>
                           )}
@@ -335,7 +337,7 @@ export default function LayananClient() {
                     <div style={{ width: "36px", height: "36px", borderRadius: "50%", border: `1px solid ${current.accentColor}30`, display: "flex", alignItems: "center", justifyContent: "center", color: current.accentColor, fontSize: "15px", flexShrink: 0 }}>
                       {d.icon}
                     </div>
-                    <div>
+                    <div style={{ minWidth: "0" }}>
                       <p style={{ fontSize: "14px", fontWeight: 500, color: "#0F2830", marginBottom: "4px" }}>{d.title}</p>
                       <p style={{ fontSize: "13px", fontWeight: 300, color: "#7A9AA5", lineHeight: 1.7 }}>{d.desc}</p>
                     </div>
@@ -381,7 +383,7 @@ export default function LayananClient() {
                       <span style={{ fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300, color: "rgba(38,108,135,0.4)", flexShrink: 0 }}>
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <div>
+                      <div style={{ minWidth: "0" }}>
                         <p style={{ fontSize: "15px", fontWeight: 500, color: "#EEF4F6", marginBottom: "4px" }}>{item.title}</p>
                         <p style={{ fontSize: "13px", fontWeight: 300, color: "rgba(134,175,170,0.45)", lineHeight: 1.7 }}>{item.desc}</p>
                       </div>
@@ -431,8 +433,24 @@ export default function LayananClient() {
       <Footer />
       <style>{`
         @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+
+        /* Kolom judul "Proses" hanya sticky di layar besar.
+           Di mobile grid berubah jadi 1 kolom, jadi sticky harus dimatikan
+           supaya tidak menimpa konten proses di bawahnya. */
+        .proses-sticky-col {
+          position: sticky;
+          top: 100px;
+        }
+
         @media (max-width: 768px) {
           .two-col-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .proses-sticky-col {
+            position: static !important;
+            top: auto !important;
+          }
+          .hero-content {
+            padding-top: clamp(48px, 12vw, 64px) !important;
+          }
         }
       `}</style>
     </main></>
@@ -454,13 +472,14 @@ function PricingCard({ pricing, accentColor, onWhatsApp }: {
       border: `2px solid ${pricing.isBestSeller ? accentColor : "rgba(38,108,135,0.12)"}`,
       borderRadius: "8px",
       padding: "28px",
+      marginTop: pricing.isBestSeller ? "14px" : "0",
       position: "relative",
       display: "flex",
       flexDirection: "column",
       boxShadow: pricing.isBestSeller ? `0 8px 32px ${accentColor}20` : "none",
     }}>
       {pricing.isBestSeller && (
-        <div style={{ position: "absolute", top: "-14px", left: "50%", transform: "translateX(-50%)", background: accentColor, color: "#fff", fontSize: "11px", fontWeight: 600, padding: "4px 16px", borderRadius: "2px", letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+        <div style={{ position: "absolute", top: "-14px", left: "50%", transform: "translateX(-50%)", background: accentColor, color: "#fff", fontSize: "11px", fontWeight: 600, padding: "4px 16px", borderRadius: "2px", letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", zIndex: 2 }}>
           Best Seller
         </div>
       )}
