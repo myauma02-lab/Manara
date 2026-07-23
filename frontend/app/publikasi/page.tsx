@@ -70,7 +70,7 @@ export default function PublikasiPage() {
         gradientDirection="to-right"
         gradientColor="#0F2830"
         gradientOpacity={0.88}
-        style={{ minHeight: "80vh", display: "flex", alignItems: "flex-end" }}
+        style={{ minHeight: "80vh", display: "flex", alignItems: "flex-end", paddingTop: "90px", }}
       >
         {/* Radial accent */}
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
