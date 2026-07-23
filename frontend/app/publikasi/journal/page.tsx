@@ -44,8 +44,8 @@ export default function JournalPage() {
   return (
     <main>
       <Navbar />
-      <div style={{ paddingTop: "100px", paddingBottom: "120px", background: "#F4F7F7", minHeight: "100vh" }}>
-        <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
+          <div style={{ paddingBottom: "48px" }}>
 
           {/* Breadcrumb */}
           <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "32px", fontSize: "12px", color: "#B8CDD2" }}>

@@ -73,17 +73,8 @@ export default function PublikasiPage() {
         style={{ minHeight: "80vh", display: "flex", alignItems: "flex-end" }}
       >
         {/* Radial accent */}
-        <div style={{
-          position: "absolute", inset: 0,
-          background: "radial-gradient(ellipse 60% 60% at 80% 30%, rgba(38,108,135,0.18) 0%, transparent 60%)",
-          pointerEvents: "none",
-        }} />
-
-        <div style={{
-          maxWidth: "1100px", margin: "0 auto",
-          padding: "160px clamp(20px,5vw,48px) 80px",
-          position: "relative", zIndex: 2, width: "100%",
-        }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
+          <div style={{ paddingBottom: "48px" }}>
           {/* Eyebrow */}
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
             <div style={{ width: "28px", height: "1px", background: "rgba(134,175,170,0.4)" }} />
@@ -134,6 +125,7 @@ export default function PublikasiPage() {
             </div>
           )}
         </div>
+      </div>
       </HeroBackground>
 
       {/* ── 3 KARTU TIPE PUBLIKASI ── */}
