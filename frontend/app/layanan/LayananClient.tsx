@@ -67,18 +67,10 @@ export default function LayananClient() {
     <main style={{ background: "none" }}>
       <Navbar />
       {/* ── HERO PER LAYANAN ── */}
-      <HeroBackground
-        settingKey={HERO_BG_KEYS.layanan}
-        fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
-        gradientDirection="to-right"
-        gradientColor="#0F2830"
-        gradientOpacity={0.90}
-        style={{ minHeight: "320px" }}
-          >
       <section style={{
         paddingTop: "0",
         paddingBottom: "0",
-        background: "transparent",
+        background: "none",
         position: "relative",
         overflow: "hidden",
         minHeight: "320px",
@@ -86,6 +78,15 @@ export default function LayananClient() {
       
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
           <div style={{ paddingBottom: "48px" }}>
+
+            <HeroBackground
+            settingKey={HERO_BG_KEYS.layanan}
+           fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+           gradientDirection="to-right"
+           gradientColor="#0F2830"
+           gradientOpacity={0.90}
+            style={{ minHeight: "320px" }}
+          >   
             <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: current.accentColor, marginBottom: "14px", opacity: 0.9 }}>
               Layanan Manara
             </p>
@@ -109,6 +110,7 @@ export default function LayananClient() {
                 Konsultasi Gratis via WhatsApp
               </button>
             )}
+            </HeroBackground>
           </div>
 
           {/* ── TAB NAVIGATOR ── */}
@@ -149,7 +151,7 @@ export default function LayananClient() {
           </div>
         </div>
       </section>
-</HeroBackground>
+            
       <div ref={contentRef} />
 
       {/* ── COMING SOON STATE ── */}
