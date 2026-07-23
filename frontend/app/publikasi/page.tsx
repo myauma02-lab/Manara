@@ -63,7 +63,7 @@ export default function PublikasiPage() {
     <main>
       <Navbar />
 
-      <div style={{ paddingTop: "120px", paddingBottom: "120px", background: "none", minHeight: "100vh" }}>
+      <div style={{ paddingTop: "0px", paddingBottom: "120px", background: "none", minHeight: "100vh" }}>
         <HeroBackground
           settingKey={HERO_BG_KEYS.publikasi}
           fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
