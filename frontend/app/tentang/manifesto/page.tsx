@@ -32,28 +32,29 @@ export default function ManifestoPage() {
 
       {/* Hero */}
       <section style={{ minHeight: "65vh", display: "flex", flexDirection: "column", justifyContent: "flex-end", paddingBottom: "72px", paddingTop: "120px", background: "#0F2830", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 70% at 50% 50%, rgba(38,108,135,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", top: 0, right: "200px", width: "1px", height: "100%", background: "linear-gradient(to bottom, transparent, rgba(38,108,135,0.15) 40%, rgba(38,108,135,0.04) 100%)" }} />
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
+          <div style={{ paddingBottom: "48px" }}>
+            <div style={{ maxWidth: "860px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", width: "100%", position: "relative", zIndex: 2 }}>
+              <div style={{ display: "flex", gap: "8px", fontSize: "12px", color: "rgba(134,175,170,0.35)", marginBottom: "32px", flexWrap: "wrap" }}>
+                <Link href="/tentang/manara" style={{ color: "rgba(134,175,170,0.35)", textDecoration: "none" }}>Tentang Kami</Link>
+                <span>→</span>
+                <span style={{ color: "rgba(134,175,170,0.6)" }}>Manifesto</span>
+              </div>
 
-        <div style={{ maxWidth: "860px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", width: "100%", position: "relative", zIndex: 2 }}>
-          <div style={{ display: "flex", gap: "8px", fontSize: "12px", color: "rgba(134,175,170,0.35)", marginBottom: "32px", flexWrap: "wrap" }}>
-            <Link href="/tentang/manara" style={{ color: "rgba(134,175,170,0.35)", textDecoration: "none" }}>Tentang Kami</Link>
-            <span>→</span>
-            <span style={{ color: "rgba(134,175,170,0.6)" }}>Manifesto</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "36px" }}>
+                <div style={{ width: "40px", height: "1px", background: "rgba(134,175,170,0.3)" }} />
+                <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.5)", margin: 0 }}>
+                  Manifesto Manara
+                </p>
+              </div>
+              <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(40px,7vw,88px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.0, marginBottom: "36px", letterSpacing: "-0.01em" }}>
+                Kami tidak<br />mengangkat suara<br />untuk didengar.
+              </h1>
+              <p style={{ fontFamily: "Georgia,serif", fontSize: "clamp(18px,2.5vw,26px)", fontWeight: 300, fontStyle: "italic", color: "rgba(134,175,170,0.5)", lineHeight: 1.5, maxWidth: "580px" }}>
+                Kami mendalamkannya agar orang-orang yang tepat, pada waktu yang tepat, mendengarkan hal yang tepat.
+              </p>
+            </div>
           </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "36px" }}>
-            <div style={{ width: "40px", height: "1px", background: "rgba(134,175,170,0.3)" }} />
-            <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.5)", margin: 0 }}>
-              Manifesto Manara
-            </p>
-          </div>
-          <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(40px,7vw,88px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.0, marginBottom: "36px", letterSpacing: "-0.01em" }}>
-            Kami tidak<br />mengangkat suara<br />untuk didengar.
-          </h1>
-          <p style={{ fontFamily: "Georgia,serif", fontSize: "clamp(18px,2.5vw,26px)", fontWeight: 300, fontStyle: "italic", color: "rgba(134,175,170,0.5)", lineHeight: 1.5, maxWidth: "580px" }}>
-            Kami mendalamkannya agar orang-orang yang tepat, pada waktu yang tepat, mendengarkan hal yang tepat.
-          </p>
         </div>
       </section>
 

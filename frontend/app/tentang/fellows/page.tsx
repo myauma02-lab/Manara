@@ -42,26 +42,27 @@ export default function FellowsPage() {
         position: "relative",
         overflow: "hidden",
       }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 60% at 20% 60%, rgba(38,108,135,0.18) 0%, transparent 60%)", pointerEvents: "none" }} />
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
+          <div style={{ paddingBottom: "48px" }}>
 
-          {/* Breadcrumb */}
-          <div style={{ display: "flex", gap: "8px", fontSize: "12px", color: "rgba(134,175,170,0.35)", marginBottom: "28px", flexWrap: "wrap" }}>
-            <Link href="/tentang/manara" style={{ color: "rgba(134,175,170,0.35)", textDecoration: "none" }}>Tentang Kami</Link>
-            <span>→</span>
-            <span style={{ color: "rgba(134,175,170,0.6)" }}>Manara Fellows</span>
+            {/* Breadcrumb */}
+            <div style={{ display: "flex", gap: "8px", fontSize: "12px", color: "rgba(134,175,170,0.35)", marginBottom: "28px", flexWrap: "wrap" }}>
+              <Link href="/tentang/manara" style={{ color: "rgba(134,175,170,0.35)", textDecoration: "none" }}>Tentang Kami</Link>
+              <span>→</span>
+              <span style={{ color: "rgba(134,175,170,0.6)" }}>Manara Fellows</span>
+            </div>
+
+            <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.55)", marginBottom: "16px" }}>
+              Manara Fellows
+            </p>
+            <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(36px,6vw,68px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.08, marginBottom: "20px", letterSpacing: "-0.01em" }}>
+              Tenaga ahli dan<br />
+              <em style={{ color: "#86AFAA", fontStyle: "italic" }}>peneliti Manara.</em>
+            </h1>
+            <p style={{ fontSize: "17px", fontWeight: 300, color: "rgba(134,175,170,0.5)", lineHeight: 1.85, maxWidth: "520px" }}>
+              Manara Fellows adalah jaringan akademisi, peneliti, dan praktisi yang mendukung kerja intelektual dan riset Manara dari berbagai disiplin ilmu.
+            </p>
           </div>
-
-          <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.55)", marginBottom: "16px" }}>
-            Manara Fellows
-          </p>
-          <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(36px,6vw,68px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.08, marginBottom: "20px", letterSpacing: "-0.01em" }}>
-            Tenaga ahli dan<br />
-            <em style={{ color: "#86AFAA", fontStyle: "italic" }}>peneliti Manara.</em>
-          </h1>
-          <p style={{ fontSize: "17px", fontWeight: 300, color: "rgba(134,175,170,0.5)", lineHeight: 1.85, maxWidth: "520px" }}>
-            Manara Fellows adalah jaringan akademisi, peneliti, dan praktisi yang mendukung kerja intelektual dan riset Manara dari berbagai disiplin ilmu.
-          </p>
         </div>
       </section>
 

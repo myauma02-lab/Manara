@@ -31,8 +31,8 @@ export default function TentangPage() {
 
       {/* Hero */}
       <HeroBackground settingKey={HERO_BG_KEYS.tentang} fallbackGradient="linear-gradient(135deg, #0F2830, #1a4f63)" gradientDirection="to-left" gradientColor="#0F2830" gradientOpacity={0.90} style={{ paddingTop: "140px", paddingBottom: "80px" }} >
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 60% at 20% 80%, rgba(38,108,135,0.2) 0%, transparent 60%)", pointerEvents: "none" }} />
-        <div style={{ maxWidth: "860px", margin: "0 auto", padding: "0 40px", position: "relative", zIndex: 2 }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
+          <div style={{ paddingBottom: "48px" }}>
           <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.7)", marginBottom: "24px" }}>
             Tentang Manara
           </p>
@@ -44,6 +44,7 @@ export default function TentangPage() {
             Manara adalah kolektif intelektual dan inisiatif media kreatif yang lahir dari keyakinan bahwa diskursus yang bermakna dimulai dari mereka yang berani berpikir mendalam.
           </p>
         </div>
+      </div>
       </HeroBackground>
 
       {/* Doctrine banner */}

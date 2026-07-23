@@ -30,23 +30,24 @@ export default function FounderListPage() {
 
       {/* Hero */}
       <section style={{ paddingTop: "140px", paddingBottom: "80px", background: "#0F2830", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 60% at 30% 70%, rgba(38,108,135,0.15) 0%, transparent 60%)", pointerEvents: "none" }} />
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
-          <div style={{ display: "flex", gap: "8px", fontSize: "12px", color: "rgba(134,175,170,0.35)", marginBottom: "28px", flexWrap: "wrap" }}>
-            <Link href="/tentang/manara" style={{ color: "rgba(134,175,170,0.35)", textDecoration: "none" }}>Tentang Kami</Link>
-            <span>→</span>
-            <span style={{ color: "rgba(134,175,170,0.6)" }}>Founder</span>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
+          <div style={{ paddingBottom: "48px" }}>
+            <div style={{ display: "flex", gap: "8px", fontSize: "12px", color: "rgba(134,175,170,0.35)", marginBottom: "28px", flexWrap: "wrap" }}>
+              <Link href="/tentang/manara" style={{ color: "rgba(134,175,170,0.35)", textDecoration: "none" }}>Tentang Kami</Link>
+              <span>→</span>
+              <span style={{ color: "rgba(134,175,170,0.6)" }}>Founder</span>
+            </div>
+            <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.55)", marginBottom: "16px" }}>
+              Tim Pendiri
+            </p>
+            <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(36px,6vw,68px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.1, marginBottom: "20px" }}>
+              Pikiran-pikiran<br />
+              <em style={{ color: "#86AFAA", fontStyle: "italic" }}>di balik Manara.</em>
+            </h1>
+            <p style={{ fontSize: "17px", fontWeight: 300, color: "rgba(134,175,170,0.5)", lineHeight: 1.85, maxWidth: "520px" }}>
+              Manara lahir dari keyakinan bersama lima individu: bahwa anak muda Indonesia layak mendapatkan platform yang setara dengan kedalaman pikiran mereka.
+            </p>
           </div>
-          <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.55)", marginBottom: "16px" }}>
-            Tim Pendiri
-          </p>
-          <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(36px,6vw,68px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.1, marginBottom: "20px" }}>
-            Pikiran-pikiran<br />
-            <em style={{ color: "#86AFAA", fontStyle: "italic" }}>di balik Manara.</em>
-          </h1>
-          <p style={{ fontSize: "17px", fontWeight: 300, color: "rgba(134,175,170,0.5)", lineHeight: 1.85, maxWidth: "520px" }}>
-            Manara lahir dari keyakinan bersama lima individu: bahwa anak muda Indonesia layak mendapatkan platform yang setara dengan kedalaman pikiran mereka.
-          </p>
         </div>
       </section>
 
