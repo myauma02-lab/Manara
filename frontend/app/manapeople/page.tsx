@@ -137,10 +137,10 @@ function WaitlistMode() {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "120px 20px 80px" }}>
         <div style={{ maxWidth: "520px", width: "100%", textAlign: "center" }}>
-          <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "linear-gradient(135deg,#0F2830,#266c87)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px", fontSize: "36px" }}>
+          <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "none", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px", fontSize: "36px" }}>
             ✓
           </div>
-          <h2 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(28px,4vw,40px)", fontWeight: 300, color: "#0F2830", marginBottom: "14px" }}>
+          <h2 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(28px,4vw,40px)", fontWeight: 300, color: "none", marginBottom: "14px" }}>
             Kamu sudah masuk daftar!
           </h2>
           <p style={{ fontSize: "17px", fontWeight: 300, color: "#7A9AA5", lineHeight: 1.8, marginBottom: "32px" }}>
