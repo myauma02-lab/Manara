@@ -101,7 +101,7 @@ export default function HeroBackground({
           position: "absolute",
           inset: 0,
           background: bgUrl
-            ? `url(${bgUrl}) center/cover no-repeat`
+          ? `url(${bgUrl}) center top / cover no-repeat`
             : fallbackGradient,
           transition: "opacity 0.6s ease",
           opacity: loaded ? 1 : 0,
