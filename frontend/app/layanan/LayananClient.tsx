@@ -83,7 +83,8 @@ export default function LayananClient() {
           gradientOpacity={0.90}
           style={{ minHeight: "320px" }}
         >
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
+          
+          <div style={{ width: "100%", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
 
             <div style={{ paddingBottom: "48px" }}>
               <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: current.accentColor, marginBottom: "14px", opacity: 0.9 }}>
