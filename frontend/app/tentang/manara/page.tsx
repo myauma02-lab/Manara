@@ -30,22 +30,32 @@ export default function TentangPage() {
       <Navbar />
 
       {/* Hero */}
-      <HeroBackground settingKey={HERO_BG_KEYS.tentang} fallbackGradient="linear-gradient(135deg, #0F2830, #1a4f63)" gradientDirection="to-left" gradientColor="#0F2830" gradientOpacity={0.90} style={{ paddingTop: "140px", paddingBottom: "80px" }} >
+
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
           <div style={{ paddingBottom: "48px" }}>
-          <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.7)", marginBottom: "24px" }}>
-            Tentang Manara
-          </p>
-          <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(40px,6vw,80px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.1, marginBottom: "32px", letterSpacing: "-0.02em" }}>
-            Lebih dari organisasi —<br />
-            <em style={{ color: "#86AFAA", fontStyle: "italic" }}>sebuah gerakan pemikiran.</em>
-          </h1>
-          <p style={{ fontSize: "18px", fontWeight: 300, color: "rgba(134,175,170,0.6)", lineHeight: 1.85, maxWidth: "580px" }}>
-            Manara adalah kolektif intelektual dan inisiatif media kreatif yang lahir dari keyakinan bahwa diskursus yang bermakna dimulai dari mereka yang berani berpikir mendalam.
-          </p>
+
+            <HeroBackground
+            settingKey={HERO_BG_KEYS.tentang}
+            fallbackGradient="linear-gradient(135deg, #0F2830, #1a4f63)"
+            gradientDirection="to-left"
+            gradientColor="#0F2830"
+            gradientOpacity={0.90}
+            style={{ paddingTop: "140px", paddingBottom: "80px" }}
+            >
+            <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.7)", marginBottom: "24px" }}>
+              Tentang Manara
+            </p>
+            <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(40px,6vw,80px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.1, marginBottom: "32px", letterSpacing: "-0.02em" }}>
+              Lebih dari organisasi —<br />
+              <em style={{ color: "#86AFAA", fontStyle: "italic" }}>sebuah gerakan pemikiran.</em>
+            </h1>
+            <p style={{ fontSize: "18px", fontWeight: 300, color: "rgba(134,175,170,0.6)", lineHeight: 1.85, maxWidth: "580px" }}>
+              Manara adalah kolektif intelektual dan inisiatif media kreatif yang lahir dari keyakinan bahwa diskursus yang bermakna dimulai dari mereka yang berani berpikir mendalam.
+            </p>
+          </HeroBackground>
+          </div>
         </div>
-      </div>
-      </HeroBackground>
+      
 
       {/* Doctrine banner */}
       <div style={{ background: "#266c87", padding: "20px 40px", textAlign: "center" }}>
