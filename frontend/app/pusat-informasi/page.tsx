@@ -113,8 +113,8 @@ export default function PusatInformasiPage() {
     <main>
         <Navbar />
         {/* Dekorasi background */}
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 60% at 20% 60%, rgba(38,108,135,0.18) 0%, transparent 60%)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", top: 0, right: "200px", width: "1px", height: "100%", background: "linear-gradient(to bottom, transparent, rgba(38,108,135,0.08) 50%, transparent)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "none", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: 0, right: "200px", width: "1px", height: "100%", background: "none" }} />
         <HeroBackground
         settingKey={HERO_BG_KEYS.pusatInformasi}
         fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
