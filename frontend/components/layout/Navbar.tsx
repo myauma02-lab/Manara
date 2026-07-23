@@ -547,7 +547,7 @@ export default function Navbar() {
               </div>
             </div>
                 {/* Di bawah Link CTA di mobile menu */}
-                <Link href="/admin" style={{
+                <Link href="/login" style={{
                   display: "block",
                   textAlign: "center",
                   padding: "10px",
