@@ -30,11 +30,7 @@ export default function TentangPage() {
       <Navbar />
 
       {/* Hero */}
-
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
-          <div style={{ paddingBottom: "48px" }}>
-
-            <HeroBackground
+<HeroBackground
             settingKey={HERO_BG_KEYS.tentang}
             fallbackGradient="linear-gradient(135deg, #0F2830, #1a4f63)"
             gradientDirection="to-left"
@@ -53,8 +49,6 @@ export default function TentangPage() {
               Manara adalah kolektif intelektual dan inisiatif media kreatif yang lahir dari keyakinan bahwa diskursus yang bermakna dimulai dari mereka yang berani berpikir mendalam.
             </p>
           </HeroBackground>
-          </div>
-        </div>
       
 
       {/* Doctrine banner */}
