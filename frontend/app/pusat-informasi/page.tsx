@@ -137,7 +137,7 @@ export default function PusatInformasiPage() {
       
 
       {/* ── 4 KARTU KATEGORI ── */}
-      <section style={{ padding: "0 0 80px", background: "#F4F7F7" }}>
+      <section style={{ padding: "0 0 80px", background: "none" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
 
           {/* Grid 4 kartu utama */}
