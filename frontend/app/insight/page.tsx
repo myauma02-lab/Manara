@@ -35,9 +35,7 @@ export default function InsightPage() {
   return (
     <main>
       <Navbar />
-      <div style={{ paddingTop: "120px", paddingBottom: "120px", background: "none", minHeight: "100vh" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
-        <HeroBackground
+      <HeroBackground
                   settingKey={HERO_BG_KEYS.layanan}
                   fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
                   gradientDirection="to-right"
@@ -45,6 +43,9 @@ export default function InsightPage() {
                   gradientOpacity={0.90}
                   style={{ paddingTop: "140px", minHeight: "320px" }}
           >
+      <div style={{ paddingTop: "120px", paddingBottom: "120px", background: "none", minHeight: "100vh" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
+        
           <div style={{ marginBottom: "64px" }}>
             <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#266c87", marginBottom: "16px" }}>
               Insight
@@ -81,9 +82,9 @@ export default function InsightPage() {
               </Link>
             ))}
           </div>
-        </HeroBackground>
         </div>
       </div>
+      </HeroBackground>
       <Footer />
     </main>
   );
