@@ -64,7 +64,7 @@ export default function LayananClient() {
   };
 
   return (
-    <main style={{ background: "none" }}>
+    <><main style={{ background: "none" }}>
       <Navbar />
       {/* ── HERO PER LAYANAN ── */}
       <section style={{
@@ -75,83 +75,81 @@ export default function LayananClient() {
         overflow: "hidden",
         minHeight: "320px",
       }}>
-      
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
-          <HeroBackground
-            settingKey={HERO_BG_KEYS.layanan}
-           fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
-           gradientDirection="to-right"
-           gradientColor="#0F2830"
-           gradientOpacity={0.90}
-            style={{ minHeight: "320px" }}
-          >  
-          <div style={{ paddingBottom: "48px" }}> 
-            <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: current.accentColor, marginBottom: "14px", opacity: 0.9 }}>
-              Layanan Manara
-            </p>
-            <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(32px,5vw,60px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.1, marginBottom: "8px" }}>
-              {current.heroTitle}
-            </h1>
-            <h2 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(26px,4vw,50px)", fontWeight: 300, fontStyle: "italic", color: current.accentColor, marginBottom: "20px" }}>
-              {current.heroSubtitle}
-            </h2>
-            <p style={{ fontSize: "clamp(14px,2vw,17px)", fontWeight: 300, color: "rgba(134,175,170,0.6)", lineHeight: 1.85, maxWidth: "560px", marginBottom: "28px" }}>
-              {current.heroDesc}
-            </p>
-            {current.status === "active" && (
-              <button
-                onClick={() => openWhatsApp(`Halo Manara, saya ingin konsultasi tentang layanan ${current.title}`)}
-                style={{ display: "flex", alignItems: "center", gap: "10px", background: "#25D366", color: "#fff", padding: "13px 28px", borderRadius: "4px", border: "none", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}
-              >
-                <svg width="20" height="20" viewBox="0 0 30 30" fill="none">
-                  <path d="M15 2.5C8.096 2.5 2.5 8.096 2.5 15c0 2.28.617 4.415 1.692 6.247L2.5 27.5l6.427-1.667A12.431 12.431 0 0015 27.5c6.904 0 12.5-5.596 12.5-12.5S21.904 2.5 15 2.5zm6.22 17.193c-.26.73-1.517 1.393-2.077 1.48-.53.08-1.2.113-1.934-.121a17.61 17.61 0 01-1.749-.647c-3.082-1.332-5.09-4.453-5.244-4.66-.152-.206-1.245-1.658-1.245-3.163 0-1.505.788-2.247 1.067-2.553.28-.306.61-.382.814-.382.205 0 .408.002.587.01.188.01.44-.071.688.524.26.62.882 2.125.959 2.278.078.154.13.332.026.537-.105.205-.157.332-.312.511-.154.18-.325.4-.463.537-.154.153-.315.318-.135.624.18.305.8 1.315 1.716 2.13 1.178 1.052 2.173 1.38 2.479 1.533.305.153.484.128.663-.077.18-.205.766-.894 1.97-.894z" fill="white"/>
-                </svg>
-                Konsultasi Gratis via WhatsApp
-              </button>
-            )}
-            
-          </div>
-          </HeroBackground>
+        <HeroBackground
+          settingKey={HERO_BG_KEYS.layanan}
+          fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+          gradientDirection="to-right"
+          gradientColor="#0F2830"
+          gradientOpacity={0.90}
+          style={{ minHeight: "320px" }}
+        >
+          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
 
-          {/* ── TAB NAVIGATOR ── */}
-          <div style={{
-            display: "flex",
-            gap: "0",
-            overflowX: "auto",
-            scrollbarWidth: "none",
-            borderTop: "1px solid rgba(38,108,135,0.15)",
-          }}>
-            {ALL_LAYANAN.map(l => (
-              <button
-                key={l.id}
-                onClick={() => setTab(l.id)}
-                style={{
-                  padding: "14px 24px",
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  letterSpacing: "0.03em",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: activeTab === l.id ? "#fff" : "rgba(134,175,170,0.45)",
-                  borderBottom: `3px solid ${activeTab === l.id ? l.accentColor : "transparent"}`,
-                  transition: "all 0.2s",
-                  whiteSpace: "nowrap",
-                  position: "relative",
-                }}
-              >
-                {l.title}
-                {l.status === "coming_soon" && (
-                  <span style={{ marginLeft: "6px", fontSize: "9px", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", background: "rgba(134,175,170,0.15)", color: "rgba(134,175,170,0.5)", padding: "2px 6px", borderRadius: "2px" }}>
-                    Soon
-                  </span>
-                )}
-              </button>
-            ))}
+            <div style={{ paddingBottom: "48px" }}>
+              <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: current.accentColor, marginBottom: "14px", opacity: 0.9 }}>
+                Layanan Manara
+              </p>
+              <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(32px,5vw,60px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.1, marginBottom: "8px" }}>
+                {current.heroTitle}
+              </h1>
+              <h2 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(26px,4vw,50px)", fontWeight: 300, fontStyle: "italic", color: current.accentColor, marginBottom: "20px" }}>
+                {current.heroSubtitle}
+              </h2>
+              <p style={{ fontSize: "clamp(14px,2vw,17px)", fontWeight: 300, color: "rgba(134,175,170,0.6)", lineHeight: 1.85, maxWidth: "560px", marginBottom: "28px" }}>
+                {current.heroDesc}
+              </p>
+              {current.status === "active" && (
+                <button
+                  onClick={() => openWhatsApp(`Halo Manara, saya ingin konsultasi tentang layanan ${current.title}`)}
+                  style={{ display: "flex", alignItems: "center", gap: "10px", background: "#25D366", color: "#fff", padding: "13px 28px", borderRadius: "4px", border: "none", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 30 30" fill="none">
+                    <path d="M15 2.5C8.096 2.5 2.5 8.096 2.5 15c0 2.28.617 4.415 1.692 6.247L2.5 27.5l6.427-1.667A12.431 12.431 0 0015 27.5c6.904 0 12.5-5.596 12.5-12.5S21.904 2.5 15 2.5zm6.22 17.193c-.26.73-1.517 1.393-2.077 1.48-.53.08-1.2.113-1.934-.121a17.61 17.61 0 01-1.749-.647c-3.082-1.332-5.09-4.453-5.244-4.66-.152-.206-1.245-1.658-1.245-3.163 0-1.505.788-2.247 1.067-2.553.28-.306.61-.382.814-.382.205 0 .408.002.587.01.188.01.44-.071.688.524.26.62.882 2.125.959 2.278.078.154.13.332.026.537-.105.205-.157.332-.312.511-.154.18-.325.4-.463.537-.154.153-.315.318-.135.624.18.305.8 1.315 1.716 2.13 1.178 1.052 2.173 1.38 2.479 1.533.305.153.484.128.663-.077.18-.205.766-.894 1.97-.894z" fill="white" />
+                  </svg>
+                  Konsultasi Gratis via WhatsApp
+                </button>
+              )}
+            </div>
           </div>
+        </HeroBackground>
+
+        {/* ── TAB NAVIGATOR ── */}
+        <div style={{
+          display: "flex",
+          gap: "0",
+          overflowX: "auto",
+          scrollbarWidth: "none",
+          borderTop: "1px solid rgba(38,108,135,0.15)",
+        }}>
+          {ALL_LAYANAN.map(l => (
+            <button
+              key={l.id}
+              onClick={() => setTab(l.id)}
+              style={{
+                padding: "14px 24px",
+                fontSize: "13px",
+                fontWeight: 500,
+                letterSpacing: "0.03em",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: activeTab === l.id ? "#fff" : "rgba(134,175,170,0.45)",
+                borderBottom: `3px solid ${activeTab === l.id ? l.accentColor : "transparent"}`,
+                transition: "all 0.2s",
+                whiteSpace: "nowrap",
+                position: "relative",
+              }}
+            >
+              {l.title}
+              {l.status === "coming_soon" && (
+                <span style={{ marginLeft: "6px", fontSize: "9px", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", background: "rgba(134,175,170,0.15)", color: "rgba(134,175,170,0.5)", padding: "2px 6px", borderRadius: "2px" }}>
+                  Soon
+                </span>
+              )}
+            </button>
+          ))}
         </div>
       </section>
-            
       <div ref={contentRef} />
 
       {/* ── COMING SOON STATE ── */}
@@ -436,7 +434,7 @@ export default function LayananClient() {
           .two-col-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
         }
       `}</style>
-    </main>
+    </main></>
   );
 }
 

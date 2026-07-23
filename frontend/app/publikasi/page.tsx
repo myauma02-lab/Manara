@@ -61,7 +61,8 @@ export default function PublikasiPage() {
 
   return (
     <main>
-      <HeroBackground
+        <Navbar />
+        <HeroBackground
         settingKey={HERO_BG_KEYS.publikasi}
         fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
         gradientDirection="to-right"
@@ -69,7 +70,6 @@ export default function PublikasiPage() {
         gradientOpacity={0.9}
         style={{ paddingTop: "140px", minHeight: "320px" }}
       >
-        <Navbar />
         <div style={{ paddingTop: "0px", paddingBottom: "120px", background: "none", minHeight: "100vh" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
             {/* Eyebrow */}

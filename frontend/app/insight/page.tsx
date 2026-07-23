@@ -36,7 +36,7 @@ export default function InsightPage() {
     <main>
       <Navbar />
       <HeroBackground
-                  settingKey={HERO_BG_KEYS.layanan}
+                  settingKey={HERO_BG_KEYS.insight}
                   fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
                   gradientDirection="to-right"
                   gradientColor="#0F2830"

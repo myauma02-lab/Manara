@@ -2,6 +2,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import type { Metadata } from "next";
+import HeroBackground from "@/components/shared/HeroBackground";
+import { HERO_BG_KEYS } from "@/lib/hero-settings";
 
 export const metadata: Metadata = {
   title: "Tentang Manara",
@@ -26,7 +28,14 @@ export default function TentangManaraPage() {
   return (
     <main>
       <Navbar />
-
+      <HeroBackground
+              settingKey={HERO_BG_KEYS.tentang}
+              fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+              gradientDirection="to-right"
+              gradientColor="#0F2830"
+              gradientOpacity={0.9}
+              style={{ paddingTop: "140px", minHeight: "320px" }}
+            >
       {/* Hero */}
       <section style={{ paddingTop: "120px", paddingBottom: "100px", background: "none", position: "relative", overflow: "hidden" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
@@ -52,6 +61,7 @@ export default function TentangManaraPage() {
           </div>
         </div>
       </section>
+     </HeroBackground>
 
       {/* Doctrine */}
       <div style={{ background: "#266c87", padding: "18px 40px", textAlign: "center" }}>

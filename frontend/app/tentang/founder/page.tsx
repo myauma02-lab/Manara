@@ -4,6 +4,8 @@ import { foundersApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
+import HeroBackground from "@/components/shared/HeroBackground";
+import { HERO_BG_KEYS } from "@/lib/hero-settings";
 
 const GRADS = [
   "linear-gradient(145deg,#266c87,#0F2830)",
@@ -27,7 +29,14 @@ export default function FounderListPage() {
   return (
     <main>
       <Navbar />
-
+      <HeroBackground
+                  settingKey={HERO_BG_KEYS.tentang}
+                  fallbackGradient="linear-gradient(135deg, #0F2830, #1a4f63)"
+                  gradientDirection="to-left"
+                  gradientColor="#0F2830"
+                  gradientOpacity={0.90}
+                  style={{ paddingTop: "140px", paddingBottom: "80px" }}
+                  >
       {/* Hero */}
       <section style={{ paddingTop: "140px", paddingBottom: "80px", background: "#0F2830", position: "relative", overflow: "hidden" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
@@ -50,6 +59,7 @@ export default function FounderListPage() {
           </div>
         </div>
       </section>
+      </HeroBackground>
 
       {/* Grid founders */}
       <section style={{ padding: "80px clamp(20px,5vw,40px) 120px", background: "#F4F7F7" }}>

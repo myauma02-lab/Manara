@@ -5,6 +5,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import type { Metadata } from "next";
+import HeroBackground from "@/components/shared/HeroBackground";
+import { HERO_BG_KEYS } from "@/lib/hero-settings";
 
 // Gradient fallback per index
 const GRADS = [
@@ -33,7 +35,14 @@ export default function FellowsPage() {
   return (
     <main>
       <Navbar />
-
+      <HeroBackground
+                        settingKey={HERO_BG_KEYS.tentang}
+                        fallbackGradient="linear-gradient(135deg, #0F2830, #1a4f63)"
+                        gradientDirection="to-left"
+                        gradientColor="#0F2830"
+                        gradientOpacity={0.90}
+                        style={{ paddingTop: "140px", paddingBottom: "80px" }}
+                        >
       {/* ── HERO ── */}
       <section style={{
         paddingTop: "140px",
@@ -65,6 +74,7 @@ export default function FellowsPage() {
           </div>
         </div>
       </section>
+      </HeroBackground>
 
       {/* ── GRID FELLOWS ── */}
       <section style={{ padding: "80px clamp(20px,5vw,40px) 120px", background: "#F4F7F7" }}>

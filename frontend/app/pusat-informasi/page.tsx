@@ -112,9 +112,6 @@ export default function PusatInformasiPage() {
   return (
     <main>
         <Navbar />
-        {/* Dekorasi background */}
-        <div style={{ position: "absolute", inset: 0, background: "none", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", top: 0, right: "200px", width: "1px", height: "100%", background: "none" }} />
         <HeroBackground
         settingKey={HERO_BG_KEYS.pusatInformasi}
         fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
@@ -122,7 +119,11 @@ export default function PusatInformasiPage() {
         gradientColor="#0F2830"
         gradientOpacity={0.88}
         style={{ paddingTop: "140px", paddingBottom: "80px" }}
-      > <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
+      >
+        {/* Dekorasi background */}
+        <div style={{ position: "absolute", inset: 0, background: "none", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: 0, right: "200px", width: "1px", height: "100%", background: "none" }} />
+         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
           <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.55)", marginBottom: "16px" }}>
             Pusat Informasi
           </p>
@@ -134,6 +135,7 @@ export default function PusatInformasiPage() {
             Satu tempat untuk mengikuti perkembangan, pencapaian, publikasi, dan agenda strategis Manara.
           </p>
         </div>
+        </HeroBackground>
       
 
       {/* ── 4 KARTU KATEGORI ── */}
@@ -268,7 +270,6 @@ export default function PusatInformasiPage() {
           </div>
         </div>
       </section>
-    </HeroBackground>
       {/* ── PREVIEW KONTEN PER KATEGORI ── */}
       <section style={{ padding: "0 0 120px", background: "#F4F7F7" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
