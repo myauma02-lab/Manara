@@ -32,13 +32,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user, token, logout } = useAuthStore();
   const [checked, setChecked] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isLoginPage = pathname === "/admin/login";
+  const isLoginPage = pathname === "/login";
 
   useEffect(() => {
     if (isLoginPage) { setChecked(true); return; }
     const { token } = useAuthStore.getState();
     if (!token) {
-      router.push("/admin/login");
+      router.push("/login");
       return;
     }
     setChecked(true);
