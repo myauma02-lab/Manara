@@ -114,16 +114,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="id" className={`${dmSans.variable} ${cormorant.variable}`}>
       <body>
-        <HeroBackground
-          settingKey={HERO_BG_KEYS.homepage}
-          fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
-          gradientDirection="to-right"
-          gradientColor="#0F2830"
-          gradientOpacity={0.92}
-          style={{ minHeight: "100svh", paddingTop: "140px", paddingBottom: "80px" }}
-        >
           {children}
-        </HeroBackground>
         <AIChatFloat />
         <WhatsAppFloat />
       </body>
