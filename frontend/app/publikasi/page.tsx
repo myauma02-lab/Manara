@@ -63,70 +63,70 @@ export default function PublikasiPage() {
     <main>
       <Navbar />
 
-      {/* ── HERO — full-height, HeroBackground sebagai wrapper ── */}
-      <HeroBackground
-        settingKey={HERO_BG_KEYS.publikasi}
-        fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
-        gradientDirection="to-right"
-        gradientColor="#0F2830"
-        gradientOpacity={0.88}
-        style={{ minHeight: "80vh", display: "flex", alignItems: "flex-end", paddingTop: "90px", }}
-      >
-        {/* Radial accent */}
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
-          <div style={{ paddingBottom: "48px" }}>
-          {/* Eyebrow */}
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
-            <div style={{ width: "28px", height: "1px", background: "rgba(134,175,170,0.4)" }} />
-            <p style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(134,175,170,0.6)" }}>
-              Publikasi Manara
-            </p>
-          </div>
+      <div style={{ paddingTop: "120px", paddingBottom: "120px", background: "none", minHeight: "100vh" }}>
+              <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
+              <HeroBackground
+                settingKey={HERO_BG_KEYS.publikasi}
+                fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+                gradientDirection="to-right"
+                gradientColor="#0F2830"
+                gradientOpacity={0.90}
+                style={{ paddingTop: "140px", minHeight: "320px" }}
+              >
+                <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
+                  {/* Eyebrow */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
+                    <div style={{ width: "28px", height: "1px", background: "rgba(134,175,170,0.4)" }} />
+                    <p style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(134,175,170,0.6)" }}>
+                      Publikasi Manara
+                    </p>
+                  </div>
 
-          <h1 style={{
-            fontFamily: "Georgia,serif",
-            fontSize: "clamp(40px,6.5vw,84px)",
-            fontWeight: 300,
-            color: "#EEF4F6",
-            lineHeight: 1.05,
-            marginBottom: "20px",
-            letterSpacing: "-0.02em",
-            maxWidth: "700px",
-          }}>
-            Produk intelektual<br />
-            <em style={{ color: "#86AFAA" }}>Manara.</em>
-          </h1>
+                  <h1 style={{
+                    fontFamily: "Georgia,serif",
+                    fontSize: "clamp(40px,6.5vw,84px)",
+                    fontWeight: 300,
+                    color: "#EEF4F6",
+                    lineHeight: 1.05,
+                    marginBottom: "20px",
+                    letterSpacing: "-0.02em",
+                    maxWidth: "700px",
+                  }}>
+                    Produk intelektual<br />
+                    <em style={{ color: "#86AFAA" }}>Manara.</em>
+                  </h1>
 
-          <p style={{
-            fontSize: "clamp(16px,2vw,19px)",
-            fontWeight: 300,
-            color: "rgba(134,175,170,0.55)",
-            lineHeight: 1.85,
-            maxWidth: "520px",
-            marginBottom: "40px",
-          }}>
-            Tiga format publikasi — dari tulisan populer hingga jurnal ilmiah — dirancang
-            untuk menjangkau pembaca yang berbeda dengan kedalaman yang berbeda.
-          </p>
-
-          {/* Stats bar */}
-          {loaded && (
-            <div style={{ display: "flex", gap: "0", borderTop: "1px solid rgba(38,108,135,0.2)", paddingTop: "28px" }}>
-              {TYPES.map((t, i) => (
-                <div key={t.type} style={{ paddingRight: "32px", marginRight: "32px", borderRight: i < TYPES.length - 1 ? "1px solid rgba(38,108,135,0.15)" : "none" }}>
-                  <p style={{ fontFamily: "Georgia,serif", fontSize: "clamp(28px,3.5vw,40px)", fontWeight: 300, color: t.color, lineHeight: 1, marginBottom: "4px" }}>
-                    {counts[t.type] ?? "—"}
+                  <p style={{
+                    fontSize: "clamp(16px,2vw,19px)",
+                    fontWeight: 300,
+                    color: "rgba(134,175,170,0.55)",
+                    lineHeight: 1.85,
+                    maxWidth: "520px",
+                    marginBottom: "40px",
+                  }}>
+                    Tiga format publikasi — dari tulisan populer hingga jurnal ilmiah — dirancang
+                    untuk menjangkau pembaca yang berbeda dengan kedalaman yang berbeda.
                   </p>
-                  <p style={{ fontSize: "12px", fontWeight: 500, color: "rgba(134,175,170,0.45)", letterSpacing: "0.04em" }}>
-                    {t.title}
-                  </p>
+
+                  {/* Stats bar */}
+                  {loaded && (
+                    <div style={{ display: "flex", gap: "0", borderTop: "1px solid rgba(38,108,135,0.2)", paddingTop: "28px" }}>
+                      {TYPES.map((t, i) => (
+                        <div key={t.type} style={{ paddingRight: "32px", marginRight: "32px", borderRight: i < TYPES.length - 1 ? "1px solid rgba(38,108,135,0.15)" : "none" }}>
+                          <p style={{ fontFamily: "Georgia,serif", fontSize: "clamp(28px,3.5vw,40px)", fontWeight: 300, color: t.color, lineHeight: 1, marginBottom: "4px" }}>
+                            {counts[t.type] ?? "—"}
+                          </p>
+                          <p style={{ fontSize: "12px", fontWeight: 500, color: "rgba(134,175,170,0.45)", letterSpacing: "0.04em" }}>
+                            {t.title}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              </HeroBackground>
+              </div>
       </div>
-      </HeroBackground>
 
       {/* ── 3 KARTU TIPE PUBLIKASI ── */}
       <section style={{ padding: "80px clamp(20px,5vw,48px) 120px", background: "#F4F7F7" }}>
