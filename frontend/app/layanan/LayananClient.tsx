@@ -130,7 +130,7 @@ export default function LayananClient() {
                 fontSize: "13px",
                 fontWeight: 500,
                 letterSpacing: "0.03em",
-                background: "none",
+                background: "#0F2830",
                 border: "none",
                 cursor: "pointer",
                 color: activeTab === l.id ? "#fff" : "rgba(134,175,170,0.45)",
