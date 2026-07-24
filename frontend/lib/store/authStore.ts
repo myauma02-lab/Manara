@@ -97,5 +97,6 @@ export const ROLE_CONFIG = {
 export type UserRole = keyof typeof ROLE_CONFIG;
 
 export function getDashboardPath(role: string): string {
+  
   return ROLE_CONFIG[role as UserRole]?.dashboard || "/dashboard";
 }
