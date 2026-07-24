@@ -84,9 +84,9 @@ export default function LayananClient() {
           style={{ minHeight: "320px" }}
         >
           
-          <div style={{ width: "100%", margin: "0 auto", padding: "clamp(64px,10vw,88px) clamp(20px,5vw,40px) 0" }} className="hero-content">
+          <div style={{ width: "100%", maxWidth: "1200px", margin: "0 auto", padding: "clamp(64px,10vw,88px) clamp(20px,5vw,40px) 0" }} className="hero-content">
 
-            <div style={{ paddingBottom: "48px" }}>
+            <div style={{ paddingBottom: "48px", maxWidth: "720px" }}>
               <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: current.accentColor, marginBottom: "14px", opacity: 0.9 }}>
                 Layanan Manara
               </p>
@@ -113,17 +113,16 @@ export default function LayananClient() {
             </div>
           </div>
         </HeroBackground>
+      </section>
 
-        {/* ── TAB NAVIGATOR ── */}
-        <div style={{
-          display: "flex",
-          gap: "0",
-          overflowX: "auto",
-          scrollbarWidth: "none",
-          borderTop: "1px solid rgba(38,108,135,0.15)",
-          position: "relative",
-          zIndex: 3,
-        }}>
+      {/* ── TAB NAVIGATOR ──
+          Sengaja dijadikan sibling dari section hero (bukan di dalamnya),
+          karena section hero pakai overflow:hidden untuk background — kalau
+          tab nav ada di dalamnya, position:sticky tidak akan berfungsi.
+          Sticky di sini membuat user bisa gonta-ganti layanan tanpa perlu
+          scroll balik ke atas, pola umum di website startup produk/jasa. */}
+      <div className="layanan-tabs-wrap">
+        <div className="layanan-tabs-inner">
           {ALL_LAYANAN.map(l => (
             <button
               key={l.id}
@@ -152,7 +151,7 @@ export default function LayananClient() {
             </button>
           ))}
         </div>
-      </section>
+      </div>
       <div ref={contentRef} />
 
       {/* ── COMING SOON STATE ── */}
@@ -176,7 +175,9 @@ export default function LayananClient() {
                   {cat.items && (
                     <div
                       onClick={() => setOpenAccordion(openAccordion === cat.id ? null : cat.id)}
-                      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", rowGap: "8px", padding: "18px 24px", background: current.accentColor, borderRadius: openAccordion === cat.id ? "4px 4px 0 0" : "4px", cursor: "pointer" }}
+                      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", rowGap: "8px", padding: "20px 24px", background: current.accentColor, borderRadius: openAccordion === cat.id ? "10px 10px 0 0" : "10px", cursor: "pointer", boxShadow: `0 4px 14px ${current.accentColor}30`, transition: "box-shadow 0.2s, transform 0.2s" }}
+                      onMouseOver={e => { (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 22px ${current.accentColor}45`; }}
+                      onMouseOut={e => { (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 14px ${current.accentColor}30`; }}
                     >
                       <span style={{ fontSize: "15px", fontWeight: 500, color: "#fff" }}>{cat.title}</span>
                       <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
@@ -194,7 +195,7 @@ export default function LayananClient() {
 
                   {/* Accordion content — list items */}
                   {cat.items && openAccordion === cat.id && (
-                    <div style={{ border: `1px solid ${current.accentColor}30`, borderTop: "none", borderRadius: "0 0 4px 4px", overflow: "hidden" }}>
+                    <div style={{ border: `1px solid ${current.accentColor}30`, borderTop: "none", borderRadius: "0 0 10px 10px", overflow: "hidden" }}>
                       {cat.items.map((item, i) => (
                         <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", rowGap: "8px", padding: "14px 24px", borderBottom: i < cat.items!.length - 1 ? "1px solid rgba(38,108,135,0.07)" : "none", background: "#fff" }}>
                           <div style={{ minWidth: "0", flex: "1 1 220px" }}>
@@ -217,7 +218,7 @@ export default function LayananClient() {
                           <p style={{ fontSize: "12px", color: "#B8CDD2", marginBottom: "12px" }}>Paket Harga:</p>
                           <div style={{ display: "flex", gap: "12px", rowGap: "28px", flexWrap: "wrap" }}>
                             {cat.pricing.map(p => (
-                              <div key={p.id} style={{ flex: 1, minWidth: "200px", background: "#fff", border: `1px solid ${p.isBestSeller ? current.accentColor : "rgba(38,108,135,0.12)"}`, borderRadius: "4px", padding: "16px", marginTop: p.isBestSeller ? "14px" : "0", position: "relative" }}>
+                              <div key={p.id} style={{ flex: 1, minWidth: "200px", background: "#fff", border: `1px solid ${p.isBestSeller ? current.accentColor : "rgba(38,108,135,0.12)"}`, borderRadius: "8px", padding: "16px", marginTop: p.isBestSeller ? "14px" : "0", position: "relative" }}>
                                 {p.isBestSeller && (
                                   <span style={{ position: "absolute", top: "-10px", left: "50%", transform: "translateX(-50%)", background: current.accentColor, color: "#fff", fontSize: "10px", fontWeight: 600, padding: "2px 12px", borderRadius: "2px", letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", zIndex: 2 }}>
                                     Best Seller
@@ -278,7 +279,7 @@ export default function LayananClient() {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                   {current.overviewPoints.map((point, i) => (
-                    <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start", padding: "14px 16px", background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px" }}>
+                    <div key={i} className="hover-lift-card" style={{ display: "flex", gap: "12px", alignItems: "flex-start", padding: "14px 16px", background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "8px" }}>
                       <span style={{ color: current.accentColor, fontSize: "16px", flexShrink: 0, marginTop: "1px" }}>✓</span>
                       <p style={{ fontSize: "14px", fontWeight: 300, color: "#3A5560", lineHeight: 1.7 }}>{point}</p>
                     </div>
@@ -333,7 +334,7 @@ export default function LayananClient() {
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: "14px" }}>
                 {current.deliverables.map((d, i) => (
-                  <div key={i} style={{ display: "flex", gap: "14px", padding: "20px", background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", alignItems: "flex-start" }}>
+                  <div key={i} className="hover-lift-card" style={{ display: "flex", gap: "14px", padding: "20px", background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "8px", alignItems: "flex-start" }}>
                     <div style={{ width: "36px", height: "36px", borderRadius: "50%", border: `1px solid ${current.accentColor}30`, display: "flex", alignItems: "center", justifyContent: "center", color: current.accentColor, fontSize: "15px", flexShrink: 0 }}>
                       {d.icon}
                     </div>
@@ -358,7 +359,12 @@ export default function LayananClient() {
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", justifyContent: "center" }}>
                 {current.clients.map((client, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "40px", padding: "10px 22px" }}>
+                  <div
+                    key={i}
+                    style={{ display: "flex", alignItems: "center", gap: "10px", background: "#fff", border: `1px solid rgba(38,108,135,0.1)`, borderRadius: "40px", padding: "10px 22px", transition: "border-color 0.2s, box-shadow 0.2s" }}
+                    onMouseOver={e => { (e.currentTarget as HTMLElement).style.borderColor = current.accentColor; (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 12px ${current.accentColor}25`; }}
+                    onMouseOut={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(38,108,135,0.1)"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
+                  >
                     <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: current.accentColor, flexShrink: 0 }} />
                     <span style={{ fontSize: "14px", fontWeight: 300, color: "#3A5560" }}>{client}</span>
                   </div>
@@ -379,7 +385,7 @@ export default function LayananClient() {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
                   {current.whyManara.map((item, i) => (
-                    <div key={i} style={{ display: "flex", gap: "16px", padding: "18px", background: "rgba(38,108,135,0.06)", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px" }}>
+                    <div key={i} style={{ display: "flex", gap: "16px", padding: "18px", background: "rgba(38,108,135,0.06)", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "8px" }}>
                       <span style={{ fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300, color: "rgba(38,108,135,0.4)", flexShrink: 0 }}>
                         {String(i + 1).padStart(2, "0")}
                       </span>
@@ -442,6 +448,37 @@ export default function LayananClient() {
           top: 100px;
         }
 
+        /* Tab navigator: nempel di atas layar saat discroll, item
+           di-center di layar besar biar terasa seperti navigasi produk. */
+        .layanan-tabs-wrap {
+          position: sticky;
+          top: 0;
+          z-index: 20;
+          background: #0F2830;
+          border-top: 1px solid rgba(38,108,135,0.15);
+          box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+        }
+        .layanan-tabs-inner {
+          display: flex;
+          justify-content: center;
+          gap: 0;
+          overflow-x: auto;
+          scrollbar-width: none;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+        .layanan-tabs-inner::-webkit-scrollbar { display: none; }
+
+        /* Efek angkat halus untuk kartu-kartu ringkasan (overview,
+           deliverables) supaya terasa lebih interaktif seperti produk SaaS. */
+        .hover-lift-card {
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .hover-lift-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 24px rgba(15,40,48,0.10);
+        }
+
         @media (max-width: 768px) {
           .two-col-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
           .proses-sticky-col {
@@ -451,6 +488,7 @@ export default function LayananClient() {
           .hero-content {
             padding-top: clamp(48px, 12vw, 64px) !important;
           }
+          .layanan-tabs-inner { justify-content: flex-start; }
         }
       `}</style>
     </main></>
@@ -467,17 +505,22 @@ function PricingCard({ pricing, accentColor, onWhatsApp }: {
     p === 0 ? null : `Rp ${p.toLocaleString("id-ID")}`;
 
   return (
-    <div style={{
-      background: "#fff",
-      border: `2px solid ${pricing.isBestSeller ? accentColor : "rgba(38,108,135,0.12)"}`,
-      borderRadius: "8px",
-      padding: "28px",
-      marginTop: pricing.isBestSeller ? "14px" : "0",
-      position: "relative",
-      display: "flex",
-      flexDirection: "column",
-      boxShadow: pricing.isBestSeller ? `0 8px 32px ${accentColor}20` : "none",
-    }}>
+    <div
+      style={{
+        background: "#fff",
+        border: `2px solid ${pricing.isBestSeller ? accentColor : "rgba(38,108,135,0.12)"}`,
+        borderRadius: "8px",
+        padding: "28px",
+        marginTop: pricing.isBestSeller ? "14px" : "0",
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        boxShadow: pricing.isBestSeller ? `0 8px 32px ${accentColor}20` : "none",
+        transition: "transform 0.2s, box-shadow 0.2s",
+      }}
+      onMouseOver={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)"; (e.currentTarget as HTMLElement).style.boxShadow = `0 12px 28px ${accentColor}25`; }}
+      onMouseOut={e => { (e.currentTarget as HTMLElement).style.transform = "none"; (e.currentTarget as HTMLElement).style.boxShadow = pricing.isBestSeller ? `0 8px 32px ${accentColor}20` : "none"; }}
+    >
       {pricing.isBestSeller && (
         <div style={{ position: "absolute", top: "-14px", left: "50%", transform: "translateX(-50%)", background: accentColor, color: "#fff", fontSize: "11px", fontWeight: 600, padding: "4px 16px", borderRadius: "2px", letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", zIndex: 2 }}>
           Best Seller
