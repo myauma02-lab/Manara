@@ -24,6 +24,7 @@ const NAV = [
   { href: "/dashboard/hr", label: "→ HR Dashboard", icon: "△" },
   { href: "/dashboard/finance", label: "→ Finance Dashboard", icon: "◆" },
   { href: "/dashboard/ops", label: "→ Ops Dashboard", icon: "□" },
+  { href: "/dashboard/publikasi", label: "→ Publikasi Dashboard", icon: "✦" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
