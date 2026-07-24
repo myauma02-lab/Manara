@@ -96,17 +96,7 @@ export const ROLE_CONFIG = {
 
 export type UserRole = keyof typeof ROLE_CONFIG;
 
-  export function getDashboardPath(role: string): string {
-  const map: Record<string, string> = {
-    SUPERADMIN:        "/admin",
-    SEKJEN:            "/admin",
-    PUBLIKASI_ADMIN:   "/dashboard/publikasi",
-    PUBLIKASI_EDITOR:  "/dashboard/publikasi",
-    PUBLIKASI_WRITER:  "/dashboard/publikasi",
-    HR:                "/dashboard/hr",
-    OPERASIONAL:       "/dashboard/ops",
-    KEUANGAN:          "/dashboard/finance",
-  };
-  return map[role] || "/dashboard";
+export function getDashboardPath(role: string): string {
+  
   return ROLE_CONFIG[role as UserRole]?.dashboard || "/dashboard";
-  }
+}
