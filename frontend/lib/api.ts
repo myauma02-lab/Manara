@@ -303,6 +303,9 @@ export const publicationsApi = {
 
   delete: (id: string) =>
     api.delete(`/publications/${id}`),
+
+  submit: (data: FormData) => 
+    api.post("/publications/submit", data),
 };
 
 export const fellowsApi = {
