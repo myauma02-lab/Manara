@@ -47,7 +47,6 @@ export default function FellowsPage() {
       <section style={{
         paddingTop: "140px",
         paddingBottom: "80px",
-        background: "#0F2830",
         position: "relative",
         overflow: "hidden",
       }}>
