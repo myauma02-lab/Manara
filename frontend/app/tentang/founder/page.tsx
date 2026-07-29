@@ -32,13 +32,13 @@ export default function FounderListPage() {
       <HeroBackground
                   settingKey={HERO_BG_KEYS.tentang}
                   fallbackGradient="linear-gradient(135deg, #0F2830, #1a4f63)"
-                  gradientDirection="to-left"
+                  gradientDirection="to-right"
                   gradientColor="#0F2830"
                   gradientOpacity={0.90}
                   style={{ paddingTop: "140px", paddingBottom: "80px" }}
                   >
       {/* Hero */}
-      <section style={{ paddingTop: "140px", paddingBottom: "80px", background: "#0F2830", position: "relative", overflow: "hidden" }}>
+      <section style={{ paddingTop: "140px", paddingBottom: "80px", position: "relative", overflow: "hidden" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
           <div style={{ paddingBottom: "48px" }}>
             <div style={{ display: "flex", gap: "8px", fontSize: "12px", color: "rgba(134,175,170,0.35)", marginBottom: "28px", flexWrap: "wrap" }}>
