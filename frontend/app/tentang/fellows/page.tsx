@@ -38,7 +38,7 @@ export default function FellowsPage() {
       <HeroBackground
                         settingKey={HERO_BG_KEYS.tentang}
                         fallbackGradient="linear-gradient(135deg, #0F2830, #1a4f63)"
-                        gradientDirection="to-left"
+                        gradientDirection="to-right"
                         gradientColor="#0F2830"
                         gradientOpacity={0.90}
                         style={{ paddingTop: "140px", paddingBottom: "80px" }}
