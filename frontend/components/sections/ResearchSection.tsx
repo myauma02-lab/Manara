@@ -1,30 +1,13 @@
-"use client";
-import { useEffect, useState } from "react";
-import { publicationsApi } from "@/lib/api";
+import { serverPublicationsApi } from "@/lib/server-api";
 import Link from "next/link";
 
-export default function ResearchSection() {
-  const [papers, setPapers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Load paper + journal sekaligus
-    Promise.all([
-      publicationsApi.list({ type: "PAPER", limit: 3 }),
-      publicationsApi.list({ type: "JOURNAL", limit: 2 }),
-    ])
-      .then(([paperRes, journalRes]) => {
-        const combined = [
-          ...(paperRes.data.data || []),
-          ...(journalRes.data.data || []),
-        ].slice(0, 4);
-        setPapers(combined);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  const isEmpty = !loading && papers.length === 0;
+export default async function ResearchSection() {
+  const [paperData, journalData] = await Promise.all([
+    serverPublicationsApi.list({ type: "PAPER", limit: "3" }),
+    serverPublicationsApi.list({ type: "JOURNAL", limit: "2" }),
+  ]);
+  const papers = [...(paperData || []), ...(journalData || [])].slice(0, 4);
+  const isEmpty = papers.length === 0;
 
   const TYPE_STYLE: Record<string, { color: string; label: string }> = {
     PAPER: { color: "#3F6F6A", label: "Paper" },
@@ -56,21 +39,6 @@ export default function ResearchSection() {
           </div>
         </div>
 
-        {/* Loading skeleton */}
-        {loading && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {[1, 2, 3].map(i => (
-              <div key={i} style={{ background: "#fff", borderRadius: "4px", padding: "24px", animation: "pulse 1.5s infinite", display: "flex", gap: "16px" }}>
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <div style={{ height: "11px", background: "rgba(38,108,135,0.06)", borderRadius: "2px", width: "20%" }} />
-                  <div style={{ height: "18px", background: "rgba(38,108,135,0.06)", borderRadius: "2px", width: "75%" }} />
-                  <div style={{ height: "13px", background: "rgba(38,108,135,0.04)", borderRadius: "2px", width: "50%" }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
         {/* Empty state */}
         {isEmpty && (
           <div style={{ background: "#0F2830", borderRadius: "4px", padding: "64px", textAlign: "center", border: "1px solid rgba(38,108,135,0.1)" }}>
@@ -85,7 +53,7 @@ export default function ResearchSection() {
         )}
 
         {/* List papers */}
-        {!loading && papers.length > 0 && (
+        {papers.length > 0 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {papers.map(p => {
               const ts = TYPE_STYLE[p.type] || TYPE_STYLE.PAPER;
@@ -103,9 +71,7 @@ export default function ResearchSection() {
                     alignItems: "center",
                     gap: "20px",
                     transition: "all 0.2s",
-                  }}
-                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = "rgba(38,108,135,0.3)"}
-                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = "rgba(38,108,135,0.1)"}
+                  }} className="research-row"
                   >
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", gap: "8px", marginBottom: "5px", alignItems: "center" }}>
@@ -146,7 +112,12 @@ export default function ResearchSection() {
           </div>
         )}
       </div>
-      <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }`}</style>
+      <style>{`
+        .research-row:hover { border-color: rgba(38,108,135,0.3) !important; }
+        @media (max-width: 640px) {
+          .research-row { padding: 16px !important; gap: 12px !important; }
+        }
+      `}</style>
     </section>
   );
 }

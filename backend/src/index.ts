@@ -9,13 +9,6 @@ import path from "path";
 
 dotenv.config();
 
-console.log("STEP 1");
-console.log("DATABASE_URL exists:", !!process.env.DATABASE_URL);
-console.log(
-  "DATABASE_URL prefix:",
-  process.env.DATABASE_URL?.substring(0, 20)
-);
-
 import authRoutes from "./routes/auth";
 import articleRoutes from "./routes/articles";
 import projectRoutes from "./routes/projects";
@@ -42,8 +35,6 @@ app.set("trust proxy", 1);
 
 const PORT = process.env.PORT || 5000;
 
-console.log("STEP 2");
-
 // ================= Security =================
 
 app.use(helmet());
@@ -57,6 +48,7 @@ const allowedOrigins = [
   // Domain baru
   "https://manarainstitute.id",
   "https://www.manarainstitute.id",
+  "https://vps.manarainstitute.id",
 ];
 
 app.use(
@@ -85,8 +77,6 @@ app.use(
     legacyHeaders: false,
   })
 );
-
-console.log("STEP 3");
 
 // ================= Middleware =================
 
@@ -131,10 +121,7 @@ app.get("/api/health", (_req, res) => {
 
 app.use(errorHandler);
 
-console.log("STEP 4");
-
 app.listen(PORT, () => {
-  console.log("STEP 5");
   console.log(`🏛️  Manara API running on port ${PORT}`);
   console.log(`📖 Environment: ${process.env.NODE_ENV}`);
 });

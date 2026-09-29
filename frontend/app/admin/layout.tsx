@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 import { useEffect, useState, useRef } from "react";
 import { settingsApi } from "@/lib/api";
 import { HERO_BG_KEYS, HERO_BG_LABELS, type HeroBgKey } from "@/lib/hero-settings";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { useAuthStore } from "@/lib/store/authStore";
+import { getDashboardPath, useAuthStore } from "@/lib/store/authStore";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: "◎", exact: true },
@@ -33,22 +33,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user, token, logout } = useAuthStore();
   const [checked, setChecked] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isLoginPage = pathname === "/login";
+  const isLoginPage = pathname === "/admin/login";
 
   useEffect(() => {
     if (isLoginPage) { setChecked(true); return; }
-    const { token } = useAuthStore.getState();
-    if (!token) {
-      router.push("/login");
+    if (!token || !user) {
+      router.replace("/portal");
+      return;
+    }
+    if (!["SUPERADMIN", "SEKJEN"].includes(user.role)) {
+      router.replace(getDashboardPath(user.role));
       return;
     }
     setChecked(true);
-  }, [isLoginPage]);
+  }, [isLoginPage, router, token, user]);
 
   // Close sidebar on route change (mobile)
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
-  if (!checked) return (
+  if (!checked || (!isLoginPage && (!user || !["SUPERADMIN", "SEKJEN"].includes(user.role)))) return (
     <div style={{ minHeight: "100vh", background: "#0F2830", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <p style={{ color: "rgba(134,175,170,0.4)", fontSize: "13px", letterSpacing: "0.1em" }}>Memuat...</p>
     </div>
@@ -151,7 +154,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/" target="_blank" style={{ flex: 1, display: "block", textAlign: "center", fontSize: "11px", color: "rgba(134,175,170,0.35)", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "2px", padding: "6px", textDecoration: "none", transition: "color 0.15s" }}>
             Lihat Web
           </Link>
-          <button onClick={() => { logout(); router.push("/admin/login"); }}
+          <button onClick={() => { logout(); router.push("/portal"); }}
             style={{ flex: 1, fontSize: "11px", color: "rgba(134,175,170,0.35)", background: "none", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "2px", padding: "6px", cursor: "pointer" }}>
             Keluar
           </button>

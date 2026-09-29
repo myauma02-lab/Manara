@@ -67,8 +67,6 @@ PANDUAN MENJAWAB:
 
 export async function POST(request: Request) {
   try {
-    console.log("=== GEMINI ROUTE ===");
-
     const body = await request.json();
     const messages = body.messages ?? [];
 

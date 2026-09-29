@@ -1,12 +1,5 @@
 import nodemailer from "nodemailer";
 
-console.log({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: process.env.SMTP_SECURE,
-  user: process.env.SMTP_USER,
-});
-
 // Buat transporter — akan null kalau SMTP belum dikonfigurasi
 export const createTransporter = () => {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return null;
@@ -24,6 +17,14 @@ export const createTransporter = () => {
 const FROM = process.env.EMAIL_FROM || "Manara <manararesearch@gmail.com>";
 const ADMIN = process.env.ADMIN_EMAIL || process.env.SMTP_USER || "manararesearch@gmail.com";
 
+const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+}[character]!));
+
 // Base HTML template
 const template = (title: string, content: string) => `
 <!DOCTYPE html>
@@ -38,7 +39,7 @@ const template = (title: string, content: string) => `
     <div style="background:#0F2830;padding:28px 36px;">
       <p style="font-family:Georgia,serif;font-size:22px;font-weight:300;color:#EEF4F6;margin:0;letter-spacing:0.04em;">Manara</p>
       <p style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(134,175,170,0.5);margin:6px 0 0;">
-        ${title}
+        ${escapeHtml(title)}
       </p>
     </div>
 
@@ -57,25 +58,23 @@ const template = (title: string, content: string) => `
 
 const infoBox = (label: string, value: string) => `
 <div style="background:rgba(38,108,135,0.04);border:1px solid rgba(38,108,135,0.1);border-radius:2px;padding:14px 18px;margin-bottom:12px;">
-  <p style="font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#B8CDD2;margin:0 0 4px;">${label}</p>
-  <p style="font-size:15px;color:#0F2830;margin:0;">${value}</p>
+  <p style="font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#B8CDD2;margin:0 0 4px;">${escapeHtml(label)}</p>
+  <p style="font-size:15px;color:#0F2830;margin:0;">${escapeHtml(value)}</p>
 </div>`;
 
 const btn = (text: string, href: string) => `
-<a href="${href}" style="display:inline-block;background:#266c87;color:#fff;padding:12px 28px;border-radius:2px;text-decoration:none;font-size:13px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;margin-top:8px;">
-  ${text}
+<a href="${escapeHtml(href)}" style="display:inline-block;background:#266c87;color:#fff;padding:12px 28px;border-radius:2px;text-decoration:none;font-size:13px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;margin-top:8px;">
+  ${escapeHtml(text)}
 </a>`;
 
 // ── Kirim email (safe — tidak crash kalau SMTP belum setup) ──
 const send = async (to: string, subject: string, html: string) => {
   const transporter = createTransporter();
   if (!transporter) {
-    console.log(`[Email Skip] SMTP belum dikonfigurasi. To: ${to} | Subject: ${subject}`);
     return;
   }
   try {
     await transporter.sendMail({ from: FROM, to, subject, html });
-    console.log(`[Email Sent] To: ${to} | Subject: ${subject}`);
   } catch (err) {
     console.error(`[Email Error] To: ${to} | Subject: ${subject}`, err);
   }
@@ -104,7 +103,7 @@ export const sendContactConfirmation = async (data: {
 }) => {
   const content = `
     <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
-      Halo <strong style="color:#0F2830;">${data.name}</strong>,
+      Halo <strong style="color:#0F2830;">${escapeHtml(data.name)}</strong>,
     </p>
     <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
       Pesan kamu telah kami terima. Tim Manara akan merespons dalam 1–3 hari kerja.
@@ -118,7 +117,7 @@ export const sendContactConfirmation = async (data: {
 export const sendNewsletterConfirmation = async (data: {
   email: string; name?: string;
 }) => {
-  const greeting = data.name ? `Halo <strong style="color:#0F2830;">${data.name}</strong>` : "Halo";
+  const greeting = data.name ? `Halo <strong style="color:#0F2830;">${escapeHtml(data.name)}</strong>` : "Halo";
   const content = `
     <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
       ${greeting}, terima kasih telah berlangganan <strong>Surat Manara</strong>.
@@ -164,10 +163,10 @@ export const sendApplicationConfirmation = async (data: {
 }) => {
   const content = `
     <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
-      Halo <strong style="color:#0F2830;">${data.fullName}</strong>,
+      Halo <strong style="color:#0F2830;">${escapeHtml(data.fullName)}</strong>,
     </p>
     <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
-      Lamaran kamu untuk posisi <strong style="color:#0F2830;">${data.position}</strong> telah kami terima. 
+      Lamaran kamu untuk posisi <strong style="color:#0F2830;">${escapeHtml(data.position)}</strong> telah kami terima.
       Tim Manara akan meninjau lamaranmu dan menghubungimu melalui email ini.
     </p>
     ${infoBox("ID Lamaran", data.appId)}
@@ -216,7 +215,7 @@ export const sendStatusUpdateEmail = async (data: {
 
   const content = `
     <p style="font-size:15px;font-weight:300;color:#3A5560;line-height:1.8;margin:0 0 20px;">
-      Halo <strong style="color:#0F2830;">${data.fullName}</strong>,
+      Halo <strong style="color:#0F2830;">${escapeHtml(data.fullName)}</strong>,
     </p>
     <div style="border-left:3px solid ${info.color};padding:16px 20px;background:rgba(38,108,135,0.04);margin-bottom:20px;">
       <p style="font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#B8CDD2;margin:0 0 6px;">Status Lamaranmu</p>

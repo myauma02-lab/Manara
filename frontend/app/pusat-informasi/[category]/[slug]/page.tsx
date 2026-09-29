@@ -1,10 +1,9 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { infoApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
+import { sanitizeRichText } from "@/lib/sanitizeHtml";
+import { serverInfoApi } from "@/lib/server-api";
+import type { Metadata } from "next";
 
 const CATEGORY_CONFIG: Record<string, { title: string; color: string; grad: string; listHref: string }> = {
   news:     { title: "News",       color: "#266c87", grad: "linear-gradient(135deg,#0F2830,#266c87)", listHref: "/pusat-informasi/news" },
@@ -13,32 +12,21 @@ const CATEGORY_CONFIG: Record<string, { title: string; color: string; grad: stri
   agenda:   { title: "Key Agenda", color: "#8A8F5E", grad: "linear-gradient(135deg,#141408,#4A4E28)", listHref: "/pusat-informasi/agenda" },
 };
 
-export default function InfoDetailPage() {
-  const { category, slug } = useParams();
-  const [item, setItem] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+type PageProps = { params: Promise<{ category: string; slug: string }> };
 
-  const config = CATEGORY_CONFIG[String(category)] || CATEGORY_CONFIG.news;
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const item = await serverInfoApi.detail(slug);
+  return {
+    title: item?.title ? `${item.title} | Manara` : "Pusat Informasi Manara",
+    description: item?.excerpt || item?.title || "Informasi dan berita terbaru dari Manara.",
+  };
+}
 
-  useEffect(() => {
-    infoApi.detail(String(slug))
-      .then(r => {
-        setItem(r.data.data);
-        if (r.data.data?.title) document.title = `${r.data.data.title} | Manara`;
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [slug]);
-
-  if (loading) return (
-    <main>
-      <Navbar />
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#F4F7F7", paddingTop: "80px" }}>
-        <p style={{ color: "#7A9AA5", fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300 }}>Memuat...</p>
-      </div>
-      <Footer />
-    </main>
-  );
+export default async function InfoDetailPage({ params }: PageProps) {
+  const { category, slug } = await params;
+  const item = await serverInfoApi.detail(slug);
+  const config = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.news;
 
   if (!item) return (
     <main>
@@ -128,7 +116,7 @@ export default function InfoDetailPage() {
 
           {/* Content */}
           {item.content && (
-            <div className="prose" dangerouslySetInnerHTML={{ __html: item.content }} />
+            <div className="prose" dangerouslySetInnerHTML={{ __html: sanitizeRichText(item.content) }} />
           )}
 
           {/* Download PDF untuk magazine */}

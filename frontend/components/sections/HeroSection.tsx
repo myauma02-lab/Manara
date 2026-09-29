@@ -1,29 +1,8 @@
-"use client";
-import { useEffect, useState } from "react";
-import { publicationsApi, fellowsApi } from "@/lib/api";
+import { serverHomepageStatsApi } from "@/lib/server-api";
 import Link from "next/link";
 
-export default function HeroSection() {
-  const [stats, setStats] = useState({
-    publikasi: 0,
-    fellows: 0,
-    loaded: false,
-  });
-
-  useEffect(() => {
-    Promise.all([
-      publicationsApi.list({ limit: 1 }),
-      fellowsApi.list(),
-    ])
-      .then(([pubRes, fellowRes]) => {
-        setStats({
-          publikasi: pubRes.data.pagination?.total || 0,
-          fellows: (fellowRes.data.data || []).length,
-          loaded: true,
-        });
-      })
-      .catch(() => setStats(s => ({ ...s, loaded: true })));
-  }, []);
+export default async function HeroSection() {
+  const stats = await serverHomepageStatsApi.get();
 
   return (
     <section style={{
@@ -118,12 +97,12 @@ export default function HeroSection() {
         }}>
           {[
             {
-              value: stats.loaded ? (stats.publikasi > 0 ? stats.publikasi.toString() : "—") : "...",
+              value: stats.publicationCount && stats.publicationCount > 0 ? stats.publicationCount.toString() : "—",
               label: "Publikasi",
               sub: "Artikel, Paper & Journal",
             },
             {
-              value: stats.loaded ? (stats.fellows > 0 ? stats.fellows.toString() : "—") : "...",
+              value: stats.fellowCount && stats.fellowCount > 0 ? stats.fellowCount.toString() : "—",
               label: "Fellows",
               sub: "Peneliti & Akademisi",
             },

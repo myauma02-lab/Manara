@@ -8,7 +8,7 @@ export default function DashboardIndexPage() {
   const { user, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
-    if (!isAuthenticated) { router.replace("/login"); return; }
+    if (!isAuthenticated) { router.replace("/portal"); return; }
     if (user) router.replace(getDashboardPath(user.role));
   }, [user, isAuthenticated, router]);
 

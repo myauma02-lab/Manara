@@ -4,7 +4,7 @@
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://postgres-production-e4294.up.railway.app/api";
+  "https://api.manarainstitute.id/api";
 
 async function serverFetch<T>(
   path: string,
@@ -18,6 +18,18 @@ async function serverFetch<T>(
     if (!res.ok) return null;
     const data = await res.json();
     return data.data ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function serverFetchPayload<T>(path: string): Promise<T | null> {
+  try {
+    const res = await fetch(`${API_URL}${path}`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+    return await res.json() as T;
   } catch {
     return null;
   }
@@ -63,4 +75,21 @@ export const serverSettingsApi = {
 export const serverFoundersApi = {
   list: () => serverFetch<any[]>("/founders"),
   detail: (slug: string) => serverFetch<any>(`/founders/${slug}`),
+};
+
+export const serverFellowsApi = {
+  list: () => serverFetch<any[]>("/fellows"),
+};
+
+export const serverHomepageStatsApi = {
+  get: async () => {
+    const [publications, fellows] = await Promise.all([
+      serverFetchPayload<{ pagination?: { total?: number } }>("/publications?limit=1"),
+      serverFellowsApi.list(),
+    ]);
+    return {
+      publicationCount: publications?.pagination?.total ?? null,
+      fellowCount: fellows?.length ?? null,
+    };
+  },
 };

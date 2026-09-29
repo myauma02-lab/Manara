@@ -1,10 +1,8 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { foundersApi, publicationsApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
+import { serverFoundersApi, serverPublicationsApi } from "@/lib/server-api";
+import type { Metadata } from "next";
 
 const GRADS = [
   "linear-gradient(145deg,#266c87,#0F2830)",
@@ -12,36 +10,23 @@ const GRADS = [
   "linear-gradient(145deg,#5F8F8A,#3F6F6A)",
 ];
 
-export default function FounderDetailPage() {
-  const { slug } = useParams();
-  const [founder, setFounder] = useState<any>(null);
-  const [publications, setPublications] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+type PageProps = { params: Promise<{ slug: string }> };
 
-  useEffect(() => {
-    foundersApi.detail(String(slug))
-      .then(r => {
-        const f = r.data.data;
-        setFounder(f);
-        if (f?.name) document.title = `${f.name} | Founder Manara`;
-        // Load publikasi oleh founder ini kalau ada relasi
-        // `author` isn't part of the published params type, cast to any to allow passing it
-        return publicationsApi.list({ author: f?.id, limit: 6 } as any);
-      })
-      .then(r => setPublications(r.data.data || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [slug]);
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const founder = await serverFoundersApi.detail(slug);
+  return {
+    title: founder?.name ? `${founder.name} | Founder Manara` : "Founder Manara",
+    description: founder?.bio || "Kenali para pendiri Manara.",
+  };
+}
 
-  if (loading) return (
-    <main>
-      <Navbar />
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#F4F7F7", paddingTop: "80px" }}>
-        <p style={{ color: "#7A9AA5", fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300 }}>Memuat profil...</p>
-      </div>
-      <Footer />
-    </main>
-  );
+export default async function FounderDetailPage({ params }: PageProps) {
+  const { slug } = await params;
+  const founder = await serverFoundersApi.detail(slug);
+  const publications = founder
+    ? await serverPublicationsApi.list({ author: founder.id, limit: "6" }) || []
+    : [];
 
   if (!founder) return (
     <main>

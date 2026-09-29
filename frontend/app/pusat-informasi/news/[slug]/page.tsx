@@ -1,63 +1,26 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 
-import { infoApi } from "@/lib/api";
+import { serverInfoApi } from "@/lib/server-api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import SocialShare from "@/components/shared/ShareButtons";
+import { sanitizeRichText } from "@/lib/sanitizeHtml";
 
-export default function NewsDetailPage() {
-const params = useParams();
-const slug = params.slug as string;
+type PageProps = { params: Promise<{ slug: string }> };
 
-const [news, setNews] = useState<any>(null);
-const [loading, setLoading] = useState(true);
-
-useEffect(() => {
-if (!slug) return;
-
-infoApi
-  .detail(slug)
-  .then((res) => {
-    setNews(res.data.data);
-  })
-  .catch((error) => {
-    console.error("Gagal memuat berita:", error);
-    setNews(null);
-  })
-  .finally(() => {
-    setLoading(false);
-  });
-
-}, [slug]);
-
-if (loading) {
-  return (
-    <main>
-      <Navbar />
-
-      <div
-        style={{
-          minHeight: "70vh",
-          paddingTop: "160px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          background: "#F4F7F7",
-        }}
-      >
-        <p style={{ color: "#7A9AA5" }}>
-          Memuat berita...
-        </p>
-      </div>
-
-      <Footer />
-    </main>
-  );
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const news = await serverInfoApi.detail(slug);
+  return {
+    title: news?.title ? `${news.title} | Manara` : "Berita Manara",
+    description: news?.excerpt || news?.title || "Berita terbaru dari Manara.",
+  };
 }
+
+export default async function NewsDetailPage({ params }: PageProps) {
+const { slug } = await params;
+const news = await serverInfoApi.detail(slug);
 
 if (!news) {
   return (
@@ -110,10 +73,7 @@ if (!news) {
   );
 }
 
-const articleUrl =
-  typeof window !== "undefined"
-    ? window.location.href
-    : `https://manarainstitute.id/pusat-informasi/news/${slug}`;
+const articleUrl = `https://manarainstitute.id/pusat-informasi/news/${slug}`;
 
   return (
     <main>
@@ -322,7 +282,7 @@ const articleUrl =
       <div
         className="article-content"
         dangerouslySetInnerHTML={{
-          __html: news.content || "",
+          __html: sanitizeRichText(news.content),
         }}
       />
 

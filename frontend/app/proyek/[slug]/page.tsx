@@ -1,11 +1,9 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { projectsApi, publicationsApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import ReadingProgress from "@/components/shared/ReadingProgress";
+import { serverProjectsApi, serverPublicationsApi } from "@/lib/server-api";
+import type { Metadata } from "next";
 
 const STATUS_CONFIG = {
   ACTIVE:    { label: "Aktif",       color: "#3F6F6A", bg: "rgba(63,111,106,0.12)",  dot: "#3F6F6A" },
@@ -14,50 +12,28 @@ const STATUS_CONFIG = {
   ARCHIVED:  { label: "Diarsipkan",  color: "#7A9AA5", bg: "rgba(122,154,165,0.1)",  dot: "#B8CDD2" },
 } as const;
 
-export default function ProyekDetailPage() {
-  const { slug } = useParams();
-  const [project, setProject] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [relatedPubs, setRelatedPubs] = useState<any[]>([]);
-  const [related, setRelated] = useState<any[]>([]);
+type PageProps = { params: Promise<{ slug: string }> };
 
-  useEffect(() => {
-    projectsApi.detail(String(slug))
-      .then(async r => {
-        const p = r.data.data;
-        setProject(p);
-        if (p?.title) document.title = `${p.title} | Proyek Manara`;
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await serverProjectsApi.detail(slug);
+  return {
+    title: project?.title ? `${project.title} | Proyek Manara` : "Proyek Manara",
+    description: project?.description || "Jelajahi proyek riset dan inisiatif Manara.",
+  };
+}
 
-        // Load related publications
-        if (p?.relatedPubs?.length > 0) {
-          const pubPromises = p.relatedPubs.slice(0, 3).map((pubSlug: string) =>
-            publicationsApi.detail(pubSlug).catch(() => null)
-          );
-          const pubs = (await Promise.all(pubPromises)).filter(Boolean).map(r => r?.data?.data);
-          setRelatedPubs(pubs.filter(Boolean));
-        }
-
-        // Load related projects
-        return projectsApi.list({ category: p?.category, limit: 4 });
-      })
-      .then(r => {
-        setRelated((r?.data?.data || []).filter((p: any) => p.slug !== slug).slice(0, 3));
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [slug]);
-
-  if (loading) return (
-    <main>
-      <Navbar />
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#F4F7F7", paddingTop: "80px" }}>
-        <p style={{ color: "#7A9AA5", fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300 }}>
-          Memuat proyek...
-        </p>
-      </div>
-      <Footer />
-    </main>
-  );
+export default async function ProyekDetailPage({ params }: PageProps) {
+  const { slug } = await params;
+  const project = await serverProjectsApi.detail(slug);
+  const [relatedPubsData, relatedData] = project
+    ? await Promise.all([
+        Promise.all((project.relatedPubs || []).slice(0, 3).map((pubSlug: string) => serverPublicationsApi.detail(pubSlug))),
+        serverProjectsApi.list(project.category ? { category: project.category, limit: "4" } : { limit: "4" }),
+      ])
+    : [[], []];
+  const relatedPubs = (relatedPubsData || []).filter(Boolean);
+  const related = (relatedData || []).filter((item: any) => item.slug !== slug).slice(0, 3);
 
   if (!project) return (
     <main>

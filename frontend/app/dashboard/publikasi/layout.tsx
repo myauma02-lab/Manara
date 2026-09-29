@@ -35,7 +35,7 @@ export default function PublikasiLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
-    if (!isAuthenticated) { router.replace("/login"); return; }
+    if (!isAuthenticated) { router.replace("/portal"); return; }
     if (user && !ALLOWED_ROLES.includes(user.role)) router.replace("/dashboard");
   }, [isAuthenticated, user, router]);
 
@@ -100,7 +100,7 @@ export default function PublikasiLayout({ children }: { children: React.ReactNod
                   <p style={{ fontSize: "12px", fontWeight: 500, color: "#EEF4F6", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.name}</p>
                   <p style={{ fontSize: "10px", color: "rgba(134,175,170,0.5)" }}>{ROLE_LABEL[user.role] || "Tim Publikasi"}</p>
                 </div>
-                <button onClick={() => { logout(); router.replace("/login"); }} style={{ background: "none", border: "none", color: "rgba(134,175,170,0.3)", cursor: "pointer", fontSize: "14px", padding: "2px" }}>⏏</button>
+                <button onClick={() => { logout(); router.replace("/portal"); }} style={{ background: "none", border: "none", color: "rgba(134,175,170,0.3)", cursor: "pointer", fontSize: "14px", padding: "2px" }}>⏏</button>
               </>
             )}
           </div>

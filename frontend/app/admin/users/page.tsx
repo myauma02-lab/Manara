@@ -141,10 +141,10 @@ export default function AdminUsersPage() {
                     </button>
                     <button onClick={() => {
                       const newPw = prompt(`Reset password untuk ${u.name}?\nMasukkan password baru:`);
-                      if (newPw && newPw.length >= 6) {
+                      if (newPw && newPw.length >= 8) {
                         usersApi.resetPassword(u.id, newPw).then(() => alert("Password berhasil direset!")).catch(() => alert("Gagal reset password"));
                       } else if (newPw) {
-                        alert("Password minimal 6 karakter");
+                        alert("Password minimal 8 karakter");
                       }
                     }}
                       style={{ fontSize: "12px", color: "#C6AD8A", border: "1px solid rgba(198,173,138,0.25)", borderRadius: "4px", padding: "5px 12px", background: "none", cursor: "pointer" }}>
@@ -185,8 +185,8 @@ function CreateUserModal({ onClose, onSuccess }: { onClose: () => void; onSucces
     if (!form.name || !form.email || !form.password) {
       setError("Semua field wajib diisi"); return;
     }
-    if (form.password.length < 6) {
-      setError("Password minimal 6 karakter"); return;
+    if (form.password.length < 8) {
+      setError("Password minimal 8 karakter"); return;
     }
     setSaving(true);
     try {

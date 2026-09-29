@@ -1,58 +1,25 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { publicationsApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import ShareButtons from "@/components/shared/ShareButtons";
+import PublicationDownloadLink from "@/components/shared/PublicationDownloadLink";
+import { serverPublicationsApi } from "@/lib/server-api";
+import type { Metadata } from "next";
 
+type PageProps = { params: Promise<{ slug: string }> };
 
-export default function PaperDetailPage() {
-  const { slug } = useParams();
-  const [paper, setPaper] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState(false);
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const paper = await serverPublicationsApi.detail(slug);
+  return {
+    title: paper?.title ? `${paper.title} | Manara Paper` : "Manara Paper",
+    description: paper?.abstract || paper?.excerpt || "Publikasi riset Manara Paper.",
+  };
+}
 
-  useEffect(() => {
-    publicationsApi.detail(String(slug))
-      .then(r => {
-        setPaper(r.data.data);
-        if (r.data.data?.title) document.title = `${r.data.data.title} | Manara Paper`;
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [slug]);
-
-const handleDownload = async () => {
-  if (!paper?.pdfUrl) { alert("File tidak tersedia"); return; }
-  setDownloading(true);
-  try {
-    // Increment count dulu
-    await publicationsApi.download(paper.slug).catch(() => {});
-    // Buka URL langsung — bukan dari window.open setelah await
-    // tapi pakai anchor programmatic
-    const a = document.createElement("a");
-    a.href = paper.pdfUrl;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  } finally {
-    setDownloading(false);
-  }
-};
-
-  if (loading) return (
-    <main>
-      <Navbar />
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#F4F7F7", paddingTop: "80px" }}>
-        <p style={{ color: "#7A9AA5", fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300 }}>Memuat paper...</p>
-      </div>
-      <Footer />
-    </main>
-  );
+export default async function PaperDetailPage({ params }: PageProps) {
+  const { slug } = await params;
+  const paper = await serverPublicationsApi.detail(slug);
 
   if (!paper) return (
     <main>
@@ -115,13 +82,9 @@ const handleDownload = async () => {
 
           {/* Download button */}
           {paper.pdfUrl && (
-              <a
+              <PublicationDownloadLink
+              slug={paper.slug}
               href={paper.pdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => {
-                publicationsApi.download(paper.slug).catch(() => {});
-              }}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -142,7 +105,7 @@ const handleDownload = async () => {
               <span style={{ fontSize: "11px", opacity: 0.6 }}>
                 · {paper.downloadCount || 0} unduhan
               </span>
-            </a>
+            </PublicationDownloadLink>
           )}
 
         {/* Abstract */}

@@ -1,6 +1,4 @@
-"use client";
-import { useEffect, useState } from "react";
-import { projectsApi } from "@/lib/api";
+import { serverProjectsApi } from "@/lib/server-api";
 import Link from "next/link";
 
 const STATUS_CONFIG = {
@@ -17,18 +15,9 @@ const GRADS = [
   "linear-gradient(135deg,#6E7448,#A4AA7A)",
 ];
 
-export default function ProjectsSection() {
-  const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    projectsApi.list({ limit: 4 })
-      .then(r => setProjects(r.data.data || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  const isEmpty = !loading && projects.length === 0;
+export default async function ProjectsSection() {
+  const projects = await serverProjectsApi.list({ limit: "4" }) || [];
+  const isEmpty = projects.length === 0;
 
   return (
     <section style={{ padding: "100px 0", background: "#0F2830" }}>
@@ -50,21 +39,6 @@ export default function ProjectsSection() {
           </Link>
         </div>
 
-        {/* Loading */}
-        {loading && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: "16px" }} className="two-col-grid">
-            {[1,2,3,4].map(i => (
-              <div key={i} style={{ background: "rgba(38,108,135,0.06)", borderRadius: "4px", overflow: "hidden", animation: "pulse 1.5s infinite" }}>
-                <div style={{ aspectRatio: "16/9", background: "rgba(38,108,135,0.08)" }} />
-                <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <div style={{ height: "12px", background: "rgba(38,108,135,0.08)", borderRadius: "2px", width: "30%" }} />
-                  <div style={{ height: "18px", background: "rgba(38,108,135,0.08)", borderRadius: "2px" }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
         {/* Empty */}
         {isEmpty && (
           <div style={{ textAlign: "center", padding: "64px 0", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px" }}>
@@ -79,7 +53,7 @@ export default function ProjectsSection() {
         )}
 
         {/* Grid */}
-        {!loading && projects.length > 0 && (
+        {projects.length > 0 && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: "16px" }} className="two-col-grid">
             {projects.map((p, i) => {
               const sc = STATUS_CONFIG[p.status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.UPCOMING;
@@ -93,14 +67,7 @@ export default function ProjectsSection() {
                     transition: "all 0.2s",
                     height: "100%",
                   }}
-                    onMouseEnter={e => {
-                      (e.currentTarget as HTMLElement).style.background = "rgba(38,108,135,0.1)";
-                      (e.currentTarget as HTMLElement).style.borderColor = "rgba(38,108,135,0.25)";
-                    }}
-                    onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.background = "rgba(38,108,135,0.06)";
-                      (e.currentTarget as HTMLElement).style.borderColor = "rgba(38,108,135,0.12)";
-                    }}
+                    className="project-card"
                   >
                     {/* Cover */}
                     <div style={{ aspectRatio: "16/9", background: p.coverImage ? `url(${p.coverImage}) center/cover` : GRADS[i % GRADS.length], position: "relative" }}>
@@ -147,6 +114,8 @@ export default function ProjectsSection() {
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
         @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.75)} }
+        .project-card:hover { background: rgba(38,108,135,0.1) !important; border-color: rgba(38,108,135,0.25) !important; }
+        .project-card:focus-visible { outline: 2px solid #86AFAA; outline-offset: 3px; }
         @media (max-width: 640px) {
           .two-col-grid { grid-template-columns: 1fr !important; }
         }

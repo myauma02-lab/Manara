@@ -4,8 +4,6 @@ const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://api.manarainstitute.id/api";
 
-console.log("API_URL =", API_URL);
-
 export const api = axios.create({
   baseURL: API_URL,
 });
@@ -38,7 +36,7 @@ api.interceptors.response.use(
       try {
         localStorage.removeItem("manara-auth");
         if (typeof window !== "undefined") {
-          window.location.href = "/login";
+          window.location.href = "/portal";
         }
       } catch { }
     }

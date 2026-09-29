@@ -2,8 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import { DM_Sans, Cormorant_Garamond } from "next/font/google";
-import AIChatFloat from "@/components/shared/AIChatFloat";
-import WhatsAppFloat from "@/components/shared/WhatsAppFloat";
+import SiteWidgets from "@/components/shared/SiteWidgets";
 import HeroBackground from "@/components/shared/HeroBackground";
 import { HERO_BG_KEYS } from "@/lib/hero-settings";
 
@@ -107,7 +106,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -123,8 +121,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           {children}
         </HeroBackground>
-        <AIChatFloat />
-        <WhatsAppFloat />
+        <SiteWidgets />
       </body>
     </html>
   );

@@ -20,7 +20,7 @@ export default function HRLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
-    if (!isAuthenticated) { router.replace("/login"); return; }
+    if (!isAuthenticated) { router.replace("/portal"); return; }
     const allowed = ["SUPERADMIN", "SEKJEN", "HR"];
     if (user && !allowed.includes(user.role)) {
       router.replace("/dashboard");
@@ -131,7 +131,7 @@ export default function HRLayout({ children }: { children: React.ReactNode }) {
               </div>
             )}
             {sidebarOpen && (
-              <button onClick={() => { logout(); router.replace("/login"); }}
+              <button onClick={() => { logout(); router.replace("/portal"); }}
                 style={{ background: "none", border: "none", color: "rgba(95,143,138,0.3)", cursor: "pointer", fontSize: "14px", padding: "2px" }}
                 title="Keluar">
                 ⏏

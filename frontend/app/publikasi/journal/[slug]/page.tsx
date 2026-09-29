@@ -1,50 +1,25 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { publicationsApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import ShareButtons from "@/components/shared/ShareButtons";
+import PublicationDownloadLink from "@/components/shared/PublicationDownloadLink";
+import { serverPublicationsApi } from "@/lib/server-api";
+import type { Metadata } from "next";
 
-export default function JournalDetailPage() {
-  const { slug } = useParams();
-  const [journal, setJournal] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState(false);
+type PageProps = { params: Promise<{ slug: string }> };
 
-  useEffect(() => {
-    publicationsApi.detail(String(slug))
-      .then(r => {
-        setJournal(r.data.data);
-        if (r.data.data?.title) document.title = `${r.data.data.title} | Manara Journal`;
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [slug]);
-
-  const handleDownload = async () => {
-    if (!journal) return;
-    setDownloading(true);
-    try {
-      const res = await publicationsApi.download(journal.slug);
-      window.open(res.data.url, "_blank");
-    } catch {
-      alert("File tidak tersedia");
-    } finally {
-      setDownloading(false);
-    }
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const journal = await serverPublicationsApi.detail(slug);
+  return {
+    title: journal?.title ? `${journal.title} | Manara Journal` : "Manara Journal",
+    description: journal?.abstract || journal?.excerpt || "Publikasi ilmiah Manara Journal.",
   };
+}
 
-  if (loading) return (
-    <main>
-      <Navbar />
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#F4F7F7", paddingTop: "80px" }}>
-        <p style={{ color: "#7A9AA5", fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300 }}>Memuat artikel jurnal...</p>
-      </div>
-      <Footer />
-    </main>
-  );
+export default async function JournalDetailPage({ params }: PageProps) {
+  const { slug } = await params;
+  const journal = await serverPublicationsApi.detail(slug);
 
   if (!journal) return (
     <main>
@@ -129,13 +104,9 @@ export default function JournalDetailPage() {
 
           {/* Download */}
           {journal.pdfUrl && (
-            <a
-              href={journal.pdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => {
-                publicationsApi.download(journal.slug).catch(() => {});
-              }}
+              <PublicationDownloadLink
+                slug={journal.slug}
+                href={journal.pdfUrl}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -156,7 +127,7 @@ export default function JournalDetailPage() {
               <span style={{ fontSize: "11px", opacity: 0.6 }}>
                 · {journal.downloadCount || 0}
               </span>
-            </a>
+              </PublicationDownloadLink>
           )}
 
           {/* Abstract */}

@@ -1,11 +1,15 @@
-"use client";
-import { useEffect, useState } from "react";
-import { foundersApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import HeroBackground from "@/components/shared/HeroBackground";
 import { HERO_BG_KEYS } from "@/lib/hero-settings";
+import { serverFoundersApi } from "@/lib/server-api";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Founder Manara",
+  description: "Kenali para pendiri Manara dan gagasan yang membentuk kolektif kami.",
+};
 
 const GRADS = [
   "linear-gradient(145deg,#266c87,#0F2830)",
@@ -15,16 +19,8 @@ const GRADS = [
   "linear-gradient(145deg,#6E7448,#8A8F5E)",
 ];
 
-export default function FounderListPage() {
-  const [founders, setFounders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    foundersApi.list()
-      .then(r => setFounders(r.data.data || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+export default async function FounderListPage() {
+  const founders = await serverFoundersApi.list() || [];
 
   return (
     <main>
@@ -64,27 +60,14 @@ export default function FounderListPage() {
       {/* Grid founders */}
       <section style={{ padding: "80px clamp(20px,5vw,40px) 120px", background: "#F4F7F7" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-          {loading ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: "24px" }}>
-              {[1,2,3,4,5].map(i => (
-                <div key={i} style={{ background: "#fff", borderRadius: "4px", overflow: "hidden", animation: "pulse 1.5s infinite" }}>
-                  <div style={{ aspectRatio: "3/4", background: "rgba(38,108,135,0.06)" }} />
-                  <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                    <div style={{ height: "16px", background: "rgba(38,108,135,0.06)", borderRadius: "2px", width: "70%" }} />
-                    <div style={{ height: "12px", background: "rgba(38,108,135,0.04)", borderRadius: "2px", width: "50%" }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: "24px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(100%,200px),1fr))", gap: "24px" }}>
               {founders.map((founder, i) => (
                 <Link
                   key={founder.id}
                   href={founder.slug ? `/tentang/founder/${founder.slug}` : "#"}
                   style={{ textDecoration: "none" }}
                 >
-                  <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", overflow: "hidden", transition: "all 0.25s", cursor: "pointer" }}>
+                  <div className="founder-card" style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", overflow: "hidden", transition: "all 0.25s", cursor: "pointer" }}>
                     {/* Foto */}
                     <div style={{ aspectRatio: "3/4", position: "relative", background: founder.photo ? undefined : GRADS[i % 5] }}>
                       {founder.photo ? (
@@ -117,9 +100,8 @@ export default function FounderListPage() {
                 </Link>
               ))}
             </div>
-          )}
 
-          {!loading && founders.length === 0 && (
+          {founders.length === 0 && (
             <div style={{ textAlign: "center", padding: "80px 0" }}>
               <p style={{ fontFamily: "Georgia,serif", fontSize: "22px", color: "#7A9AA5" }}>Data founder belum tersedia.</p>
             </div>
@@ -139,7 +121,6 @@ export default function FounderListPage() {
 
       <Footer />
       <style>{`
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
         .founder-card:hover .founder-overlay { opacity: 1 !important; }
       `}</style>
     </main>

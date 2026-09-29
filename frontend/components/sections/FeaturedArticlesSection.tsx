@@ -1,18 +1,8 @@
-"use client";
-import { useEffect, useState } from "react";
-import { publicationsApi } from "@/lib/api";
+import { serverPublicationsApi } from "@/lib/server-api";
 import Link from "next/link";
 
-export default function FeaturedArticlesSection() {
-  const [articles, setArticles] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    publicationsApi.list({ type: "ARTICLE", limit: 4 })
-      .then(r => setArticles(r.data.data || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+export default async function FeaturedArticlesSection() {
+  const articles = await serverPublicationsApi.list({ type: "ARTICLE", limit: "4" }) || [];
 
   const getReadTime = (content: string) => {
     const words = (content || "").replace(/<[^>]*>/g, " ").split(/\s+/).filter(Boolean).length;
@@ -22,7 +12,7 @@ export default function FeaturedArticlesSection() {
   const featured = articles[0];
   const rest = articles.slice(1);
 
-  if (!loading && articles.length === 0) return null;
+  if (!featured) return null;
 
   return (
     <section style={{ padding: "100px 0", background: "#F4F7F7" }}>
@@ -44,22 +34,7 @@ export default function FeaturedArticlesSection() {
           </Link>
         </div>
 
-        {/* Loading skeleton */}
-        {loading && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} style={{ background: "#fff", borderRadius: "4px", overflow: "hidden", animation: "pulse 1.5s infinite" }}>
-                <div style={{ aspectRatio: "16/9", background: "rgba(38,108,135,0.06)" }} />
-                <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <div style={{ height: "12px", background: "rgba(38,108,135,0.06)", borderRadius: "2px", width: "30%" }} />
-                  <div style={{ height: "20px", background: "rgba(38,108,135,0.06)", borderRadius: "2px" }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {!loading && featured && (
+        {featured && (
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
             {/* Featured — besar */}

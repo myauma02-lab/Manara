@@ -1,52 +1,35 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { publicationsApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import ReadingProgress from "@/components/shared/ReadingProgress";
 import ShareButtons from "@/components/shared/ShareButtons";
+import { sanitizeRichText } from "@/lib/sanitizeHtml";
+import { serverPublicationsApi } from "@/lib/server-api";
+import type { Metadata } from "next";
 
-export default function ArtikelDetailPage() {
-  const { slug } = useParams();
-  const [article, setArticle] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [related, setRelated] = useState<any[]>([]);
+type PageProps = { params: Promise<{ slug: string }> };
 
-  useEffect(() => {
-    publicationsApi.detail(String(slug))
-      .then(r => {
-        const data = r.data.data;
-        setArticle(data);
-        if (data?.title) document.title = `${data.title} | Manara`;
-        return publicationsApi.list({ type: "ARTICLE", limit: 4 });
-      })
-      .then(r => {
-        setRelated((r.data.data || []).filter((a: any) => a.slug !== slug).slice(0, 3));
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [slug]);
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await serverPublicationsApi.detail(slug);
+  return {
+    title: article?.title ? `${article.title} | Manara` : "Artikel Manara",
+    description: article?.excerpt || "Artikel terbaru dari Manara.",
+  };
+}
+
+export default async function ArtikelDetailPage({ params }: PageProps) {
+  const { slug } = await params;
+  const [article, relatedData] = await Promise.all([
+    serverPublicationsApi.detail(slug),
+    serverPublicationsApi.list({ type: "ARTICLE", limit: "4" }),
+  ]);
+  const related = (relatedData || []).filter((item: any) => item.slug !== slug).slice(0, 3);
 
   const getReadTime = (content: string) => {
     const words = content?.replace(/<[^>]*>/g, " ").trim().split(/\s+/).length || 0;
     return Math.max(1, Math.ceil(words / 200));
   };
-
-  if (loading) return (
-    <main>
-      <Navbar />
-      <div style={{ minHeight: "100vh", background: "#F4F7F7", paddingTop: "120px" }}>
-        <div style={{ maxWidth: "760px", margin: "0 auto", padding: "0 24px" }}>
-          {[1,2,3].map(i => (
-            <div key={i} style={{ height: i === 1 ? "48px" : "16px", background: "rgba(38,108,135,0.06)", borderRadius: "2px", marginBottom: "16px", width: i === 2 ? "60%" : "100%", animation: "pulse 1.5s infinite" }} />
-          ))}
-        </div>
-      </div>
-      <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }`}</style>
-    </main>
-  );
 
   if (!article) return (
     <main>
@@ -136,7 +119,7 @@ export default function ArtikelDetailPage() {
           )}
 
           {/* Content */}
-          <div className="prose has-dropcap" dangerouslySetInnerHTML={{ __html: article.content || "" }} />
+          <div className="prose has-dropcap" dangerouslySetInnerHTML={{ __html: sanitizeRichText(article.content) }} />
 
           {/* Tags */}
           {article.tags?.length > 0 && (

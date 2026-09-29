@@ -21,7 +21,7 @@ export default function FinanceLayout({ children }: { children: React.ReactNode 
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
-    if (!isAuthenticated) { router.replace("/login"); return; }
+    if (!isAuthenticated) { router.replace("/portal"); return; }
     const allowed = ["SUPERADMIN", "SEKJEN", "KEUANGAN"];
     if (user && !allowed.includes(user.role)) router.replace("/dashboard");
   }, [isAuthenticated, user, router]);
@@ -110,7 +110,7 @@ export default function FinanceLayout({ children }: { children: React.ReactNode 
                   </p>
                   <p style={{ fontSize: "10px", color: "rgba(198,173,138,0.5)" }}>Tim Keuangan</p>
                 </div>
-                <button onClick={() => { logout(); router.replace("/login"); }}
+                <button onClick={() => { logout(); router.replace("/portal"); }}
                   style={{ background: "none", border: "none", color: "rgba(198,173,138,0.3)", cursor: "pointer", fontSize: "14px", padding: "2px" }}>
                   ⏏
                 </button>

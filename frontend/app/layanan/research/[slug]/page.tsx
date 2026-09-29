@@ -1,10 +1,8 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { projectsApi } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
+import { serverProjectsApi } from "@/lib/server-api";
+import type { Metadata } from "next";
 
 const STATUS_CONFIG: any = {
   UPCOMING: { label: "Akan Datang", color: "#266c87", bg: "rgba(38,108,135,0.08)" },
@@ -13,33 +11,22 @@ const STATUS_CONFIG: any = {
   ARCHIVED: { label: "Diarsipkan", color: "#7A9AA5", bg: "rgba(122,154,165,0.1)" },
 };
 
-export default function ResearchDetailPage() {
-  const { slug } = useParams();
-  const [project, setProject] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [related, setRelated] = useState<any[]>([]);
+type PageProps = { params: Promise<{ slug: string }> };
 
-  
-  useEffect(() => {
-    projectsApi.detail(String(slug))
-      .then(r => {
-        setProject(r.data.data);
-        if (r.data.data?.title) document.title = `${r.data.data.title} | Research Manara`;
-        return projectsApi.list();
-      })
-      .then(r => setRelated((r.data.data || []).filter((p: any) => p.slug !== slug).slice(0, 3)))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [slug]);
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await serverProjectsApi.detail(slug);
+  return {
+    title: project?.title ? `${project.title} | Research Manara` : "Research Manara",
+    description: project?.description || "Riset dan proyek kajian Manara.",
+  };
+}
 
-  if (loading) return (
-    <main><Navbar />
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#F4F7F7", paddingTop: "80px" }}>
-        <p style={{ color: "#7A9AA5", fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300 }}>Memuat...</p>
-      </div>
-      <Footer />
-    </main>
-  );
+export default async function ResearchDetailPage({ params }: PageProps) {
+  const { slug } = await params;
+  const project = await serverProjectsApi.detail(slug);
+  const relatedData = project ? await serverProjectsApi.list() : [];
+  const related = (relatedData || []).filter((item: any) => item.slug !== slug).slice(0, 3);
 
   if (!project) return (
     <main><Navbar />

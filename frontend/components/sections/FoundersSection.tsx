@@ -1,6 +1,4 @@
-"use client";
-import { useEffect, useState } from "react";
-import { foundersApi } from "@/lib/api";
+import { serverFoundersApi } from "@/lib/server-api";
 import Link from "next/link";
 
 const GRADIENT_MAP = [
@@ -11,24 +9,16 @@ const GRADIENT_MAP = [
   "linear-gradient(145deg,#6E7448,#8A8F5E)",
 ];
 
-export default function FoundersSection() {
-  const [founders, setFounders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+const FALLBACK_FOUNDERS = [
+  { id: "1", name: "Mutamimul Yhauma", role: "Co-Founder", photo: null, slug: null },
+  { id: "2", name: "Oca Aulia Putri Nofianti", role: "Co-Founder", photo: null, slug: null },
+  { id: "3", name: "Shalsa Bila Agustina", role: "Co-Founder", photo: null, slug: null },
+  { id: "4", name: "Firstamarya Diffa Oktavinanti", role: "Co-Founder", photo: null, slug: null },
+  { id: "5", name: "Sultan Isjad Ubaidillah", role: "Co-Founder", photo: null, slug: null },
+];
 
-  useEffect(() => {
-    foundersApi.list()
-      .then(r => setFounders(r.data.data || []))
-      .catch(() => {
-        setFounders([
-          { id: "1", name: "Mutamimul Yhauma", role: "Co-Founder", photo: null, slug: null },
-          { id: "2", name: "Oca Aulia Putri Nofianti", role: "Co-Founder", photo: null, slug: null },
-          { id: "3", name: "Shalsa Bila Agustina", role: "Co-Founder", photo: null, slug: null },
-          { id: "4", name: "Firstamarya Diffa Oktavinanti", role: "Co-Founder", photo: null, slug: null },
-          { id: "5", name: "Sultan Isjad Ubaidillah", role: "Co-Founder", photo: null, slug: null },
-        ]);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+export default async function FoundersSection() {
+  const founders = await serverFoundersApi.list() || FALLBACK_FOUNDERS;
 
   return (
     <section id="founders" style={{ padding: "100px 0", background: "#F8FAFA", overflow: "hidden" }}>

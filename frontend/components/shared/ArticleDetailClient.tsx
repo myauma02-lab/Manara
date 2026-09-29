@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import { Clock, Eye, ArrowLeft } from 'lucide-react';
+import { sanitizeRichText } from '@/lib/sanitizeHtml';
 
 export default function ArticleDetailClient({ slug }: { slug: string }) {
   const [article, setArticle] = useState<any>(null);
@@ -77,7 +78,7 @@ export default function ArticleDetailClient({ slug }: { slug: string }) {
         )}
 
         {/* Content */}
-        <div className="prose-manara" dangerouslySetInnerHTML={{ __html: article.content }} />
+        <div className="prose-manara" dangerouslySetInnerHTML={{ __html: sanitizeRichText(article.content) }} />
 
         {/* Tags */}
         {article.tags?.length > 0 && (

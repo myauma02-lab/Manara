@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/lib/store/authStore";
+import { getDashboardPath, useAuthStore } from "@/lib/store/authStore";
 
 // HOC untuk proteksi halaman berdasarkan role
 export function withRoleGuard(
@@ -14,12 +14,10 @@ export function withRoleGuard(
 
     useEffect(() => {
       if (!isAuthenticated) {
-        router.replace("/login");
+        router.replace("/portal");
         return;
       }
       if (user && !allowedRoles.includes(user.role)) {
-        // Redirect ke dashboard yang sesuai rolenya
-        const { getDashboardPath } = require("@/lib/store/authStore");
         router.replace(getDashboardPath(user.role));
       }
     }, [isAuthenticated, user, router]);

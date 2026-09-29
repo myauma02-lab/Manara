@@ -1,5 +1,7 @@
 "use client";
 
+import { sanitizeRichText } from "@/lib/sanitizeHtml";
+
 interface Props {
   article: {
     title: string;
@@ -88,7 +90,7 @@ export default function ArticlePreview({ article, onClose }: Props) {
           {/* Body */}
           <div
             className="article-prose"
-            dangerouslySetInnerHTML={{ __html: article.content || "<p>Belum ada konten.</p>" }}
+            dangerouslySetInnerHTML={{ __html: sanitizeRichText(article.content || "<p>Belum ada konten.</p>") }}
             style={{ fontSize: "17px", fontWeight: 300, color: "#3A5560", lineHeight: 1.9 }}
           />
         </div>

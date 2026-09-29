@@ -9,7 +9,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.replace("/login");
+      router.replace("/portal");
     }
   }, [isAuthenticated, router]);
 
