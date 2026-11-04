@@ -3,10 +3,12 @@ import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import ShareButtons from "@/components/shared/ShareButtons";
 import PublicationDownloadLink from "@/components/shared/PublicationDownloadLink";
+import PublicationIdentity from "@/components/shared/PublicationIdentity";
 import { serverPublicationsApi } from "@/lib/server-api";
 import type { Metadata } from "next";
 
 type PageProps = { params: Promise<{ slug: string }> };
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.manarainstitute.id").replace(/\/$/, "");
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -14,6 +16,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: journal?.title ? `${journal.title} | Manara Journal` : "Manara Journal",
     description: journal?.abstract || journal?.excerpt || "Publikasi ilmiah Manara Journal.",
+    alternates: { canonical: `${SITE_URL}/publikasi/journal/${encodeURIComponent(slug)}` },
+    other: journal?.publicationCode ? { publicationCode: journal.publicationCode } : undefined,
   };
 }
 
@@ -77,6 +81,7 @@ export default async function JournalDetailPage({ params }: PageProps) {
           <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(24px,4vw,44px)", fontWeight: 300, color: "#0F2830", lineHeight: 1.15, marginBottom: "20px" }}>
             {journal.title}
           </h1>
+          <PublicationIdentity code={journal.publicationCode} canonicalPath={`/publikasi/journal/${encodeURIComponent(slug)}`} />
 
           {/* Authors */}
           {journal.authors?.length > 0 && (

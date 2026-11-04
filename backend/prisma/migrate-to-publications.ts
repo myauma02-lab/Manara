@@ -2,6 +2,14 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+async function nextPublicationCode(family: string): Promise<string> {
+  const sequence = `publication_code_seq_${family.toLowerCase()}`;
+  const rows = await prisma.$queryRawUnsafe<{ value: bigint }[]>(
+    `SELECT nextval('public.${sequence}') AS value`
+  );
+  return `MNR-${family}-${String(rows[0].value).padStart(4, "0")}`;
+}
+
 function generateSlug(text: string): string {
   return text
     .toLowerCase()
@@ -44,6 +52,7 @@ async function migrateArticles() {
       const pub = await prisma.publication.create({
         data: {
           type: "ARTICLE",
+          publicationCode: await nextPublicationCode(articleSubtype === "COMMENTARY" ? "COM" : "ART"),
           slug: article.slug,
           title: article.title,
           excerpt: article.excerpt || null,
@@ -108,6 +117,7 @@ async function migrateResearch() {
       await prisma.publication.create({
         data: {
           type: type as any,
+          publicationCode: await nextPublicationCode(type === "JOURNAL" ? "JRN" : "RP"),
           slug: paper.slug,
           title: paper.title,
           abstract: paper.abstract || null,

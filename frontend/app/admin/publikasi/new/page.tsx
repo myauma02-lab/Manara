@@ -5,6 +5,7 @@ import { publicationsApi, categoriesApi } from "@/lib/api";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
+import PublicationTopicsField from "@/components/admin/PublicationTopicsField";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -27,7 +28,7 @@ const TYPE_META = {
   PAPER: {
     label: "Manara Paper",
     color: "#3F6F6A",
-    subtypes: ["POLICY_PAPER", "WORKING_PAPER", "POLICY_BRIEF", "WHITE_PAPER", "RESEARCH_NOTE"],
+    subtypes: ["POLICY_PAPER", "WORKING_PAPER", "POLICY_BRIEF", "WHITE_PAPER", "RESEARCH_NOTE", "RESEARCH_REPORT"],
     hasContent: false,
     hasPdf: true,
     hasAcademic: false,
@@ -57,6 +58,7 @@ export default function NewPublikasiPage() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [authorsInput, setAuthorsInput] = useState("");
   const [keywordsInput, setKeywordsInput] = useState("");
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [reviewersInput, setReviewersInput] = useState("");
   const [citationsInput, setCitationsInput] = useState("");
   const [autoSaved, setAutoSaved] = useState<string | null>(null);
@@ -101,11 +103,11 @@ export default function NewPublikasiPage() {
   useEffect(() => {
     if (!form.title && !form.content && !form.abstract) return;
     const t = setTimeout(() => {
-      localStorage.setItem(AUTOSAVE_KEY, JSON.stringify({ ...form, authorsInput, keywordsInput }));
+      localStorage.setItem(AUTOSAVE_KEY, JSON.stringify({ ...form, authorsInput, keywordsInput, selectedTopics }));
       setAutoSaved(new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }));
     }, 5000);
     return () => clearTimeout(t);
-  }, [form, authorsInput, keywordsInput]);
+  }, [form, authorsInput, keywordsInput, selectedTopics]);
 
   const handleRestore = () => {
     const saved = localStorage.getItem(AUTOSAVE_KEY);
@@ -114,6 +116,7 @@ export default function NewPublikasiPage() {
       setForm(f => ({ ...f, ...p }));
       if (p.authorsInput) setAuthorsInput(p.authorsInput);
       if (p.keywordsInput) setKeywordsInput(p.keywordsInput);
+      if (Array.isArray(p.selectedTopics)) setSelectedTopics(p.selectedTopics);
     }
     setShowRestore(false);
   };
@@ -143,6 +146,7 @@ export default function NewPublikasiPage() {
       if (form.issn) fd.append("issn", form.issn);
       fd.append("authors", JSON.stringify(authorsInput.split(",").map(a => a.trim()).filter(Boolean)));
       fd.append("keywords", JSON.stringify(keywordsInput.split(",").map(k => k.trim()).filter(Boolean)));
+      fd.append("topics", JSON.stringify(selectedTopics));
       fd.append("reviewers", JSON.stringify(reviewersInput.split(",").map(r => r.trim()).filter(Boolean)));
       fd.append("citations", JSON.stringify(citationsInput.split("\n").map(c => c.trim()).filter(Boolean)));
       fd.append("institutions", JSON.stringify(form.institutions.split(",").map(i => i.trim()).filter(Boolean)));
@@ -443,6 +447,7 @@ export default function NewPublikasiPage() {
                 </p>
               )}
             </div>
+            <PublicationTopicsField value={selectedTopics} onChange={setSelectedTopics} disabled={saving} />
 
             {/* Featured */}
             <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", cursor: "pointer" }}>

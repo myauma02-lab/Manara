@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
-import { DM_Sans, Cormorant_Garamond } from "next/font/google";
+import { DM_Sans, Cormorant_Garamond, Newsreader } from "next/font/google";
 import SiteWidgets from "@/components/shared/SiteWidgets";
 import HeroBackground from "@/components/shared/HeroBackground";
 import { HERO_BG_KEYS } from "@/lib/hero-settings";
@@ -16,6 +16,14 @@ const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   variable: "--font-cormorant",
   weight: ["300", "400", "500", "600"],
+  display: "swap",
+});
+
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  style: ["normal", "italic"],
+  variable: "--font-newsreader",
   display: "swap",
 });
 
@@ -110,7 +118,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={`${dmSans.variable} ${cormorant.variable}`}>
+    <html lang="id" className={`${dmSans.variable} ${cormorant.variable} ${newsreader.variable}`}>
       <body>
         <HeroBackground
           settingKey={HERO_BG_KEYS.homepage}

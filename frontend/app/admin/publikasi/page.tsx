@@ -171,6 +171,7 @@ export default function AdminPublikasiPage() {
                     </p>
                     <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
                       <p style={{ fontSize: "12px", color: "#B8CDD2" }}>{pub.author?.name}</p>
+                      {pub.publicationCode && <code style={{ fontSize: "11px", color: "#266c87" }}>{pub.publicationCode}</code>}
                       {pub.publishedAt && (
                         <p style={{ fontSize: "11px", color: "#B8CDD2" }}>
                           · {new Date(pub.publishedAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
@@ -180,6 +181,11 @@ export default function AdminPublikasiPage() {
                         <p style={{ fontSize: "11px", color: "#B8CDD2" }}>· 👁 {pub.viewCount}</p>
                       )}
                     </div>
+                    {pub.topics?.length > 0 && (
+                      <p style={{ marginTop: "5px", fontSize: "11px", color: "#4F5F68" }}>
+                        Topik: {pub.topics.join(" · ")}
+                      </p>
+                    )}
                   </div>
 
                   {/* Type */}

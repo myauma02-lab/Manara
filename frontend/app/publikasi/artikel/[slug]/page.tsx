@@ -3,11 +3,13 @@ import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import ReadingProgress from "@/components/shared/ReadingProgress";
 import ShareButtons from "@/components/shared/ShareButtons";
+import PublicationIdentity from "@/components/shared/PublicationIdentity";
 import { sanitizeRichText } from "@/lib/sanitizeHtml";
 import { serverPublicationsApi } from "@/lib/server-api";
 import type { Metadata } from "next";
 
 type PageProps = { params: Promise<{ slug: string }> };
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.manarainstitute.id").replace(/\/$/, "");
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -15,6 +17,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: article?.title ? `${article.title} | Manara` : "Artikel Manara",
     description: article?.excerpt || "Artikel terbaru dari Manara.",
+    alternates: { canonical: `${SITE_URL}/publikasi/artikel/${encodeURIComponent(slug)}` },
+    other: article?.publicationCode ? { publicationCode: article.publicationCode } : undefined,
   };
 }
 
@@ -89,6 +93,7 @@ export default async function ArtikelDetailPage({ params }: PageProps) {
           <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(26px,5vw,48px)", fontWeight: 300, color: "#0F2830", lineHeight: 1.12, marginBottom: "24px" }}>
             {article.title}
           </h1>
+          <PublicationIdentity code={article.publicationCode} canonicalPath={`/publikasi/artikel/${encodeURIComponent(slug)}`} />
 
           {/* Meta bar */}
           <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px 0", marginBottom: "12px", borderTop: "1px solid rgba(38,108,135,0.08)", borderBottom: "1px solid rgba(38,108,135,0.08)", flexWrap: "wrap" }}>

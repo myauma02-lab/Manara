@@ -5,6 +5,8 @@ import { publicationsApi, categoriesApi } from "@/lib/api";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
+import PublicationIdentity from "@/components/shared/PublicationIdentity";
+import PublicationTopicsField from "@/components/admin/PublicationTopicsField";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -17,7 +19,7 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
 
 const TYPE_META = {
   ARTICLE: { label: "Artikel", color: "#266c87", subtypes: ["OPINION", "ESSAY", "ANALYSIS", "COMMENTARY", "OTHER"], hasContent: true, hasPdf: false, hasAcademic: false },
-  PAPER: { label: "Manara Paper", color: "#3F6F6A", subtypes: ["POLICY_PAPER", "WORKING_PAPER", "POLICY_BRIEF", "WHITE_PAPER", "RESEARCH_NOTE"], hasContent: false, hasPdf: true, hasAcademic: false },
+  PAPER: { label: "Manara Paper", color: "#3F6F6A", subtypes: ["POLICY_PAPER", "WORKING_PAPER", "POLICY_BRIEF", "WHITE_PAPER", "RESEARCH_NOTE", "RESEARCH_REPORT"], hasContent: false, hasPdf: true, hasAcademic: false },
   JOURNAL: { label: "Manara Journal", color: "#5F8F8A", subtypes: [], hasContent: false, hasPdf: true, hasAcademic: true },
 };
 
@@ -33,6 +35,7 @@ export default function EditPublikasiPage() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [authorsInput, setAuthorsInput] = useState("");
   const [keywordsInput, setKeywordsInput] = useState("");
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [reviewersInput, setReviewersInput] = useState("");
   const [citationsInput, setCitationsInput] = useState("");
   const [autoSaved, setAutoSaved] = useState<string | null>(null);
@@ -76,6 +79,7 @@ export default function EditPublikasiPage() {
         });
         setAuthorsInput((found.authors || []).join(", "));
         setKeywordsInput((found.keywords || []).join(", "));
+        setSelectedTopics(found.topics || []);
         setReviewersInput((found.reviewers || []).join(", "));
         setCitationsInput((found.citations || []).join("\n"));
         if (found.coverImage) setCoverPreview(found.coverImage);
@@ -112,6 +116,7 @@ export default function EditPublikasiPage() {
       if (form.issn) fd.append("issn", form.issn);
       fd.append("authors", JSON.stringify(authorsInput.split(",").map(a => a.trim()).filter(Boolean)));
       fd.append("keywords", JSON.stringify(keywordsInput.split(",").map(k => k.trim()).filter(Boolean)));
+      fd.append("topics", JSON.stringify(selectedTopics));
       fd.append("reviewers", JSON.stringify(reviewersInput.split(",").map(r => r.trim()).filter(Boolean)));
       fd.append("citations", JSON.stringify(citationsInput.split("\n").map(c => c.trim()).filter(Boolean)));
       fd.append("institutions", JSON.stringify(form.institutions.split(",").map(i => i.trim()).filter(Boolean)));
@@ -147,6 +152,7 @@ export default function EditPublikasiPage() {
 
   return (
     <div style={{ padding: "40px", maxWidth: "1040px" }}>
+      {pub.publicationCode && <PublicationIdentity code={pub.publicationCode} />}
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "28px" }}>
         <Link href="/admin/publikasi" style={{ color: "#B8CDD2", textDecoration: "none", fontSize: "20px" }}>←</Link>
@@ -342,6 +348,7 @@ export default function EditPublikasiPage() {
                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
+            <PublicationTopicsField value={selectedTopics} onChange={setSelectedTopics} disabled={saving} />
 
             <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", cursor: "pointer" }}>
               <input type="checkbox" checked={form.isFeatured} onChange={e => setForm(f => ({ ...f, isFeatured: e.target.checked }))}

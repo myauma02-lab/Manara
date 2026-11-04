@@ -8,6 +8,22 @@ import slugify from "slugify";
 
 const router = Router();
 
+const ALLOWED_PUBLICATION_TOPICS = new Set([
+  "Media Studies",
+  "Economic Discourse",
+  "Politic & Social Discourse",
+  "Human Ecology",
+  "Law and Public Policy",
+]);
+
+function parsePublicationTopics(value: string): string[] {
+  const parsed: unknown = JSON.parse(value);
+  if (!Array.isArray(parsed)) return [];
+  return [...new Set(parsed.filter((topic): topic is string =>
+    typeof topic === "string" && ALLOWED_PUBLICATION_TOPICS.has(topic)
+  ))];
+}
+
 // ── Helper generate slug unik ──
 async function makeSlug(title: string, excludeId?: string): Promise<string> {
   let base = slugify(title, { lower: true, strict: true }).substring(0, 80);
@@ -20,6 +36,29 @@ async function makeSlug(title: string, excludeId?: string): Promise<string> {
     counter++;
   }
   return slug;
+}
+
+// PostgreSQL sequences allocate unique, non-reusable numbers under concurrent requests.
+function publicationCodeFamily(type: string, articleSubtype?: string, paperSubtype?: string): string {
+  if (type === "ARTICLE") return articleSubtype === "COMMENTARY" ? "COM" : "ART";
+  if (type === "JOURNAL") return "JRN";
+  switch (paperSubtype) {
+    case "POLICY_BRIEF": return "PB";
+    case "WORKING_PAPER": return "WP";
+    case "RESEARCH_REPORT": return "RR";
+    case "WHITE_PAPER": return "WHT";
+    case "RESEARCH_NOTE": return "RN";
+    default: return "RP";
+  }
+}
+
+async function nextPublicationCode(type: string, articleSubtype?: string, paperSubtype?: string): Promise<string> {
+  const family = publicationCodeFamily(type, articleSubtype, paperSubtype);
+  const sequence = `publication_code_seq_${family.toLowerCase()}`;
+  const rows = await prisma.$queryRawUnsafe<{ value: bigint }[]>(
+    `SELECT nextval('public.${sequence}') AS value`
+  );
+  return `MNR-${family}-${String(rows[0].value).padStart(4, "0")}`;
 }
 
 // ── GET /api/publications ──
@@ -154,6 +193,7 @@ router.post("/submit",
       const pub = await prisma.publication.create({
         data: {
           type,
+          publicationCode: await nextPublicationCode(type, articleSubtype, paperSubtype),
           slug,
           title,
           excerpt: excerpt || null,
@@ -184,6 +224,25 @@ router.post("/submit",
     }
   }
 );
+
+// ── GET /api/publications/code/:code ── (published short-link resolver)
+router.get("/code/:code", async (req, res) => {
+  const code = req.params.code.toUpperCase();
+  if (!/^MNR-[A-Z]{2,5}-\d{4,}$/.test(code)) {
+    return res.status(404).json({ message: "Publikasi tidak ditemukan" });
+  }
+
+  try {
+    const publication = await prisma.publication.findFirst({
+      where: { publicationCode: { equals: code, mode: "insensitive" }, status: "PUBLISHED" },
+      select: { publicationCode: true, type: true, slug: true },
+    });
+    if (!publication) return res.status(404).json({ message: "Publikasi tidak ditemukan" });
+    return res.json({ success: true, data: publication });
+  } catch (err: any) {
+    return res.status(500).json({ message: err.message });
+  }
+});
 
 // ── GET /api/publications/:slug ──
 router.get("/:slug", async (req, res) => {
@@ -232,7 +291,7 @@ router.post("/",
         title, type, excerpt, content, abstract,
         status: requestedStatus, isFeatured, categoryId,
         articleSubtype, paperSubtype,
-        authors, keywords, institutions,
+        authors, keywords, topics, institutions,
         volume, issue, year, doi, reviewers, citations, issn,
       } = req.body;
 
@@ -249,6 +308,7 @@ router.post("/",
       const pub = await prisma.publication.create({
         data: {
           type,
+          publicationCode: await nextPublicationCode(type, articleSubtype, paperSubtype),
           slug,
           title,
           excerpt: excerpt || null,
@@ -265,6 +325,7 @@ router.post("/",
           paperSubtype: paperSubtype || null,
           authors: authors ? JSON.parse(authors) : [],
           keywords: keywords ? JSON.parse(keywords) : [],
+          topics: topics ? parsePublicationTopics(topics) : [],
           institutions: institutions ? JSON.parse(institutions) : [],
           downloadCount: 0,
           volume: volume ? parseInt(volume) : null,
@@ -310,7 +371,7 @@ router.put("/:id",
         title, excerpt, content, abstract,
         status: requestedStatus, isFeatured, categoryId,
         articleSubtype, paperSubtype,
-        authors, keywords, institutions,
+        authors, keywords, topics, institutions,
         volume, issue, year, doi, reviewers, citations, issn,
       } = req.body;
 
@@ -344,6 +405,7 @@ router.put("/:id",
       if (paperSubtype !== undefined) data.paperSubtype = paperSubtype || null;
       if (authors !== undefined) data.authors = JSON.parse(authors);
       if (keywords !== undefined) data.keywords = JSON.parse(keywords);
+      if (topics !== undefined) data.topics = parsePublicationTopics(topics);
       if (institutions !== undefined) data.institutions = JSON.parse(institutions);
       if (volume !== undefined) data.volume = volume ? parseInt(volume) : null;
       if (issue !== undefined) data.issue = issue ? parseInt(issue) : null;
@@ -383,7 +445,7 @@ router.put("/:id",
         title, excerpt, content, abstract,
         status, isFeatured, categoryId,
         articleSubtype, paperSubtype,
-        authors, keywords, institutions,
+        authors, keywords, topics, institutions,
         volume, issue, year, doi, reviewers, citations, issn,
       } = req.body;
 
@@ -414,6 +476,7 @@ router.put("/:id",
       if (paperSubtype !== undefined) data.paperSubtype = paperSubtype || null;
       if (authors !== undefined) data.authors = JSON.parse(authors);
       if (keywords !== undefined) data.keywords = JSON.parse(keywords);
+      if (topics !== undefined) data.topics = parsePublicationTopics(topics);
       if (institutions !== undefined) data.institutions = JSON.parse(institutions);
 
       // Journal fields

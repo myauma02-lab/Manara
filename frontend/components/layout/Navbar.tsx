@@ -94,6 +94,8 @@ export default function Navbar() {
 
   // Close on route change
   useEffect(() => {
+    // Reset transient navigation panels after Next.js changes routes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileOpen(false);
     setMobileExpanded(null);
     setDesktopActive(null);
@@ -109,7 +111,7 @@ export default function Navbar() {
     };
     window.addEventListener("keydown", fn);
     return () => window.removeEventListener("keydown", fn);
-  }, []);
+  }, [router]);
 
   const isDark = isHome && !scrolled && !mobileOpen;
 
@@ -361,22 +363,6 @@ export default function Navbar() {
             }}>
               Hubungi Kami
             </Link>
-
-            <Link href="/admin" style={{
-              marginLeft: "8px",
-              fontSize: "12px",
-              fontWeight: 500,
-              border: `1px solid ${isDark ? "rgba(238,244,246,0.2)" : "rgba(38,108,135,0.2)"}`,
-              padding: "8px 20px",
-              borderRadius: "2px",
-              color: isDark ? "rgba(238,244,246,0.25)" : "rgba(38,108,135,0.3)",
-              textDecoration: "none",
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-              transition: "all 0.2s",
-            }}>
-              Admin
-              </Link>
 
           </div>
         )}

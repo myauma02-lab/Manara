@@ -122,10 +122,16 @@ export default function PublicationList({ type, title, accent, basePath, publicP
                     <p style={{ fontSize: "14px", fontWeight: 500, color: "#0F2830", marginBottom: "3px", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{p.title}</p>
                     <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
                       <p style={{ fontSize: "12px", color: "#B8CDD2" }}>{p.author?.name}</p>
+                      {p.publicationCode && <code style={{ fontSize: "11px", color: accent }}>{p.publicationCode}</code>}
                       {p.publishedAt && <p style={{ fontSize: "11px", color: "#B8CDD2" }}>· {new Date(p.publishedAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</p>}
                       {p.viewCount > 0 && <p style={{ fontSize: "11px", color: "#B8CDD2" }}>· 👁 {p.viewCount}</p>}
                       {p.status === "REVIEW" && canReview && <span style={{ fontSize: "11px", color: "#f59e0b", fontWeight: 500 }}>· Perlu review</span>}
                     </div>
+                    {p.topics?.length > 0 && (
+                      <p style={{ marginTop: "5px", fontSize: "11px", color: "#4F5F68" }}>
+                        Topik: {p.topics.join(" · ")}
+                      </p>
+                    )}
                   </div>
                   <div>
                     {canReview ? (

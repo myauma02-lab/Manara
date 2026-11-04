@@ -77,7 +77,7 @@ export default function Footer() {
   const linkStyle = {
     fontSize: "13px",
     fontWeight: 300,
-    color: "rgba(134,175,170,0.45)" as const,
+    color: "#C6D3D7" as const,
     textDecoration: "none" as const,
     display: "block" as const,
     marginBottom: "8px",
@@ -116,7 +116,7 @@ export default function Footer() {
             <p style={{
               fontSize: "13px",
               fontWeight: 300,
-              color: "rgba(134,175,170,0.3)",
+              color: "#C6D3D7",
               lineHeight: 1.8,
               marginBottom: "16px",
               maxWidth: "200px",
@@ -128,27 +128,30 @@ export default function Footer() {
               fontWeight: 500,
               letterSpacing: "0.14em",
               textTransform: "uppercase",
-              color: "rgba(38,108,135,0.5)",
+              color: "#B8C7CB",
               marginBottom: "24px",
             }}>
               Shaping Ideas for the Public Sphere
             </p>
 
             {/* Newsletter mini */}
-            <p style={{ fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(134,175,170,0.25)", marginBottom: "10px" }}>
+            <p style={{ fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#B8C7CB", marginBottom: "10px" }}>
               Surat Manara
             </p>
             {done ? (
-              <p style={{ fontSize: "13px", color: "#5F8F8A", fontStyle: "italic" }}>
+              <p style={{ fontSize: "13px", color: "#B8D2CE", fontStyle: "italic" }}>
                 ✓ Terima kasih berlangganan!
               </p>
             ) : (
               <form onSubmit={handleSubscribe} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label htmlFor="footer-email" className="sr-only">Alamat email</label>
                 <input
                   type="email"
+                  className="footer-email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="email@kamu.com"
+                  id="footer-email"
                   required
                   style={{
                     background: "rgba(38,108,135,0.08)",
@@ -193,7 +196,7 @@ export default function Footer() {
                 fontWeight: 500,
                 letterSpacing: "0.14em",
                 textTransform: "uppercase",
-                color: "rgba(134,175,170,0.25)",
+                color: "#B8C7CB",
                 marginBottom: "14px",
               }}>
                 {col.title}
@@ -217,33 +220,44 @@ export default function Footer() {
           flexWrap: "wrap",
           gap: "12px",
         }}>
-          <p style={{ fontSize: "12px", fontWeight: 300, color: "rgba(134,175,170,0.2)" }}>
+          <p style={{ fontSize: "12px", fontWeight: 400, color: "#B8C7CB" }}>
             © {new Date().getFullYear()} Manara. Seluruh hak dilindungi.
           </p>
           <div style={{ display: "flex", gap: "20px" }}>
-            <Link href="/manapeople" style={{ fontSize: "12px", color: "rgba(134,175,170,0.25)", textDecoration: "none" }}>
+            <Link href="/manapeople" style={{ fontSize: "12px", color: "#B8C7CB", textDecoration: "none" }}>
               ManaPeople
             </Link>
-            <Link href="/cari" style={{ fontSize: "12px", color: "rgba(134,175,170,0.25)", textDecoration: "none" }}>
+            <Link href="/cari" style={{ fontSize: "12px", color: "#B8C7CB", textDecoration: "none" }}>
               Cari
             </Link>
-            <Link href="/tentang/manara" style={{ fontSize: "12px", color: "rgba(134,175,170,0.25)", textDecoration: "none" }}>
+            <Link href="/tentang/manara" style={{ fontSize: "12px", color: "#B8C7CB", textDecoration: "none" }}>
               Tentang
             </Link>
           </div>
+          <Link href="/admin" style={{ fontSize: "11px", color: "#B8C7CB", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+            Admin
+          </Link>
           <p style={{
             fontFamily: "Georgia,serif",
             fontSize: "12px",
             fontStyle: "italic",
             fontWeight: 300,
-            color: "rgba(134,175,170,0.2)",
+            color: "#B8C7CB",
           }}>
-            "Di mana gagasan menemukan cahayanya."
+            {'"Di mana gagasan menemukan cahayanya."'}
           </p>
         </div>
       </div>
 
       <style>{`
+        .footer-email::placeholder {
+          color: #D5DDE1;
+          opacity: 1;
+        }
+        .footer-email:focus-visible {
+          outline: 3px solid #86AFAA !important;
+          outline-offset: 2px;
+        }
         .footer-grid {
           grid-template-columns: 1.6fr repeat(4, 1fr) !important;
         }

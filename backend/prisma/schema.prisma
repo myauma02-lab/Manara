@@ -402,6 +402,7 @@ enum PaperSubtype {
   POLICY_BRIEF
   WHITE_PAPER
   RESEARCH_NOTE
+  RESEARCH_REPORT
 }
 
 // ─── MODEL PUBLICATION (menggantikan articles + research) ─
@@ -410,6 +411,7 @@ model Publication {
   id   String          @id @default(cuid())
   type PublicationType
   slug String          @unique
+  publicationCode String @unique
 
   // Field umum
   title       String
@@ -438,6 +440,7 @@ model Publication {
   paperSubtype  PaperSubtype?
   authors       String[]
   keywords      String[]
+  topics        String[]      @default([])
   pdfUrl        String?
   downloadCount Int           @default(0)
   institutions  String[]
