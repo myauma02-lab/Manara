@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 const BASE = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.manarainstitute.id").replace(/\/$/, "");
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://api.manarainstitute.id/api";
 
 async function fetchPublications(type: string) {
   try {
