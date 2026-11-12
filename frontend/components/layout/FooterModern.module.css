@@ -1,0 +1,46 @@
+.footer { background: var(--color-ink); color: #F3F7F7; }
+.footerInner { width: min(calc(100% - 3rem), var(--content-width)); margin-inline: auto; padding: clamp(3.5rem, 7vw, 6rem) 0 1.5rem; }
+.footerMain { display: grid; grid-template-columns: 1.35fr repeat(3, minmax(130px, .7fr)) 1.5fr; gap: clamp(1.4rem, 3vw, 3rem); padding-bottom: 3.5rem; }
+.brandBlock { max-width: 260px; }
+.wordmark { display: inline-flex; flex-direction: column; gap: .08rem; margin-bottom: 1rem; color: white; font-family: var(--font-display); font-size: 2rem; font-weight: 600; letter-spacing: -.05em; line-height: .92; text-decoration: none; }
+.wordmark span { color: var(--color-sage); font-family: var(--font-body); font-size: .62rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; }
+.brandBlock > p, .newsletter > p:not(.newsletterEyebrow) { margin: 0; color: rgba(243,247,247,.68); font-size: .9rem; line-height: 1.65; }
+.tagline { display: inline-block; margin-top: 1rem; color: var(--color-sage); font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.linkGroup h2 { margin: .2rem 0 1rem; color: rgba(243,247,247,.54); font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.linkGroup ul { display: grid; gap: .65rem; margin: 0; padding: 0; list-style: none; }
+.linkGroup a, .bottomLinks a { display: inline-flex; align-items: center; gap: .3rem; color: rgba(243,247,247,.82); font-size: .83rem; line-height: 1.35; text-decoration: none; transition: color 150ms ease; }
+.linkGroup a svg { opacity: 0; transition: opacity 150ms ease; }
+.linkGroup a:hover, .bottomLinks a:hover { color: white; }
+.linkGroup a:hover svg { opacity: 1; }
+.newsletter { align-self: start; border: 1px solid rgba(255,255,255,.13); border-radius: var(--radius-card); padding: 1.25rem; background: rgba(255,255,255,.045); }
+.newsletterEyebrow { margin: 0 0 .45rem; color: var(--color-sage); font-size: .7rem; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
+.newsletter h2 { margin: 0 0 .55rem; color: white; font-family: var(--font-display); font-size: 1.35rem; font-weight: 500; letter-spacing: -.025em; line-height: 1.12; }
+.newsletter > p:not(.newsletterEyebrow) { font-size: .8rem; }
+.form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; margin-top: 1rem; }
+.form input { min-width: 0; min-height: 44px; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: 0 .85rem; background: rgba(255,255,255,.08); color: white; font: 500 .83rem var(--font-body); }
+.form input::placeholder { color: rgba(243,247,247,.62); opacity: 1; }
+.form input:focus-visible { outline: 3px solid rgba(134,175,170,.55); outline-offset: 2px; }
+.form button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: .4rem; border: 0; border-radius: 999px; padding: 0 .9rem; background: var(--color-brand); color: white; font: 700 .8rem var(--font-body); cursor: pointer; }
+.form button:hover { background: #347C97; }
+.form button:disabled { cursor: wait; opacity: .65; }
+.error { grid-column: 1 / -1; margin: .2rem 0 0; color: #FFC7C2; font-size: .75rem; line-height: 1.4; }
+.success { display: flex; align-items: flex-start; gap: .5rem; margin: 1rem 0 0 !important; color: #C4E6D2 !important; font-size: .82rem !important; }
+.success svg { flex: 0 0 auto; }
+.footerBottom { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-top: 1px solid rgba(255,255,255,.13); padding-top: 1.2rem; }
+.footerBottom > p { margin: 0; color: rgba(243,247,247,.6); font-size: .76rem; }
+.bottomQuote { font-family: var(--font-display); font-size: .95rem !important; font-style: italic; }
+.bottomLinks { display: flex; gap: 1.1rem; }
+.bottomLinks a { color: rgba(243,247,247,.68); font-size: .76rem; }
+
+@media (max-width: 1080px) {
+  .footerMain { grid-template-columns: 1.2fr repeat(3, minmax(120px, .8fr)); }
+  .newsletter { grid-column: 1 / -1; max-width: 520px; }
+}
+@media (max-width: 720px) {
+  .footerInner { width: min(calc(100% - 2rem), var(--content-width)); }
+  .footerMain { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 1.25rem; padding-bottom: 2.5rem; }
+  .brandBlock { grid-column: 1 / -1; }
+  .newsletter { grid-column: 1 / -1; max-width: none; }
+  .footerBottom { align-items: flex-start; flex-direction: column; }
+  .bottomQuote { order: -1; }
+}

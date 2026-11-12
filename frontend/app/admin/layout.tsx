@@ -1,208 +1,54 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
-import { settingsApi } from "@/lib/api";
-import { HERO_BG_KEYS, HERO_BG_LABELS, type HeroBgKey } from "@/lib/hero-settings";
+
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import Link from "next/link";
+import DashboardShell, { type DashboardNavItem } from "@/components/dashboard/DashboardShell";
 import { getDashboardPath, useAuthStore } from "@/lib/store/authStore";
 
-const NAV = [
-  { href: "/admin", label: "Dashboard", icon: "◎", exact: true },
+const NAV: DashboardNavItem[] = [
+  { href: "/admin", label: "Ringkasan", icon: "◉", exact: true },
   { href: "/admin/publikasi", label: "Publikasi", icon: "✦" },
   { href: "/admin/pusat-informasi", label: "Pusat Informasi", icon: "◈" },
   { href: "/admin/layanan", label: "Layanan", icon: "◇" },
+  { href: "/admin/project", label: "Proyek", icon: "□" },
   { href: "/admin/fellows", label: "Fellows", icon: "◉" },
   { href: "/admin/founder", label: "Founder", icon: "△" },
-  { href: "/admin/recruitment", label: "Rekrutmen", icon: "□" },
-  { href: "/admin/pesan", label: "Pesan", icon: "○" },
+  { href: "/admin/recruitment", label: "Rekrutmen", icon: "○" },
+  { href: "/admin/pesan", label: "Pesan", icon: "✉" },
   { href: "/admin/newsletter", label: "Newsletter", icon: "@" },
+  { href: "/admin/media", label: "Media", icon: "▧" },
+  { href: "/admin/users", label: "Kelola Pengguna", icon: "♙" },
   { href: "/admin/settings", label: "Pengaturan", icon: "⚙" },
-  // Divider
-  { href: "/admin/users", label: "Kelola Pengguna", icon: "👥" },
-  { divider: true },
-  // Link ke sub-dashboard
-  { href: "/dashboard/hr", label: "→ HR Dashboard", icon: "△" },
-  { href: "/dashboard/finance", label: "→ Finance Dashboard", icon: "◆" },
-  { href: "/dashboard/ops", label: "→ Ops Dashboard", icon: "□" },
-  { href: "/dashboard/publikasi", label: "→ Publikasi Dashboard", icon: "✦" },
+  { href: "/admin/profile", label: "Profil & kata sandi", icon: "◎" },
+  { href: "/dashboard/hr", label: "Ruang kerja HR", icon: "↗" },
+  { href: "/dashboard/finance", label: "Ruang kerja Keuangan", icon: "↗" },
+  { href: "/dashboard/ops", label: "Ruang kerja Operasional", icon: "↗" },
+  { href: "/dashboard/publikasi", label: "Ruang kerja Publikasi", icon: "↗" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, token, logout } = useAuthStore();
+  const { user, token } = useAuthStore();
   const [checked, setChecked] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const isLoginPage = pathname === "/admin/login";
+  const isAuthorized = Boolean(user && ["SUPERADMIN", "SEKJEN"].includes(user.role));
 
   useEffect(() => {
     if (isLoginPage) { setChecked(true); return; }
-    if (!token || !user) {
-      router.replace("/portal");
-      return;
-    }
-    if (!["SUPERADMIN", "SEKJEN"].includes(user.role)) {
-      router.replace(getDashboardPath(user.role));
-      return;
-    }
+    if (!token || !user) { router.replace("/portal"); return; }
+    if (!isAuthorized) { router.replace(getDashboardPath(user.role)); return; }
     setChecked(true);
-  }, [isLoginPage, router, token, user]);
+  }, [isLoginPage, isAuthorized, router, token, user]);
 
-  // Close sidebar on route change (mobile)
-  useEffect(() => { setSidebarOpen(false); }, [pathname]);
-
-  if (!checked || (!isLoginPage && (!user || !["SUPERADMIN", "SEKJEN"].includes(user.role)))) return (
-    <div style={{ minHeight: "100vh", background: "#0F2830", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <p style={{ color: "rgba(134,175,170,0.4)", fontSize: "13px", letterSpacing: "0.1em" }}>Memuat...</p>
-    </div>
-  );
-
+  if (!checked || (!isLoginPage && (!user || !isAuthorized))) {
+    return <div className="workspace-loading" role="status">Memuat ruang kerja Manara…</div>;
+  }
   if (isLoginPage) return <>{children}</>;
 
-  const Sidebar = () => (
-    <aside style={{
-      width: "240px",
-      background: "#0F2830",
-      display: "flex",
-      flexDirection: "column",
-      borderRight: "1px solid rgba(38,108,135,0.1)",
-      height: "100vh",
-      overflowY: "auto",
-    }}>
-      {/* Brand */}
-      <div style={{ padding: "20px 20px 16px", borderBottom: "1px solid rgba(38,108,135,0.1)" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div>
-            <Link href="/" target="_blank" style={{ fontFamily: "Georgia,serif", fontSize: "20px", fontWeight: 300, color: "rgba(238,244,246,0.9)", letterSpacing: "0.04em", textDecoration: "none", display: "block" }}>
-              Manara
-            </Link>
-            <p style={{ fontSize: "9px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(38,108,135,0.5)", marginTop: "3px" }}>
-              Admin Dashboard
-            </p>
-          </div>
-          {/* Close btn mobile */}
-          <button onClick={() => setSidebarOpen(false)}
-            style={{ background: "none", border: "none", color: "rgba(134,175,170,0.3)", fontSize: "18px", cursor: "pointer", display: "none" }}
-            className="sidebar-close">
-            ×
-          </button>
-        </div>
-      </div>
-
-      {/* Nav */}
-      <nav style={{ flex: 1, padding: "10px 8px", overflowY: "auto" }}>
-        {NAV.map(({ href, label, icon, divider }) => {
-          if (divider) {
-            return <div key={href} style={{ height: "1px", background: "rgba(38,108,135,0.1)", margin: "10px 0" }} />;
-          }
-          const active = pathname === href || (href !== "/admin" && pathname.startsWith(href));
-          return (
-            <Link key={href} href={href} style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              padding: "9px 14px",
-              borderRadius: "2px",
-              marginBottom: "2px",
-              fontSize: "13px",
-              fontWeight: 300,
-              color: active ? "#86AFAA" : "rgba(134,175,170,0.4)",
-              background: active ? "rgba(38,108,135,0.15)" : "transparent",
-              textDecoration: "none",
-              transition: "all 0.15s",
-              borderLeft: active ? "2px solid #266c87" : "2px solid transparent",
-            }}>
-              <span style={{ fontSize: "12px", width: "16px", textAlign: "center", flexShrink: 0 }}>{icon}</span>
-              {label}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* User */}
-      <div style={{ padding: "12px 16px", borderTop: "1px solid rgba(38,108,135,0.1)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
-          <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(38,108,135,0.2)", border: "1px solid rgba(38,108,135,0.25)", display: "flex", alignItems: "center", justifyContent: "center", color: "#86AFAA", fontSize: "12px", fontWeight: 500, flexShrink: 0 }}>
-            {user?.name?.charAt(0)}
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: "13px", fontWeight: 300, color: "rgba(238,244,246,0.75)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {user?.name}
-            </p>
-            <p style={{ fontSize: "10px", color: "rgba(134,175,170,0.35)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-              {user?.role}
-            </p>
-          </div>
-        </div>
-        <Link
-  href="/admin/profile"
-  style={{
-    display: "block",
-    textAlign: "center",
-    fontSize: "11px",
-    color: "rgba(134,175,170,0.35)",
-    border: "1px solid rgba(38,108,135,0.1)",
-    borderRadius: "2px",
-    padding: "6px",
-    textDecoration: "none",
-    marginBottom: "6px",
-  }}
->
-  Ganti Password
-</Link>
-        <div style={{ display: "flex", gap: "8px" }}>
-          <Link href="/" target="_blank" style={{ flex: 1, display: "block", textAlign: "center", fontSize: "11px", color: "rgba(134,175,170,0.35)", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "2px", padding: "6px", textDecoration: "none", transition: "color 0.15s" }}>
-            Lihat Web
-          </Link>
-          <button onClick={() => { logout(); router.push("/portal"); }}
-            style={{ flex: 1, fontSize: "11px", color: "rgba(134,175,170,0.35)", background: "none", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "2px", padding: "6px", cursor: "pointer" }}>
-            Keluar
-          </button>
-        </div>
-      </div>
-    </aside>
-  );
-
   return (
-    <>
-      <div style={{ display: "flex", minHeight: "100vh", background: "#F4F7F7" }}>
-        {/* Desktop sidebar — fixed */}
-        <div style={{ position: "fixed", top: 0, left: 0, bottom: 0, zIndex: 40, width: "240px" }} className="desktop-sidebar">
-          <Sidebar />
-        </div>
-
-        {/* Mobile sidebar overlay */}
-        {sidebarOpen && (
-          <>
-            <div onClick={() => setSidebarOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 45 }} />
-            <div style={{ position: "fixed", top: 0, left: 0, bottom: 0, zIndex: 50, width: "260px" }}>
-              <Sidebar />
-            </div>
-          </>
-        )}
-
-        {/* Main content */}
-        <main style={{ flex: 1, marginLeft: "240px", minHeight: "100vh", overflowX: "hidden" }} className="admin-main">
-          {/* Mobile top bar */}
-          <div style={{ display: "none", alignItems: "center", gap: "12px", padding: "14px 20px", background: "#0F2830", borderBottom: "1px solid rgba(38,108,135,0.1)", position: "sticky", top: 0, zIndex: 30 }} className="mobile-topbar">
-            <button onClick={() => setSidebarOpen(true)} style={{ background: "none", border: "none", color: "rgba(134,175,170,0.6)", fontSize: "20px", cursor: "pointer", padding: "0 4px" }}>
-              ☰
-            </button>
-            <span style={{ fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300, color: "rgba(238,244,246,0.9)" }}>Manara</span>
-          </div>
-
-          {children}
-        </main>
-      </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .desktop-sidebar { display: none !important; }
-          .admin-main { margin-left: 0 !important; }
-          .mobile-topbar { display: flex !important; }
-          .sidebar-close { display: block !important; }
-        }
-      `}</style>
-    </>
+    <DashboardShell title="Sekretariat" subtitle="Admin & sekretariat" navigation={NAV}>
+      {children}
+    </DashboardShell>
   );
 }

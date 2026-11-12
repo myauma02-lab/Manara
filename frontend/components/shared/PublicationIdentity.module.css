@@ -1,0 +1,17 @@
+.identity { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .9rem 1.2rem; align-items: center; margin: 1.25rem 0; border: 1px solid var(--color-border); border-radius: 16px; padding: 1rem 1.1rem; background: var(--color-surface); }
+.codeBlock { display: grid; gap: .3rem; }
+.codeBlock p { margin: 0; color: var(--color-muted); font-size: .68rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+.codeBlock code { color: var(--color-ink); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .95rem; font-weight: 750; letter-spacing: .02em; }
+.actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .45rem; }
+.action { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; gap: .4rem; border: 1px solid var(--color-border); border-radius: 999px; padding: 0 .75rem; background: var(--color-surface); color: var(--color-brand-strong); font: 700 .72rem var(--font-body); cursor: pointer; transition: border-color .18s ease, background .18s ease; }
+.action:hover { border-color: var(--color-brand); background: var(--color-brand-soft); }
+.shortLink { display: flex; grid-column: 1 / -1; flex-wrap: wrap; gap: .35rem .6rem; margin: 0; padding-top: .7rem; border-top: 1px solid var(--color-border); color: var(--color-muted); font-size: .75rem; }
+.shortLink span { font-weight: 700; }
+.shortLink a { color: var(--color-brand-strong); overflow-wrap: anywhere; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.status { grid-column: 1 / -1; margin: -.2rem 0 0; color: var(--color-success); font-size: .75rem; }
+
+@media (max-width: 640px) {
+  .identity { grid-template-columns: 1fr; padding: .9rem; }
+  .actions { justify-content: flex-start; }
+  .action { min-height: 44px; }
+}

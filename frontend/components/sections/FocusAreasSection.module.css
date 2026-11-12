@@ -1,0 +1,29 @@
+.section { padding: clamp(4rem, 8vw, 7rem) 0; background: var(--color-surface); }
+.container { width: min(calc(100% - 2.5rem), var(--content-width)); margin-inline: auto; }
+.heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; margin-bottom: 2rem; }
+.heading h2 { max-width: 670px; margin: 0; color: var(--color-ink); font-size: clamp(2.2rem, 5vw, 4rem); line-height: 1.02; }
+.heading > p { max-width: 350px; margin: 0 0 .3rem; color: var(--color-muted); font-size: .98rem; line-height: 1.65; }
+.grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .8rem; }
+.card { display: flex; min-height: 285px; flex-direction: column; border: 1px solid var(--color-border); border-radius: var(--radius-card); padding: 1.2rem; background: var(--color-surface); color: var(--color-text); text-decoration: none; transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
+.card:hover { transform: translateY(-3px); border-color: rgba(38,108,135,.45); box-shadow: var(--shadow-card); }
+.card:focus-visible { outline: 3px solid var(--color-brand); outline-offset: 3px; }
+.number { color: var(--color-brand); font-size: .72rem; font-weight: 800; letter-spacing: .1em; }
+.card h3 { margin: 1.25rem 0 .65rem; color: var(--color-ink); font-family: var(--font-display); font-size: clamp(1.25rem, 2vw, 1.65rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.05; }
+.card p { margin: 0 0 1.4rem; color: var(--color-muted); font-size: .82rem; line-height: 1.6; }
+.explore { display: inline-flex; align-items: center; gap: .3rem; margin-top: auto; color: var(--color-brand); font-size: .76rem; font-weight: 700; }
+
+@media (max-width: 1080px) {
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .card { min-height: 250px; }
+}
+@media (max-width: 680px) {
+  .container { width: min(calc(100% - 2rem), var(--content-width)); }
+  .heading { align-items: flex-start; flex-direction: column; gap: .8rem; margin-bottom: 1.4rem; }
+  .heading > p { max-width: 520px; }
+  .grid { grid-template-columns: 1fr; gap: .65rem; }
+  .card { min-height: 0; padding: 1.1rem; }
+  .card h3 { margin-top: .7rem; font-size: 1.55rem; }
+  .card p { max-width: 520px; margin-bottom: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } }

@@ -1,28 +1,20 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import ErrorBoundary from "@/components/shared/ErrorBoundary";
-import { DM_Sans, Cormorant_Garamond, Newsreader } from "next/font/google";
+import localFont from "next/font/local";
 import SiteWidgets from "@/components/shared/SiteWidgets";
-import HeroBackground from "@/components/shared/HeroBackground";
-import { HERO_BG_KEYS } from "@/lib/hero-settings";
 
-const dmSans = DM_Sans({
-  subsets: ["latin"],
+const dmSans = localFont({
+  src: "../assets/fonts/dm-sans-latin.woff2",
   variable: "--font-dm-sans",
   display: "swap",
+  weight: "100 1000",
 });
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  variable: "--font-cormorant",
-  weight: ["300", "400", "500", "600"],
-  display: "swap",
-});
-
-const newsreader = Newsreader({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  style: ["normal", "italic"],
+const newsreader = localFont({
+  src: [
+    { path: "../assets/fonts/newsreader-latin.woff2", weight: "200 800", style: "normal" },
+    { path: "../assets/fonts/newsreader-italic-latin.woff2", weight: "200 800", style: "italic" },
+  ],
   variable: "--font-newsreader",
   display: "swap",
 });
@@ -118,17 +110,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={`${dmSans.variable} ${cormorant.variable} ${newsreader.variable}`}>
+    <html lang="id" className={`${dmSans.variable} ${newsreader.variable}`}>
       <body>
-        <HeroBackground
-          settingKey={HERO_BG_KEYS.homepage}
-          fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
-          gradientDirection="to-right"
-          gradientColor="#0F2830"
-          gradientOpacity={0.92}
-        >
-          {children}
-        </HeroBackground>
+        {children}
         <SiteWidgets />
       </body>
     </html>

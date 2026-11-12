@@ -20,7 +20,7 @@ export default async function ProjectsSection() {
   const isEmpty = projects.length === 0;
 
   return (
-    <section style={{ padding: "100px 0", background: "#0F2830" }}>
+    <section style={{ padding: "clamp(64px,8vw,112px) 0", background: "var(--color-ink)" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
 
         {/* Header */}
@@ -29,7 +29,7 @@ export default async function ProjectsSection() {
             <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.5)", marginBottom: "12px" }}>
               Proyek Manara
             </p>
-            <h2 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(28px,4vw,48px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.14 }}>
+            <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(32px,5vw,56px)", fontWeight: 500, color: "#EEF4F6", letterSpacing: "-0.035em", lineHeight: 1.04 }}>
               Dari inkuiri ke<br />
               <em style={{ color: "#86AFAA", fontStyle: "italic" }}>tindakan nyata.</em>
             </h2>
@@ -62,7 +62,7 @@ export default async function ProjectsSection() {
                   <div style={{
                     background: "rgba(38,108,135,0.06)",
                     border: "1px solid rgba(38,108,135,0.12)",
-                    borderRadius: "4px",
+                    borderRadius: "var(--radius-card)",
                     overflow: "hidden",
                     transition: "all 0.2s",
                     height: "100%",
@@ -89,7 +89,7 @@ export default async function ProjectsSection() {
                           {p.category}
                         </p>
                       )}
-                      <h3 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(16px,2vw,20px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.3, marginBottom: "8px" }}>
+                      <h3 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(19px,2vw,25px)", fontWeight: 500, color: "#EEF4F6", letterSpacing: "-0.02em", lineHeight: 1.2, marginBottom: "8px" }}>
                         {p.title}
                       </h3>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>

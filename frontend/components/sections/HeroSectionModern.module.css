@@ -1,0 +1,34 @@
+.background { position: relative; overflow: hidden; background: var(--color-ink); color: white; }
+.hero { position: relative; display: flex; min-height: max(720px, 100svh); align-items: center; overflow: hidden; padding: calc(var(--header-height) + 5rem) max(1.25rem, calc((100vw - var(--content-width)) / 2)) 5rem; color: white; }
+.glow { position: absolute; inset: auto -12% -32% auto; width: min(64vw, 800px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(134,175,170,.19), rgba(38,108,135,.08) 38%, transparent 70%); pointer-events: none; }
+.heroContent { position: relative; z-index: 2; width: min(100%, 920px); }
+.eyebrow { display: flex; align-items: center; gap: .7rem; margin: 0 0 1.3rem; color: rgba(255,255,255,.78); font-size: .75rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+.eyebrow span { width: 26px; height: 2px; border-radius: 2px; background: var(--color-sage); }
+.brandLine { margin: 0 0 .8rem; color: var(--color-sage); font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.hero h1 { max-width: 900px; margin: 0; color: white; font-family: var(--font-display); font-size: clamp(3.5rem, 8vw, 7.5rem); font-weight: 500; letter-spacing: -.055em; line-height: .98; }
+.hero h1 em { color: #A7D0C7; font-weight: 400; }
+.description { max-width: 620px; margin: 1.6rem 0 1.9rem; color: rgba(255,255,255,.78); font-size: clamp(1rem, 1.7vw, 1.18rem); line-height: 1.75; }
+.actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.metrics { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: clamp(2.6rem, 6vw, 5rem); border-top: 1px solid rgba(255,255,255,.2); padding-top: 1.3rem; }
+.metric { position: relative; display: flex; min-width: 130px; flex-direction: column; gap: .15rem; padding-right: 1.5rem; }
+.metric strong { color: white; font-family: var(--font-display); font-size: 2rem; font-weight: 500; letter-spacing: -.04em; line-height: 1.1; }
+.metric span { color: rgba(255,255,255,.64); font-size: .78rem; font-weight: 600; }
+.metric i { position: absolute; top: .2rem; right: 0; width: 1px; height: 34px; background: rgba(255,255,255,.2); }
+.scrollCue { position: absolute; right: max(1.25rem, calc((100vw - var(--content-width)) / 2)); bottom: 2rem; display: flex; align-items: center; gap: .55rem; color: rgba(255,255,255,.68); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-decoration: none; text-transform: uppercase; }
+.scrollCue:hover { color: white; }
+
+@media (max-width: 640px) {
+  .hero { min-height: max(720px, 100svh); align-items: flex-start; padding-top: calc(68px + 5.5rem); padding-bottom: 5rem; }
+  .eyebrow { font-size: .67rem; letter-spacing: .08em; }
+  .brandLine { font-size: .68rem; }
+  .hero h1 { font-size: clamp(3.15rem, 15vw, 5.3rem); }
+  .description { margin-top: 1.25rem; font-size: 1rem; }
+  .actions { display: grid; grid-template-columns: 1fr; align-items: stretch; }
+  .actions a { width: 100%; }
+  .metrics { gap: .75rem; justify-content: space-between; margin-top: 2.6rem; }
+  .metric { min-width: 0; padding-right: .65rem; }
+  .metric strong { font-size: 1.55rem; }
+  .metric span { max-width: 92px; font-size: .7rem; line-height: 1.35; }
+  .metric i { right: -.4rem; height: 30px; }
+  .scrollCue { display: none; }
+}

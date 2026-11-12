@@ -147,7 +147,7 @@ export default function PublicationExplorer({ publications }: { publications: Pu
                   className={`${styles.kindTab} ${selectedKind === tab.value ? styles.kindTabActive : ""}`}
                   onClick={() => updateFilter("jenis", tab.value)}
                 >
-                  {tab.label}{tab.count ? ` (${tab.count})` : ""}{tab.preparation ? " · dalam persiapan" : ""}
+                  {tab.label}{typeof tab.count === "number" ? ` (${tab.count})` : ""}{tab.preparation ? " · dalam persiapan" : ""}
                 </button>
               ))}
             </div>
