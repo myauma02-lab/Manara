@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { infoApi } from "@/lib/api";
-import HeroBackground from "@/components/shared/HeroBackground";
+import PageHero from "@/components/shared/PageHero";
 import { HERO_BG_KEYS } from "@/lib/hero-settings";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -112,30 +112,13 @@ export default function PusatInformasiPage() {
   return (
     <main>
         <Navbar />
-        <HeroBackground
+      <PageHero
         settingKey={HERO_BG_KEYS.pusatInformasi}
-        fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
-        gradientDirection="overlay"
-        gradientColor="#0F2830"
-        gradientOpacity={0.88}
-        style={{ paddingTop: "140px", paddingBottom: "80px" }}
-      >
-        {/* Dekorasi background */}
-        <div style={{ position: "absolute", inset: 0, background: "none", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", top: 0, right: "200px", width: "1px", height: "100%", background: "none" }} />
-         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
-          <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.55)", marginBottom: "16px" }}>
-            Pusat Informasi
-          </p>
-          <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(36px,6vw,72px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.08, marginBottom: "20px" }}>
-            Semua yang perlu<br />
-            <em style={{ color: "#86AFAA" }}>kamu ketahui tentang Manara.</em>
-          </h1>
-          <p style={{ fontSize: "17px", fontWeight: 300, color: "rgba(134,175,170,0.5)", lineHeight: 1.85, maxWidth: "540px" }}>
-            Ikuti berita terbaru dan pencapaian Manara dalam satu tempat.
-          </p>
-        </div>
-        </HeroBackground>
+        eyebrow="Pusat Informasi"
+        title="Semua yang perlu"
+        accent="kamu ketahui tentang Manara."
+        description="Ikuti berita terbaru dan pencapaian Manara dalam satu tempat."
+      />
       
 
       {/* ── KATEGORI PUBLIK ── */}

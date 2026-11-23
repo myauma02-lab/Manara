@@ -44,7 +44,7 @@
   text-decoration: none;
 }
 
-.brandMark { display: block; width: 190px; height: 55px; object-fit: contain; }
+.brandMark { display: block; width: 95px; height: 28px; object-fit: contain; }
 
 .desktopNav { display: flex; height: 100%; align-items: center; gap: 0.2rem; }
 .navGroup { position: relative; display: flex; height: 100%; align-items: center; }
@@ -149,7 +149,7 @@
 
 @media (max-width: 860px) {
   .navbar { min-height: 68px; }
-  .brandMark { width: 170px; height: 49px; }
+  .brandMark { width: 85px; height: 25px; }
   .desktopNav, .actions { display: none; }
   .mobileToggle { display: grid; }
   .backdrop, .mobilePanel { inset-block-start: 68px; }

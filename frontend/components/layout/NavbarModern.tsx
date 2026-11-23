@@ -8,7 +8,7 @@ import { ArrowRight, ChevronDown, Menu, Search, X } from "lucide-react";
 import styles from "./NavbarModern.module.css";
 
 type NavChild = { label: string; href: string; description?: string };
-type NavGroup = { label: string; href: string; children: NavChild[]; roots: string[] };
+type NavGroup = { label: string; href: string; children?: NavChild[]; roots: string[] };
 
 const NAV: NavGroup[] = [
   {
@@ -35,15 +35,19 @@ const NAV: NavGroup[] = [
     ],
   },
   {
+    label: "Manapeople",
+    href: "/manapeople",
+    roots: ["/manapeople"],
+  },
+  {
     label: "Tentang",
     href: "/tentang/manara",
-    roots: ["/tentang", "/manapeople"],
+    roots: ["/tentang"],
     children: [
       { label: "Tentang Manara", href: "/tentang/manara", description: "Misi dan cara kerja kami" },
       { label: "Manifesto", href: "/tentang/manifesto", description: "Prinsip yang menuntun Manara" },
       { label: "Founder", href: "/tentang/founder", description: "Orang-orang di balik Manara" },
       { label: "Fellows", href: "/tentang/fellows", description: "Jaringan peneliti dan tenaga ahli" },
-      { label: "ManaPeople", href: "/manapeople", description: "Terhubung dan bertumbuh bersama Manara" },
     ],
   },
 ];
@@ -110,7 +114,7 @@ export default function NavbarModern() {
       <header ref={headerRef} className={headerClass}>
         <nav className={styles.navbar} aria-label="Navigasi utama">
           <Link href="/" className={styles.brand} aria-label="Manara Institute, beranda">
-            <Image src="/manara-logo-header.png" alt="" width={190} height={55} priority className={styles.brandMark} />
+            <Image src="/manara-logo-header.png" alt="" width={95} height={28} priority className={styles.brandMark} />
           </Link>
 
           <div className={styles.desktopNav}>
@@ -122,7 +126,7 @@ export default function NavbarModern() {
                   <Link href={group.href} className={[styles.navLink, active ? styles.navLinkActive : ""].filter(Boolean).join(" ")}>
                     {group.label}
                   </Link>
-                  <button
+                  {group.children?.length ? <button
                     type="button"
                     className={styles.submenuButton}
                     aria-label={(expanded ? "Tutup" : "Buka") + " submenu " + group.label}
@@ -130,11 +134,11 @@ export default function NavbarModern() {
                     onClick={() => setOpenMenu(expanded ? null : group.label)}
                   >
                     <ChevronDown size={14} aria-hidden="true" />
-                  </button>
-                  {expanded && (
+                  </button> : null}
+                  {expanded && group.children?.length ? (
                     <div className={styles.dropdown}>
                       <p className={styles.dropdownLabel}>{group.label}</p>
-                      {group.children.map(child => (
+                      {group.children?.map(child => (
                         <Link href={child.href} className={styles.dropdownLink} key={child.href} onClick={() => setOpenMenu(null)}>
                           <span>
                             <strong>{child.label}</strong>
@@ -186,18 +190,18 @@ export default function NavbarModern() {
                   <section className={styles.mobileGroup} key={group.label}>
                     <div className={styles.mobileGroupHeading}>
                       <Link href={group.href} onClick={() => setMobileOpen(false)}>{group.label}</Link>
-                      <button
+                      {group.children?.length ? <button
                         type="button"
                         aria-label={(expanded ? "Tutup" : "Buka") + " submenu " + group.label}
                         aria-expanded={expanded}
                         onClick={() => setMobileExpanded(expanded ? null : group.label)}
                       >
                         <ChevronDown size={18} aria-hidden="true" />
-                      </button>
+                      </button> : null}
                     </div>
-                    {expanded && (
+                    {expanded && group.children?.length ? (
                       <div className={styles.mobileChildren}>
-                        {group.children.map(child => (
+                        {group.children?.map(child => (
                           <Link href={child.href} key={child.href} onClick={() => setMobileOpen(false)}>
                             <strong>{child.label}</strong>
                             {child.description && <small>{child.description}</small>}

@@ -1,60 +1,49 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import HeroBackground from "@/components/shared/HeroBackground";
+import PageHero from "@/components/shared/PageHero";
 import { HERO_BG_KEYS } from "@/lib/hero-settings";
 import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Tentang Manara",
-  description: "Manara adalah kolektif intelektual dan inisiatif media kreatif yang lahir dari keyakinan bahwa diskursus yang bermakna dimulai dari pemikiran yang mendalam.",
+  description: "Manara Institute adalah rumah intelektual dan think-tank independen yang mengembangkan pengetahuan melalui penelitian, analisis kebijakan, publikasi, dan diskursus publik.",
 };
 
 const VALUES = [
-  { symbol: "◎", title: "Depth", desc: "Kami menolak superfisialitas dalam segala bentuknya. Setiap gagasan yang kami geluti, kami geluti sepenuhnya." },
-  { symbol: "◇", title: "Integrity", desc: "Kejujuran di atas kenyamanan. Kami berkata sesuai maksud dan memegang diri pada standar yang kami anut." },
-  { symbol: "○", title: "Collective", desc: "Gagasan tumbuh lebih kuat saat dibagikan. Kami membangun ruang di mana pikiran beragam saling memperkaya." },
-  { symbol: "✦", title: "Courage", desc: "Kami mengajukan pertanyaan sulit. Keberanian intelektual adalah fondasi diskursus yang bermakna." },
+  { symbol: "◎", title: "Kebebasan berpikir", desc: "Kami menjunjung kebebasan berpikir dan keterbukaan terhadap kritik." },
+  { symbol: "◇", title: "Integritas ilmiah", desc: "Setiap gagasan berhak diuji, dan pengujian dilakukan secara terbuka serta bertanggung jawab." },
+  { symbol: "○", title: "Kolektivitas", desc: "Kami membangun kolaborasi dan kapasitas intelektual secara bersama dan berkelanjutan." },
+  { symbol: "✦", title: "Independensi", desc: "Manara bersifat nonpartisan dan menjaga independensi serta integritas intelektual dalam kolaborasi." },
+  { symbol: "＋", title: "Tanggung jawab sosial", desc: "Kami menghormati martabat manusia, keberagaman pandangan, transparansi, dan akuntabilitas." },
 ];
 
 const TIMELINE = [
-  { year: "Desember 2025", title: "Manara Didirikan", desc: "Lima pendiri bertemu dengan satu keyakinan: anak muda Indonesia butuh ruang intelektual yang lebih serius dan bermakna." },
+  { year: "Desember 2025", title: "Manara Digagas", desc: "Gagasan untuk membangun ruang intelektual dan diskursus publik Manara mulai dirintis." },
+  { year: "14 Mei 2026", title: "Manara Institute Resmi Berdiri", desc: "Manara didirikan di Malang, Jawa Timur, sebagaimana dicatat dalam Anggaran Dasar." },
   { year: "Juli 2026", title: "Platform Digital Diluncurkan", desc: "Website, newsletter, dan ekosistem media Manara mulai dibangun sebagai infrastruktur dasar kolektif." },
-  { year: "Agustus 2026", title: "Manapeople — Batch Pertama", desc: "Program rekrutmen pertama dibuka, mengundang individu-individu yang percaya bahwa gagasan dapat mengubah ruang publik." },
-  { year: "To Do", title: "Manara Papers", desc: "Divisi riset mulai memproduksi paper kebijakan, working paper, dan laporan lapangan yang dapat diakses publik." },
+  { year: "Now", title: "Still in Motion", desc: "Manara terus mengembangkan penelitian, publikasi, dan ruang kolaborasi seiring kebutuhan serta kapasitas kolektif." },
+];
+
+const MISSIONS = [
+  "Mengembangkan penelitian dan kajian yang relevan dengan persoalan publik.",
+  "Mendorong pengujian gagasan melalui tradisi intelektual yang terbuka, kritis, dan bertanggung jawab.",
+  "Menghasilkan publikasi dan pengetahuan yang dapat diakses serta dipertanggungjawabkan.",
+  "Menghubungkan hasil penelitian dengan diskursus publik, proses kebijakan, dan kebutuhan masyarakat.",
+  "Membangun kolaborasi dan kapasitas intelektual secara kolektif dan berkelanjutan.",
 ];
 
 export default function TentangPage() {
   return (
     <main>
       <Navbar />
-<HeroBackground
-            settingKey={HERO_BG_KEYS.tentang}
-            fallbackGradient="linear-gradient(135deg, #0F2830, #1a4f63)"
-            gradientDirection="to-left"
-            gradientColor="#0F2830"
-            gradientOpacity={0.90}
-            style={{ paddingTop: "140px", paddingBottom: "80px" }}
-            >
-      {/* Hero */}
-
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
-          <div style={{ paddingBottom: "48px" }}>
-
-            
-            <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.7)", marginBottom: "24px" }}>
-              Tentang Manara
-            </p>
-            <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(40px,6vw,80px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.1, marginBottom: "32px", letterSpacing: "-0.02em" }}>
-              Lebih dari organisasi —<br />
-              <em style={{ color: "#86AFAA", fontStyle: "italic" }}>sebuah gerakan pemikiran.</em>
-            </h1>
-            <p style={{ fontSize: "18px", fontWeight: 300, color: "rgba(134,175,170,0.6)", lineHeight: 1.85, maxWidth: "580px" }}>
-              Manara adalah kolektif intelektual dan inisiatif media kreatif yang lahir dari keyakinan bahwa diskursus yang bermakna dimulai dari mereka yang berani berpikir mendalam.
-            </p>
-          </div>
-        </div>
-        </HeroBackground>
+      <PageHero
+        settingKey={HERO_BG_KEYS.tentang}
+        eyebrow="Tentang Manara"
+        title="Ruang intelektual"
+        accent="dan think-tank independen."
+        description="Manara mengembangkan pengetahuan melalui penelitian, pengujian gagasan, analisis kebijakan, publikasi, dan pengembangan diskursus publik."
+      />
       
 
       {/* Doctrine banner */}
@@ -76,21 +65,21 @@ export default function TentangPage() {
                 Di persimpangan gagasan,<br />media, dan komunitas.
               </h2>
               <p style={{ fontSize: "16px", fontWeight: 300, color: "#3A5560", lineHeight: 1.9, marginBottom: "20px" }}>
-                Manara hadir sebagai ruang intelektual, kreatif, dan berpengetahuan guna menciptakan kebermanfaatan sosial berdasarkan nilai-nilai keilmuan, kolektivitas, dan independensi.
+              Manara adalah rumah intelektual dan think-tank independen yang mengembangkan pengetahuan melalui penelitian, pengujian gagasan, analisis kebijakan, publikasi, dan diskursus publik.
               </p>
               <p style={{ fontSize: "16px", fontWeight: 300, color: "#3A5560", lineHeight: 1.9, marginBottom: "20px" }}>
-                Kami adalah sebagian think tank, sebagian studio kreatif, sebagian platform wacana anak muda. Kami tidak memproduksi kebisingan — kami membangun sinyal.
+              Manara bersifat nonpartisan dan bukan alat kepentingan politik praktis, kelompok, atau pihak pemberi dana tertentu.
               </p>
               <p style={{ fontSize: "16px", fontWeight: 300, color: "#3A5560", lineHeight: 1.9 }}>
-                Berbasis di Malang, Jawa Timur, Manara bergerak dengan keyakinan bahwa perubahan ruang publik dimulai dari perubahan cara berpikir.
+              Manara berkedudukan di Malang dan dapat menyelenggarakan kegiatan di wilayah lain sesuai kebutuhan organisasi.
               </p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               {[
-                { icon: "◎", title: "Kolektif Intelektual", desc: "Komunitas pemikir yang berkomitmen pada kedalaman, bukan hanya kecepatan." },
-                { icon: "◇", title: "Inisiatif Media Kreatif", desc: "Produksi konten yang menempatkan kualitas editorial di atas segalanya." },
-                { icon: "✦", title: "Platform Wacana Muda", desc: "Ruang bagi suara-suara muda yang ingin berbicara dengan substansi." },
-                { icon: "○", title: "Think Tank Ringan", desc: "Riset dan analisis kebijakan yang mudah diakses namun rigorous secara metodologi." },
+                { icon: "◎", title: "Rumah Intelektual", desc: "Ruang untuk mengembangkan pengetahuan melalui penelitian dan pengujian gagasan." },
+                { icon: "◇", title: "Think-tank Independen", desc: "Kajian lintas bidang untuk mendukung pengembangan pengetahuan dan perbaikan kebijakan." },
+                { icon: "✦", title: "Publikasi Terbuka", desc: "Hasil kajian dan pengetahuan yang diupayakan dapat diakses serta dipertanggungjawabkan." },
+                { icon: "○", title: "Diskursus Publik", desc: "Menghubungkan hasil penelitian dengan percakapan publik dan kebutuhan masyarakat." },
               ].map(item => (
                 <div key={item.title} style={{ display: "flex", gap: "16px", padding: "20px 24px", background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px" }}>
                   <div style={{ width: "40px", height: "40px", borderRadius: "50%", border: "1px solid rgba(38,108,135,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#266c87", fontSize: "16px", flexShrink: 0 }}>
@@ -113,13 +102,29 @@ export default function TentangPage() {
         <div style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center", position: "relative", zIndex: 2 }}>
           <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.6)", marginBottom: "24px" }}>Visi</p>
           <h2 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(28px,4vw,52px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.25, marginBottom: "32px" }}>
-            Mewujudkan ruang intelektual, kreatif, berpengetahuan guna menciptakan{" "}
-            <em style={{ color: "#86AFAA", fontStyle: "italic" }}>kebermanfaatan sosial</em>{" "}
-            berdasarkan nilai-nilai keilmuan, kolektivitas, dan independensi.
+            Menjadi rumah intelektual dan think-tank independen yang berkontribusi terhadap pengembangan pengetahuan, perbaikan kebijakan, dan perubahan sosial.
           </h2>
           <p style={{ fontSize: "16px", fontWeight: 300, color: "rgba(134,175,170,0.45)", lineHeight: 1.9, maxWidth: "560px", margin: "0 auto" }}>
-            Kami membayangkan generasi yang berefleksi sebelum bereaksi — yang membangun argumen sebelum mengambil posisi, dan yang menempatkan kebenaran di atas viralitas.
+            Visi ini menjadi arah kerja Manara dalam menghubungkan penelitian, kebijakan, dan diskursus publik.
           </p>
+        </div>
+      </section>
+
+      {/* Misi */}
+      <section style={{ padding: "88px clamp(20px,5vw,40px)", background: "#F8FAFA" }}>
+        <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+          <div style={{ maxWidth: "660px", marginBottom: "36px" }}>
+            <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#266c87", marginBottom: "14px" }}>Misi</p>
+            <h2 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(26px,4vw,42px)", fontWeight: 300, color: "#0F2830" }}>Apa yang kami upayakan.</h2>
+          </div>
+          <ol style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: "14px", padding: 0, margin: 0, listStyle: "none", counterReset: "mission" }}>
+            {MISSIONS.map((mission, index) => (
+              <li key={mission} style={{ minHeight: "130px", padding: "22px 24px", background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px" }}>
+                <span style={{ display: "block", marginBottom: "12px", color: "#266c87", fontFamily: "Georgia,serif", fontSize: "20px" }}>{String(index + 1).padStart(2, "0")}</span>
+                <span style={{ color: "#3A5560", fontSize: "15px", lineHeight: 1.7 }}>{mission}</span>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 

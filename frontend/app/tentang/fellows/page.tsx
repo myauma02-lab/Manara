@@ -5,7 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import type { Metadata } from "next";
-import HeroBackground from "@/components/shared/HeroBackground";
+import PageHero from "@/components/shared/PageHero";
 import { HERO_BG_KEYS } from "@/lib/hero-settings";
 
 // Gradient fallback per index
@@ -35,45 +35,13 @@ export default function FellowsPage() {
   return (
     <main>
       <Navbar />
-      <HeroBackground
-                        settingKey={HERO_BG_KEYS.tentang}
-                        fallbackGradient="linear-gradient(135deg, #0F2830, #1a4f63)"
-                        gradientDirection="to-right"
-                        gradientColor="#0F2830"
-                        gradientOpacity={0.90}
-                        style={{ paddingTop: "140px", paddingBottom: "80px" }}
-                        >
-      {/* ── HERO ── */}
-      <section style={{
-        paddingTop: "140px",
-        paddingBottom: "80px",
-        position: "relative",
-        overflow: "hidden",
-      }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)", position: "relative", zIndex: 2 }}>
-          <div style={{ paddingBottom: "48px" }}>
-
-            {/* Breadcrumb */}
-            <div style={{ display: "flex", gap: "8px", fontSize: "12px", color: "rgba(134,175,170,0.35)", marginBottom: "28px", flexWrap: "wrap" }}>
-              <Link href="/tentang/manara" style={{ color: "rgba(134,175,170,0.35)", textDecoration: "none" }}>Tentang Kami</Link>
-              <span>→</span>
-              <span style={{ color: "rgba(134,175,170,0.6)" }}>Manara Fellows</span>
-            </div>
-
-            <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(134,175,170,0.55)", marginBottom: "16px" }}>
-              Manara Fellows
-            </p>
-            <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(36px,6vw,68px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.08, marginBottom: "20px", letterSpacing: "-0.01em" }}>
-              Tenaga ahli dan<br />
-              <em style={{ color: "#86AFAA", fontStyle: "italic" }}>peneliti Manara.</em>
-            </h1>
-            <p style={{ fontSize: "17px", fontWeight: 300, color: "rgba(134,175,170,0.5)", lineHeight: 1.85, maxWidth: "520px" }}>
-              Manara Fellows adalah jaringan akademisi, peneliti, dan praktisi yang mendukung kerja intelektual dan riset Manara dari berbagai disiplin ilmu.
-            </p>
-          </div>
-        </div>
-      </section>
-      </HeroBackground>
+      <PageHero
+        settingKey={HERO_BG_KEYS.tentang}
+        eyebrow="Manara Fellows"
+        title="Tenaga ahli dan"
+        accent="peneliti Manara."
+        description="Manara Fellows adalah jaringan akademisi, peneliti, dan praktisi yang mendukung kerja intelektual dan riset Manara dari berbagai disiplin ilmu."
+      />
 
       {/* ── GRID FELLOWS ── */}
       <section style={{ padding: "80px clamp(20px,5vw,40px) 120px", background: "#F4F7F7" }}>

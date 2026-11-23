@@ -1,0 +1,78 @@
+.background {
+  position: relative;
+  overflow: hidden;
+  background: #0f2830;
+  color: #eef4f6;
+}
+
+.hero {
+  box-sizing: border-box;
+  display: flex;
+  min-height: 430px;
+  align-items: center;
+  padding: calc(var(--header-height) + 3.5rem) max(1.25rem, calc((100vw - var(--content-width)) / 2)) 4rem;
+}
+
+.content {
+  width: min(100%, 1200px);
+  margin-inline: auto;
+}
+
+.eyebrow {
+  margin: 0 0 1rem;
+  color: rgba(167, 208, 199, 0.9);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  max-width: 1000px;
+  margin: 0;
+  color: #eef4f6;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5.5vw, 4.5rem);
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+}
+
+.hero h1 em {
+  color: #a7d0c7;
+  font-weight: 400;
+}
+
+.description {
+  max-width: 600px;
+  margin: 1.25rem 0 0;
+  color: rgba(238, 244, 246, 0.82);
+  font-size: clamp(1rem, 1.4vw, 1.08rem);
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    min-height: 380px;
+    align-items: flex-start;
+    padding: calc(68px + 3.5rem) 1.25rem 3rem;
+  }
+
+  .eyebrow {
+    margin-bottom: 0.85rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.25rem, 10vw, 3.4rem);
+    line-height: 1.06;
+  }
+
+  .description {
+    margin-top: 1rem;
+    font-size: 0.96rem;
+    line-height: 1.65;
+  }
+}

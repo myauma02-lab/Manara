@@ -43,14 +43,6 @@ export default function ManapeoplePage() {
       return (
           <main style={{ background: "#F4F7F7" }}>
             <Navbar />
-            <HeroBackground
-          settingKey={HERO_BG_KEYS.manapeople}
-          fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
-          gradientDirection="to-right"
-          gradientColor="#0F2830"
-          gradientOpacity={0.88}
-          style={{ padding: "80px clamp(20px,5vw,40px) 0" }}
-        >
             {loading ? (
               <LoadingSkeleton />
             ) : batch ? (
@@ -58,7 +50,6 @@ export default function ManapeoplePage() {
             ) : (
               <WaitlistMode />
             )}
-          </HeroBackground>
             <Footer />
           </main>
   
@@ -168,12 +159,18 @@ function WaitlistMode() {
   }
 
   return (
-    <div style={{ paddingTop: "80px" }}>
-      {/* ── HERO ── */}
-      <section style={{ padding: "80px clamp(20px,5vw,40px) 0", background: "#0F2830", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 60% at 20% 60%, rgba(38,108,135,0.2) 0%, transparent 60%)", pointerEvents: "none" }} />
-        <div style={{ maxWidth: "1100px", margin: "0 auto", position: "relative", zIndex: 2 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "64px", alignItems: "center", paddingBottom: "80px" }} className="hero-grid">
+    <div>
+      <HeroBackground
+        settingKey={HERO_BG_KEYS.manapeople}
+        fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+        gradientDirection="overlay"
+        gradientColor="#0F2830"
+        gradientOpacity={0.88}
+      >
+      {/* Hero */}
+      <section style={{ padding: "calc(var(--header-height) + 3.5rem) clamp(20px,5vw,40px) 4rem", position: "relative", overflow: "hidden" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 2 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "clamp(28px,5vw,64px)", alignItems: "center" }} className="hero-grid">
             <div>
               {/* Status badge */}
               <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(38,108,135,0.2)", border: "1px solid rgba(38,108,135,0.3)", padding: "8px 16px", borderRadius: "20px", marginBottom: "24px" }}>
@@ -183,10 +180,10 @@ function WaitlistMode() {
                 </span>
               </div>
 
-              <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(36px,5vw,64px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.08, marginBottom: "20px" }}>
+              <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(42px,5.5vw,72px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.02, marginBottom: "20px", letterSpacing: "-0.035em" }}>
                 Mana<em style={{ color: "#86AFAA" }}>People.</em>
               </h1>
-              <p style={{ fontSize: "clamp(16px,2vw,19px)", fontWeight: 300, color: "rgba(134,175,170,0.6)", lineHeight: 1.85, marginBottom: "32px" }}>
+              <p style={{ fontSize: "clamp(16px,2vw,19px)", fontWeight: 300, color: "rgba(238,244,246,0.82)", lineHeight: 1.75, marginBottom: "32px", maxWidth: "640px" }}>
                 Program rekrutmen dan onboarding Manara — sebuah undangan untuk menjadi bagian dari kolektif intelektual yang percaya bahwa gagasan dapat mengubah ruang publik.
               </p>
 
@@ -226,6 +223,7 @@ function WaitlistMode() {
           </div>
         </div>
       </section>
+      </HeroBackground>
 
       {/* ── TENTANG MANAPEOPLE ── */}
       <section style={{ padding: "80px clamp(20px,5vw,40px)", background: "#F8FAFA" }}>
@@ -587,12 +585,17 @@ function BatchMode({ batch }: { batch: Batch }) {
   }
 
   return (
-    <div style={{ paddingTop: "80px" }}>
-
-      {/* ── HERO BATCH ── */}
-      <section style={{ padding: "80px clamp(20px,5vw,40px)", background: "#0F2830", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 60% at 80% 30%, rgba(38,108,135,0.15) 0%, transparent 60%)", pointerEvents: "none" }} />
-        <div style={{ maxWidth: "1100px", margin: "0 auto", position: "relative", zIndex: 2 }}>
+    <div>
+      <HeroBackground
+        settingKey={HERO_BG_KEYS.manapeople}
+        fallbackGradient="linear-gradient(135deg, #0F2830, #266c87)"
+        gradientDirection="overlay"
+        gradientColor="#0F2830"
+        gradientOpacity={0.88}
+      >
+      {/* Hero batch */}
+      <section style={{ padding: "calc(var(--header-height) + 3.5rem) clamp(20px,5vw,40px) 4rem", position: "relative", overflow: "hidden" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 2 }}>
 
           {/* Status aktif */}
           <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.25)", padding: "8px 18px", borderRadius: "20px", marginBottom: "24px" }}>
@@ -604,14 +607,14 @@ function BatchMode({ batch }: { batch: Batch }) {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "64px", alignItems: "center" }} className="hero-grid">
             <div>
-              <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(36px,5vw,64px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.08, marginBottom: "16px" }}>
+              <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(42px,5.5vw,72px)", fontWeight: 300, color: "#EEF4F6", lineHeight: 1.02, marginBottom: "16px", letterSpacing: "-0.035em" }}>
                 Mana<em style={{ color: "#86AFAA" }}>People.</em>
               </h1>
               <p style={{ fontFamily: "Georgia,serif", fontSize: "clamp(20px,3vw,28px)", fontWeight: 300, color: "#86AFAA", fontStyle: "italic", marginBottom: "16px" }}>
                 {batch.batchName}
               </p>
               {batch.description && (
-                <p style={{ fontSize: "16px", fontWeight: 300, color: "rgba(134,175,170,0.6)", lineHeight: 1.85, marginBottom: "28px" }}>
+                <p style={{ fontSize: "16px", fontWeight: 300, color: "rgba(238,244,246,0.82)", lineHeight: 1.75, marginBottom: "28px" }}>
                   {batch.description}
                 </p>
               )}
@@ -665,6 +668,7 @@ function BatchMode({ batch }: { batch: Batch }) {
           </div>
         </div>
       </section>
+      </HeroBackground>
 
       {/* ── DETAIL POSISI ── */}
       {step === "info" && batch.positions.length > 0 && (
