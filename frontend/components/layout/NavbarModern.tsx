@@ -135,7 +135,7 @@ export default function NavbarModern() {
                   >
                     <ChevronDown size={14} aria-hidden="true" />
                   </button> : null}
-                  {expanded && group.children?.length ? (
+                  {expanded && Boolean(group.children?.length) && (
                     <div className={styles.dropdown}>
                       <p className={styles.dropdownLabel}>{group.label}</p>
                       {group.children?.map(child => (
@@ -199,7 +199,7 @@ export default function NavbarModern() {
                         <ChevronDown size={18} aria-hidden="true" />
                       </button> : null}
                     </div>
-                    {expanded && group.children?.length ? (
+                    {expanded && Boolean(group.children?.length) && (
                       <div className={styles.mobileChildren}>
                         {group.children?.map(child => (
                           <Link href={child.href} key={child.href} onClick={() => setMobileOpen(false)}>
