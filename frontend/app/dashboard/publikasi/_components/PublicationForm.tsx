@@ -1,423 +1,308 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+
+import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { publicationsApi, categoriesApi } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { publicationsApi } from "@/lib/api";
+import { PUBLICATION_DEPARTMENTS } from "@/lib/publication-explorer";
 import { useAuthStore } from "@/lib/store/authStore";
 import PublicationIdentity from "@/components/shared/PublicationIdentity";
-import PublicationTopicsField from "@/components/admin/PublicationTopicsField";
 
-const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
-  ssr: false,
-  loading: () => (
-    <div style={{ height: "400px", border: "1px solid rgba(38,108,135,0.15)", borderRadius: "2px", display: "flex", alignItems: "center", justifyContent: "center", color: "#B8CDD2" }}>
-      Memuat editor...
-    </div>
-  ),
-});
-
+const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { ssr: false });
+type Format = "EDITORIAL_NOTE" | "RESEARCH_PAPER" | "PERSPECTIVE" | "POLICY_BRIEF" | "WORKING_PAPER" | "JOURNAL";
 type PubType = "ARTICLE" | "PAPER" | "JOURNAL";
+type Version = { id: string; number: number; versionDate: string; coverImage?: string; pdfUrl?: string; changeSummary?: string; isPublished: boolean; isCurrent: boolean };
+type VersionEdit = { date?: string; summary?: string; cover?: File | null; pdf?: File | null };
 
-const TYPE_META: Record<PubType, any> = {
-  ARTICLE: { label: "Artikel", color: "#266c87", subtypes: ["OPINION", "ESSAY", "ANALYSIS", "COMMENTARY", "OTHER"], hasContent: true, hasPdf: false, hasAcademic: false },
-  PAPER: { label: "Manara Paper", color: "#3F6F6A", subtypes: ["POLICY_PAPER", "WORKING_PAPER", "POLICY_BRIEF", "WHITE_PAPER", "RESEARCH_NOTE", "RESEARCH_REPORT"], hasContent: false, hasPdf: true, hasAcademic: false },
-  JOURNAL: { label: "Manara Journal", color: "#5F8F8A", subtypes: [], hasContent: false, hasPdf: true, hasAcademic: true },
-};
+const FORMATS: { value: Format; label: string; hint: string }[] = [
+  { value: "EDITORIAL_NOTE", label: "Editorial Note", hint: "Catatan redaksi; gambar opsional" },
+  { value: "RESEARCH_PAPER", label: "Research Paper", hint: "Naskah HTML atau PDF, cover A4" },
+  { value: "PERSPECTIVE", label: "Perspective", hint: "Esai dengan cover 4:5" },
+  { value: "POLICY_BRIEF", label: "Policy Brief", hint: "Rekomendasi kebijakan, cover A4" },
+  { value: "WORKING_PAPER", label: "Working Paper", hint: "Naskah berversi, cover A4 dan PDF per versi" },
+];
+const TYPE: Record<Format, PubType> = { EDITORIAL_NOTE: "ARTICLE", RESEARCH_PAPER: "PAPER", PERSPECTIVE: "ARTICLE", POLICY_BRIEF: "PAPER", WORKING_PAPER: "PAPER", JOURNAL: "JOURNAL" };
+const FIELDS = ["title", "excerpt", "department", "attribution", "argumentSummary", "abstract", "content", "policyProblem", "decisionMakers", "executiveSummary", "evidence", "policyOptions", "implementationNotes", "seriesNumber", "feedbackUrl", "followUpResearchUrl", "dataUrl"] as const;
+type Field = typeof FIELDS[number];
+const INPUT: React.CSSProperties = { width: "100%", boxSizing: "border-box", padding: "11px 13px", border: "1px solid #c9d9df", borderRadius: 5, color: "#173642", background: "white", font: "inherit" };
+const PANEL: React.CSSProperties = { background: "#fff", border: "1px solid #dce6e8", borderRadius: 8, padding: "clamp(16px,3vw,28px)", marginBottom: 18 };
 
-const EDITOR_ROLES = ["SUPERADMIN", "SEKJEN", "PUBLIKASI_ADMIN", "PUBLIKASI_EDITOR"];
+function initialFormatForType(type?: PubType): Format { return type === "ARTICLE" ? "PERSPECTIVE" : "RESEARCH_PAPER"; }
+function lines(value: string): string[] { return value.split(/\n|,/).map(v => v.trim()).filter(Boolean); }
+function textOf(value: unknown): string { return typeof value === "string" ? value : ""; }
+function ratioOf(file: File): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { const ratio = img.naturalWidth / img.naturalHeight; URL.revokeObjectURL(url); resolve(ratio); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Gambar tidak dapat dibaca")); };
+    img.src = url;
+  });
+}
 
-export default function PublicationForm({ type, id, basePath }: { type: PubType; id?: string; basePath: string }) {
+export default function PublicationForm({ type, id, basePath, initialFormat }: { type?: PubType; id?: string; basePath: string; initialFormat?: Format }) {
   const router = useRouter();
   const { user } = useAuthStore();
-  const meta = TYPE_META[type];
-  const isEdit = !!id;
-
-  const [loading, setLoading] = useState(isEdit);
-  const [saving, setSaving] = useState<string | null>(null);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [authorsInput, setAuthorsInput] = useState("");
-  const [keywordsInput, setKeywordsInput] = useState("");
-  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-  const [reviewersInput, setReviewersInput] = useState("");
-  const [citationsInput, setCitationsInput] = useState("");
-  const [autoSaved, setAutoSaved] = useState<string | null>(null);
+  const canPublish = !!user && ["SUPERADMIN", "SEKJEN", "PUBLIKASI_ADMIN", "PUBLIKASI_EDITOR"].includes(user.role);
+  const [format, setFormat] = useState<Format>(initialFormat || initialFormatForType(type));
+  const [form, setForm] = useState<Record<Field, string>>(() => Object.fromEntries(FIELDS.map(field => [field, ""])) as Record<Field, string>);
+  const [topics, setTopics] = useState<string[]>([]);
+  const [authors, setAuthors] = useState("");
+  const [keywords, setKeywords] = useState("");
+  const [references, setReferences] = useState("");
+  const [attachments, setAttachments] = useState("");
+  const [recommendations, setRecommendations] = useState("");
+  const [citations, setCitations] = useState("");
+  const [editorAttribution, setEditorAttribution] = useState(false);
+  const [publishedAt, setPublishedAt] = useState("");
+  const [imageFocusX, setImageFocusX] = useState(50);
+  const [imageFocusY, setImageFocusY] = useState(50);
+  const [cover, setCover] = useState<File | null>(null);
+  const [pdf, setPdf] = useState<File | null>(null);
+  const [coverUrl, setCoverUrl] = useState("");
+  const [localCoverUrl, setLocalCoverUrl] = useState("");
+  const [versions, setVersions] = useState<Version[]>([]);
+  const [versionEdits, setVersionEdits] = useState<Record<string, VersionEdit>>({});
   const [pub, setPub] = useState<any>(null);
-  const [error, setError] = useState("");
+  const [versionCover, setVersionCover] = useState<File | null>(null);
+  const [versionPdf, setVersionPdf] = useState<File | null>(null);
+  const [versionDate, setVersionDate] = useState(new Date().toISOString().slice(0, 10));
+  const [changeSummary, setChangeSummary] = useState("");
+  const [loading, setLoading] = useState(!!id);
+  const [busy, setBusy] = useState(false);
+  const [preview, setPreview] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const department = PUBLICATION_DEPARTMENTS.find(item => item.name === form.department);
 
-  const [form, setForm] = useState({
-    title: "", excerpt: "", content: "", abstract: "",
-    categoryId: "", isFeatured: false,
-    articleSubtype: "", paperSubtype: "", institutions: "",
-    volume: "", issue: "", year: new Date().getFullYear().toString(), doi: "", issn: "",
-  });
-
-  const canReview = !!user && EDITOR_ROLES.includes(user.role);
-  const isOwner = isEdit ? pub?.authorId === user?.id : true;
-  // Writer cuma bisa ubah konten selama masih DRAFT & miliknya sendiri.
-  // Editor/Admin selalu bisa mengubah, kapan pun statusnya.
-  const canEditContent = !isEdit || canReview || (isOwner && pub?.status === "DRAFT");
-  const disabled = isEdit && !canEditContent;
-
-  useEffect(() => {
-    categoriesApi.list().then(r => setCategories(r.data.data || [])).catch(() => {});
-    if (isEdit) {
-      publicationsApi.adminList({ type, limit: 300 })
-        .then(r => {
-          const found = (r.data.data || []).find((p: any) => p.id === id);
-          if (found) {
-            setPub(found);
-            setForm({
-              title: found.title || "", excerpt: found.excerpt || "", content: found.content || "",
-              abstract: found.abstract || "", categoryId: found.categoryId || "", isFeatured: found.isFeatured || false,
-              articleSubtype: found.articleSubtype || "", paperSubtype: found.paperSubtype || "",
-              institutions: (found.institutions || []).join(", "),
-              volume: found.volume?.toString() || "", issue: found.issue?.toString() || "",
-              year: found.year?.toString() || "", doi: found.doi || "", issn: found.issn || "",
-            });
-            setAuthorsInput((found.authors || []).join(", "));
-            setKeywordsInput((found.keywords || []).join(", "));
-            setSelectedTopics(found.topics || []);
-            setReviewersInput((found.reviewers || []).join(", "));
-            setCitationsInput((found.citations || []).join("\n"));
-            if (found.coverImage) setCoverPreview(found.coverImage);
-          }
-        })
-        .finally(() => setLoading(false));
-    }
-  }, [id, isEdit, type]);
-
-  const handleSubmit = async (status: string, extra?: Record<string, string>) => {
-    if (!form.title.trim()) { setError("Judul wajib diisi"); return; }
-    if (meta.hasContent && status !== "DRAFT" && !form.content.trim()) { setError("Konten wajib diisi"); return; }
-    if (!meta.hasContent && status !== "DRAFT" && !form.abstract.trim()) { setError("Abstrak wajib diisi"); return; }
-
-    setSaving(status);
-    setError("");
+  const load = useCallback(async () => {
+    if (!id) return;
     try {
+      const response = await publicationsApi.adminGet(id);
+      const item = response.data.data;
+      const draft = item.draftData || {};
+      const effective = { ...item, ...draft };
+      setPub(item); setVersions(item.versions || []);
+      setFormat(effective.format || (effective.type === "ARTICLE" ? "PERSPECTIVE" : effective.paperSubtype === "WORKING_PAPER" ? "WORKING_PAPER" : effective.paperSubtype === "POLICY_BRIEF" ? "POLICY_BRIEF" : "RESEARCH_PAPER"));
+      setForm(Object.fromEntries(FIELDS.map(field => [field, textOf(effective[field])])) as Record<Field, string>);
+      setEditorAttribution(!!effective.attribution && effective.attribution !== "Redaksi Manara Institute");
+      setTopics(effective.topics || []); setAuthors((effective.authors || []).join(", "));
+      setKeywords((effective.keywords || []).join(", "));
+      setReferences((effective.references || []).join("\n"));
+      setCitations((effective.citations || []).join("\n"));
+      setPublishedAt(effective.publishedAt ? new Date(effective.publishedAt).toISOString().slice(0, 10) : "");
+      setImageFocusX(effective.imageFocusX ?? 50); setImageFocusY(effective.imageFocusY ?? 50);
+      setAttachments(Array.isArray(effective.attachments) ? effective.attachments.join("\n") : "");
+      setRecommendations(Array.isArray(effective.recommendations) ? effective.recommendations.map((r: any) => `${r.action} | ${r.actor}`).join("\n") : "");
+      setCoverUrl(effective.coverImage || "");
+    } catch { setErrors({ general: "Publikasi tidak dapat dimuat" }); }
+    finally { setLoading(false); }
+  }, [id]);
+  useEffect(() => { void load(); }, [load]);
+  useEffect(() => () => { if (localCoverUrl) URL.revokeObjectURL(localCoverUrl); }, [localCoverUrl]);
+
+  const change = (key: Field, value: string) => setForm(previous => ({ ...previous, [key]: value }));
+  const input = (key: Field, label: string, multiline = false, hint?: string) =>
+    <label style={{ display: "block", marginBottom: 18, fontSize: 13, fontWeight: 600, color: "#244b59" }} key={key}>
+      {label}{hint && <small style={{ display: "block", fontWeight: 400, color: "#667d86", margin: "4px 0" }}>{hint}</small>}
+      {multiline ? <textarea rows={key === "abstract" || key === "executiveSummary" ? 5 : 3} value={form[key]} onChange={e => change(key, e.target.value)} style={INPUT} />
+        : <input value={form[key]} onChange={e => change(key, e.target.value)} style={INPUT} />}
+      {errors[key] && <small style={{ display: "block", color: "#bd3030" }}>{errors[key]}</small>}
+    </label>;
+
+  const save = async (status: "DRAFT" | "REVIEW" | "PUBLISHED") => {
+    setErrors({}); setBusy(true);
+    try {
+      if (cover && status === "PUBLISHED") {
+        const ratio = await ratioOf(cover);
+        const expected = format === "PERSPECTIVE" ? 0.8 : 1 / Math.sqrt(2);
+        if (format !== "EDITORIAL_NOTE" && format !== "WORKING_PAPER" && Math.abs(ratio - expected) > 0.015) {
+          setErrors({ cover: `Proporsi cover harus ${format === "PERSPECTIVE" ? "4:5" : "A4 potret"}` }); return;
+        }
+      }
       const fd = new FormData();
-      if (!isEdit) fd.append("type", type);
-      fd.append("title", form.title);
-      fd.append("status", status);
-      fd.append("isFeatured", String(form.isFeatured));
-      if (form.excerpt) fd.append("excerpt", form.excerpt);
-      if (form.content) fd.append("content", form.content);
-      if (form.abstract) fd.append("abstract", form.abstract);
-      if (form.categoryId) fd.append("categoryId", form.categoryId);
-      if (form.articleSubtype) fd.append("articleSubtype", form.articleSubtype);
-      if (form.paperSubtype) fd.append("paperSubtype", form.paperSubtype);
-      if (form.volume) fd.append("volume", form.volume);
-      if (form.issue) fd.append("issue", form.issue);
-      if (form.year) fd.append("year", form.year);
-      if (form.doi) fd.append("doi", form.doi);
-      if (form.issn) fd.append("issn", form.issn);
-      fd.append("authors", JSON.stringify(authorsInput.split(",").map(a => a.trim()).filter(Boolean)));
-      fd.append("keywords", JSON.stringify(keywordsInput.split(",").map(k => k.trim()).filter(Boolean)));
-      fd.append("topics", JSON.stringify(selectedTopics));
-      fd.append("reviewers", JSON.stringify(reviewersInput.split(",").map(r => r.trim()).filter(Boolean)));
-      fd.append("citations", JSON.stringify(citationsInput.split("\n").map(c => c.trim()).filter(Boolean)));
-      fd.append("institutions", JSON.stringify(form.institutions.split(",").map(i => i.trim()).filter(Boolean)));
-      if (coverFile) fd.append("cover", coverFile);
-      if (pdfFile) fd.append("pdf", pdfFile);
-      Object.entries(extra || {}).forEach(([k, v]) => fd.append(k, v));
-
-      if (isEdit) await publicationsApi.update(id as string, fd);
-      else await publicationsApi.create(fd);
-
-      setAutoSaved(new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }));
-      if (!isEdit || ["PUBLISHED", "REVIEW", "ARCHIVED"].includes(status)) router.push(basePath);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Gagal menyimpan");
-    } finally {
-      setSaving(null);
-    }
+      fd.append("type", TYPE[format]); fd.append("format", format); fd.append("status", status);
+      FIELDS.forEach(key => fd.append(key, key === "attribution" && format === "EDITORIAL_NOTE" && !editorAttribution ? "Redaksi Manara Institute" : form[key]));
+      fd.append("topics", JSON.stringify(topics)); fd.append("authors", JSON.stringify(lines(authors)));
+      fd.append("keywords", JSON.stringify(lines(keywords)));
+      fd.append("citations", JSON.stringify(citations.split("\n").map(item => item.trim()).filter(Boolean)));
+      if (publishedAt) fd.append("publishedAt", publishedAt);
+      fd.append("imageFocusX", String(imageFocusX)); fd.append("imageFocusY", String(imageFocusY));
+      fd.append("references", JSON.stringify(lines(references)));
+      fd.append("attachments", JSON.stringify(lines(attachments)));
+      fd.append("recommendations", JSON.stringify(recommendations.split("\n").filter(Boolean).map(line => {
+        const [action, actor] = line.split("|"); return { action: action?.trim() || "", actor: actor?.trim() || "" };
+      })));
+      if (cover) fd.append("cover", cover); if (pdf) fd.append("pdf", pdf);
+      const response = id ? await publicationsApi.update(id, fd) : await publicationsApi.create(fd);
+      if (!id) router.push(`${basePath}/${response.data.data.id}`);
+      else { await load(); if (status !== "DRAFT") router.push(basePath); }
+    } catch (error: any) { setErrors({ general: error.response?.data?.message || "Gagal menyimpan", ...(error.response?.data?.fields || {}) }); }
+    finally { setBusy(false); }
   };
 
-  const inputStyle = {
-    width: "100%", padding: "11px 14px",
-    border: "1px solid rgba(38,108,135,0.15)", borderRadius: "2px",
-    fontSize: "14px", outline: "none", color: "#1C3038",
-    fontFamily: "inherit", background: "#fff", boxSizing: "border-box" as const,
+  const addVersion = async () => {
+    if (!id) return;
+    setBusy(true); setErrors({});
+    try {
+      const fd = new FormData(); fd.append("versionDate", versionDate); fd.append("changeSummary", changeSummary);
+      if (versionCover) fd.append("cover", versionCover); if (versionPdf) fd.append("pdf", versionPdf);
+      await publicationsApi.createVersion(id, fd); setVersionCover(null); setVersionPdf(null); setChangeSummary(""); await load();
+    } catch (error: any) { setErrors({ general: error.response?.data?.message || "Gagal menambah versi" }); }
+    finally { setBusy(false); }
   };
-  const labelStyle = { display: "block", fontSize: "11px", fontWeight: 500 as const, letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "#7A9AA5", marginBottom: "7px" };
+  const changeVersion = (versionId: string, patch: VersionEdit) =>
+    setVersionEdits(previous => ({ ...previous, [versionId]: { ...previous[versionId], ...patch } }));
+  const versionPayload = (versionId: string, publish: boolean) => {
+    const edit = versionEdits[versionId] || {};
+    const fd = new FormData();
+    if (publish) fd.append("publish", "true");
+    if (edit.date) fd.append("versionDate", edit.date);
+    if (edit.summary !== undefined) fd.append("changeSummary", edit.summary);
+    if (edit.cover) fd.append("cover", edit.cover);
+    if (edit.pdf) fd.append("pdf", edit.pdf);
+    return fd;
+  };
+  const saveVersion = async (versionId: string) => {
+    if (!id) return;
+    setBusy(true); setErrors({});
+    try { await publicationsApi.updateVersion(id, versionId, versionPayload(versionId, false));
+      setVersionEdits(previous => { const next = { ...previous }; delete next[versionId]; return next; }); await load(); }
+    catch (error: any) { setErrors({ general: error.response?.data?.message || "Versi belum dapat disimpan" }); }
+    finally { setBusy(false); }
+  };
+  const publishVersion = async (versionId: string) => {
+    if (!id || !canPublish) return;
+    setBusy(true); setErrors({});
+    try { await publicationsApi.updateVersion(id, versionId, versionPayload(versionId, true));
+      setVersionEdits(previous => { const next = { ...previous }; delete next[versionId]; return next; }); await load(); }
+    catch (error: any) { setErrors({ general: error.response?.data?.message || "Versi belum dapat diterbitkan", ...(error.response?.data?.fields || {}) }); }
+    finally { setBusy(false); }
+  };
 
-  if (loading) return <div style={{ padding: "40px" }}><p style={{ fontFamily: "Georgia,serif", color: "#B8CDD2" }}>Memuat...</p></div>;
-  if (isEdit && !pub) {
-    return (
-      <div style={{ padding: "40px" }}>
-        <p style={{ fontFamily: "Georgia,serif", color: "#B8CDD2", marginBottom: "12px" }}>{meta.label} tidak ditemukan.</p>
-        <Link href={basePath} style={{ color: "#266c87", fontSize: "13px" }}>← Kembali</Link>
-      </div>
-    );
-  }
-
-  return (
-    <div style={{ padding: "40px", maxWidth: "1040px" }}>
-      {isEdit && pub?.publicationCode && <PublicationIdentity code={pub.publicationCode} />}
-      {/* Header + tombol aksi */}
-      <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px", flexWrap: "wrap" }}>
-        <Link href={basePath} style={{ color: "#B8CDD2", textDecoration: "none", fontSize: "20px" }}>←</Link>
-        <div style={{ flex: 1, minWidth: "200px" }}>
-          <p style={{ fontSize: "11px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "2px" }}>
-            {isEdit ? `Edit ${meta.label}` : `${meta.label} Baru`}
-          </p>
-          <h1 style={{ fontFamily: "Georgia,serif", fontSize: "26px", fontWeight: 300, color: "#0F2830" }}>{form.title || `${meta.label} Baru`}</h1>
+  if (loading) return <p role="status">Memuat publikasi…</p>;
+  if (format === "JOURNAL") return <div style={{ padding: "clamp(20px,4vw,40px)", maxWidth: 760 }}>
+    <Link href={basePath}>← Kembali ke publikasi</Link>
+    <h1>Arsip Manara Journal</h1>
+    <p>{pub?.title || "Terbitan jurnal lama"} tetap tersimpan. Pembuatan dan penyuntingan edisi jurnal ditunda sampai tahap pengembangan berikutnya.</p>
+    <p>Halaman persiapan jurnal dapat diatur melalui pengaturan website.</p>
+    {pub?.status === "PUBLISHED" && pub.publicationCode && <Link href={`/P/${pub.publicationCode}`}>Lihat terbitan lama</Link>}
+  </div>;
+  const coverHint = format === "PERSPECTIVE" ? "4:5 · contoh 1080 × 1350 px" : format === "EDITORIAL_NOTE" ? "Opsional · rasio bebas" : "A4 potret · contoh 1400 × 1980 px";
+  return <div style={{ padding: "clamp(16px,4vw,40px)", maxWidth: 1040, margin: "auto", color: "#173642" }}>
+    <Link href={basePath} style={{ color: "#266c87" }}>← Kembali ke publikasi</Link>
+    <h1 style={{ fontSize: "clamp(26px,4vw,40px)", margin: "16px 0 6px" }}>{id ? "Edit publikasi" : "Publikasi baru"}</h1>
+    <p style={{ color: "#627985" }}>Pilih format, isi kolom yang relevan, lalu simpan draf atau kirim untuk ditinjau.</p>
+    {pub?.publicationCode && <PublicationIdentity code={pub.publicationCode} />}
+    {errors.general && <p role="alert" style={{ color: "#bd3030" }}>{errors.general}</p>}
+    <section style={PANEL}><h2>Format dan metadata</h2>
+      <label style={{ display: "block", marginBottom: 18 }}>Format publikasi
+        <select value={format} onChange={e => setFormat(e.target.value as Format)} style={INPUT}>
+          {FORMATS.map(option => <option value={option.value} key={option.value}>{option.label} — {option.hint}</option>)}
+        </select></label>
+      {input("title", "Judul")}{input("excerpt", "Ringkasan kartu", true)}
+      <label style={{ display: "block", marginBottom: 18 }}>Tanggal terbit
+        <input type="date" value={publishedAt} onChange={event => setPublishedAt(event.target.value)} style={INPUT} />
+        <small style={{ display: "block", color: "#667d86" }}>Kosongkan untuk memakai tanggal terbit otomatis.</small>
+        {errors.publishedAt && <small style={{ display: "block", color: "#bd3030" }}>{errors.publishedAt}</small>}
+      </label>
+      <label style={{ display: "block", marginBottom: 18 }}>Departemen
+        <select value={form.department} onChange={e => { change("department", e.target.value); setTopics([]); }} style={INPUT}>
+          <option value="">Pilih departemen</option>{PUBLICATION_DEPARTMENTS.map(item => <option key={item.name} value={item.name}>{item.name}</option>)}
+        </select>{errors.department && <small style={{ color: "#bd3030" }}>{errors.department}</small>}</label>
+      <fieldset style={{ border: 0, padding: 0 }}><legend>Topik</legend>
+        {(department?.topics || []).map(topic => <label key={topic} style={{ display: "inline-flex", gap: 6, margin: "8px 16px 8px 0" }}>
+          <input type="checkbox" checked={topics.includes(topic)} onChange={() => setTopics(previous => previous.includes(topic) ? previous.filter(t => t !== topic) : [...previous, topic])} />{topic}
+        </label>)}{errors.topics && <small style={{ display: "block", color: "#bd3030" }}>{errors.topics}</small>}
+      </fieldset>
+    </section>
+    <section style={PANEL}><h2>Isi {FORMATS.find(item => item.value === format)?.label}</h2>
+      {format === "EDITORIAL_NOTE" && <><label style={{ display: "block", marginBottom: 18 }}>Atribusi
+        <select value={editorAttribution ? "editor" : "redaksi"}
+          onChange={event => { const named = event.target.value === "editor"; setEditorAttribution(named); change("attribution", named ? user?.name || "" : "Redaksi Manara Institute"); }}
+          style={INPUT}><option value="redaksi">Redaksi Manara Institute</option><option value="editor">Editor bernama</option></select>
+      </label>
+        {editorAttribution && input("attribution", "Nama editor")}
+        {input("dataUrl", "Tautan publikasi terkait")}</>}
+      {format !== "EDITORIAL_NOTE" && format !== "POLICY_BRIEF" && <label style={{ display: "block", marginBottom: 18 }}>Penulis
+        <input value={authors} onChange={e => setAuthors(e.target.value)} style={INPUT} placeholder="Pisahkan dengan koma" />
+        {errors.authors && <small style={{ color: "#bd3030" }}>{errors.authors}</small>}</label>}
+      {format === "PERSPECTIVE" && input("argumentSummary", "Ringkasan argumen", true)}
+      {["RESEARCH_PAPER", "WORKING_PAPER"].includes(format) && input("abstract", "Abstrak", true)}
+      {format === "RESEARCH_PAPER" && <><label>Kata kunci<input value={keywords} onChange={e => setKeywords(e.target.value)} style={INPUT} placeholder="Pisahkan dengan koma" /></label>{errors.keywords && <small style={{ color: "#bd3030" }}>{errors.keywords}</small>}</>}
+      {format === "RESEARCH_PAPER" && <><label>Sitasi · satu per baris<textarea value={citations} onChange={event => setCitations(event.target.value)} rows={4} style={INPUT} /></label>
+        {input("dataUrl", "Tautan data")}
+        <label>Lampiran · satu URL per baris<textarea value={attachments} onChange={e => setAttachments(e.target.value)} rows={3} style={INPUT} /></label></>}
+      {format === "POLICY_BRIEF" && <>{input("policyProblem", "Masalah kebijakan", true)}{input("decisionMakers", "Sasaran pengambil keputusan")}
+        {input("executiveSummary", "Ringkasan eksekutif", true)}
+        <label>Rekomendasi · satu per baris, format: tindakan | aktor pelaksana<textarea value={recommendations} onChange={e => setRecommendations(e.target.value)} rows={5} style={INPUT} /></label>
+        {errors.recommendations && <small style={{ color: "#bd3030" }}>{errors.recommendations}</small>}
+        {input("evidence", "Dasar bukti", true)}{input("policyOptions", "Opsi kebijakan", true)}{input("implementationNotes", "Catatan implementasi", true)}</>}
+      {format === "WORKING_PAPER" && <>{input("seriesNumber", "Nomor seri · opsional")}{input("feedbackUrl", "Kanal masukan · URL")}{input("followUpResearchUrl", "Research Paper lanjutan · URL")}</>}
+      {["EDITORIAL_NOTE", "PERSPECTIVE", "RESEARCH_PAPER"].includes(format) && <div style={{ marginTop: 18 }}><label>Isi naskah HTML</label>
+        <RichTextEditor value={form.content} onChange={value => change("content", value)} minHeight="300px" />{errors.content && <small style={{ color: "#bd3030" }}>{errors.content}</small>}</div>}
+      {format === "PERSPECTIVE" && <label style={{ display: "block", marginTop: 18 }}>Referensi · satu per baris<textarea rows={4} value={references} onChange={e => setReferences(e.target.value)} style={INPUT} /></label>}
+    </section>
+    <section style={PANEL}><h2>Media</h2><p>{coverHint}</p>
+      {format !== "WORKING_PAPER" && <><label>Cover web<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e => { const file = e.target.files?.[0] || null; setCover(file); setLocalCoverUrl(file ? URL.createObjectURL(file) : ""); }} style={INPUT} /></label>
+        {(localCoverUrl || coverUrl) && <img src={localCoverUrl || coverUrl} alt="Pratinjau cover" style={{ display: "block", maxWidth: 240, maxHeight: 300, objectFit: "contain", marginTop: 12 }} />}
+        {errors.cover && <small style={{ color: "#bd3030" }}>{errors.cover}</small>}</>}
+      {format === "EDITORIAL_NOTE" && <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 16, marginTop: 16 }}>
+        <label>Titik fokus horizontal · {imageFocusX}%<input type="range" min="0" max="100" value={imageFocusX} onChange={event => setImageFocusX(Number(event.target.value))} style={{ display: "block", width: "100%" }} /></label>
+        <label>Titik fokus vertikal · {imageFocusY}%<input type="range" min="0" max="100" value={imageFocusY} onChange={event => setImageFocusY(Number(event.target.value))} style={{ display: "block", width: "100%" }} /></label>
+      </div>}
+      {["RESEARCH_PAPER", "POLICY_BRIEF"].includes(format) && <label style={{ display: "block", marginTop: 18 }}>PDF terpisah dari cover web<input type="file" accept="application/pdf" onChange={e => setPdf(e.target.files?.[0] || null)} style={INPUT} /></label>}
+    </section>
+    {format === "WORKING_PAPER" && <section style={PANEL}><h2>Versi Working Paper</h2>
+      {!id && <p>Simpan draf terlebih dahulu, lalu tambahkan versi.</p>}
+      {id && <><label>Tanggal versi<input type="date" value={versionDate} onChange={e => setVersionDate(e.target.value)} style={INPUT} /></label>
+        <label>Cover A4<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e => setVersionCover(e.target.files?.[0] || null)} style={INPUT} /></label>
+        <label>PDF versi<input type="file" accept="application/pdf" onChange={e => setVersionPdf(e.target.files?.[0] || null)} style={INPUT} /></label>
+        {errors.cover && <small style={{ display: "block", color: "#bd3030" }}>{errors.cover}</small>}
+        {errors.pdf && <small style={{ display: "block", color: "#bd3030" }}>{errors.pdf}</small>}
+        <label>Ringkasan perubahan · wajib mulai versi 2<textarea value={changeSummary} onChange={e => setChangeSummary(e.target.value)} style={INPUT} /></label>
+        <button type="button" disabled={busy} onClick={addVersion}>Simpan versi sebagai draf</button>
+        {errors.versions && <small style={{ color: "#bd3030" }}>{errors.versions}</small>}
+        <ol>{versions.map(version => <li key={version.id} style={{ margin: "14px 0" }}>
+          Versi {version.number} · {new Date(version.versionDate).toLocaleDateString("id-ID")} {version.isCurrent ? "· terkini" : ""} {version.isPublished ? "· terbit" : "· draf"}
+          {version.changeSummary && <p>{version.changeSummary}</p>}
+          {!version.isPublished && <div style={{ display: "grid", gap: 10, marginTop: 12, padding: 14, border: "1px solid #dce6e8", borderRadius: 6 }}>
+            <label>Tanggal versi<input type="date" value={versionEdits[version.id]?.date ?? version.versionDate.slice(0, 10)} onChange={event => changeVersion(version.id, { date: event.target.value })} style={INPUT} /></label>
+            <label>Cover A4 {version.coverImage ? "· sudah ada" : "· belum ada"}<input type="file" accept="image/jpeg,image/png,image/webp" onChange={event => changeVersion(version.id, { cover: event.target.files?.[0] || null })} style={INPUT} /></label>
+            <label>PDF {version.pdfUrl ? "· sudah ada" : "· belum ada"}<input type="file" accept="application/pdf" onChange={event => changeVersion(version.id, { pdf: event.target.files?.[0] || null })} style={INPUT} /></label>
+            <label>Ringkasan perubahan<textarea value={versionEdits[version.id]?.summary ?? version.changeSummary ?? ""} onChange={event => changeVersion(version.id, { summary: event.target.value })} rows={2} style={INPUT} /></label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}><button type="button" disabled={busy} onClick={() => saveVersion(version.id)}>Simpan draf versi</button>
+              {canPublish && <button type="button" disabled={busy} onClick={() => publishVersion(version.id)}>Terbitkan versi ini</button>}</div>
+          </div>}
+        </li>)}</ol></>}
+    </section>}
+    <section style={PANEL}><h2>Pratinjau</h2>
+      <button type="button" onClick={() => setPreview(value => !value)}>{preview ? "Tutup pratinjau" : "Lihat kartu dan halaman baca"}</button>
+      {preview && <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 20, marginTop: 18 }}>
+        <div style={{ padding: 18, border: "1px solid #c9d9df", borderRadius: 6 }}>
+          <small>Kartu katalog · {FORMATS.find(item => item.value === format)?.label}</small>
+          {(localCoverUrl || coverUrl) && <img src={localCoverUrl || coverUrl} alt="" style={{ display: "block", width: "100%", height: 220, objectFit: format === "EDITORIAL_NOTE" ? "cover" : "contain", objectPosition: `${imageFocusX}% ${imageFocusY}%`, margin: "10px 0" }} />}
+          <h3>{form.title || "Judul publikasi"}</h3><p>{authors || (editorAttribution ? form.attribution : "Redaksi Manara Institute")}</p>
+          <p>{form.excerpt || "Ringkasan kartu"}</p>
         </div>
-        {autoSaved && <p style={{ fontSize: "11px", color: "#B8CDD2" }}>✓ Tersimpan {autoSaved}</p>}
-
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-          {!disabled && (!isEdit || pub?.status === "DRAFT" || canReview) && (
-            <button onClick={() => handleSubmit("DRAFT")} disabled={saving !== null}
-              style={{ padding: "9px 18px", fontSize: "12px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", border: "1px solid rgba(38,108,135,0.2)", borderRadius: "2px", background: "transparent", color: "#3A5560", cursor: "pointer" }}>
-              {saving === "DRAFT" ? "..." : "Simpan Draft"}
-            </button>
-          )}
-
-          {!disabled && !canReview && (!isEdit || pub?.status === "DRAFT") && (
-            <button onClick={() => handleSubmit("REVIEW")} disabled={saving !== null}
-              style={{ padding: "9px 18px", fontSize: "12px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", border: `1px solid ${meta.color}40`, borderRadius: "2px", background: "transparent", color: meta.color, cursor: "pointer" }}>
-              {saving === "REVIEW" ? "..." : "Kirim untuk Review"}
-            </button>
-          )}
-
-          {canReview && (!isEdit || ["DRAFT", "REVIEW"].includes(pub?.status)) && (
-            <button onClick={() => handleSubmit("PUBLISHED", { publishedAt: new Date().toISOString() })} disabled={saving !== null}
-              style={{ padding: "9px 22px", fontSize: "12px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", background: "#266c87", color: "#fff", border: "none", borderRadius: "2px", cursor: "pointer", opacity: saving ? 0.6 : 1 }}>
-              {saving === "PUBLISHED" ? "..." : "Publikasikan"}
-            </button>
-          )}
-
-          {canReview && isEdit && pub?.status === "REVIEW" && (
-            <button onClick={() => handleSubmit("DRAFT")} disabled={saving !== null}
-              style={{ padding: "9px 18px", fontSize: "12px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", border: "1px solid rgba(245,158,11,0.4)", borderRadius: "2px", background: "transparent", color: "#f59e0b", cursor: "pointer" }}>
-              Minta Revisi
-            </button>
-          )}
-
-          {canReview && isEdit && pub?.status === "PUBLISHED" && (
-            <button onClick={() => handleSubmit("ARCHIVED")} disabled={saving !== null}
-              style={{ padding: "9px 18px", fontSize: "12px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", border: "1px solid rgba(100,116,139,0.3)", borderRadius: "2px", background: "transparent", color: "#64748b", cursor: "pointer" }}>
-              Arsipkan
-            </button>
-          )}
-
-          {canReview && isEdit && pub?.status === "ARCHIVED" && (
-            <button onClick={() => handleSubmit("PUBLISHED")} disabled={saving !== null}
-              style={{ padding: "9px 18px", fontSize: "12px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", background: "#3F6F6A", color: "#fff", border: "none", borderRadius: "2px", cursor: "pointer" }}>
-              Terbitkan Ulang
-            </button>
-          )}
-        </div>
-      </div>
-
-      {isEdit && pub?.status === "REVIEW" && !canReview && (
-        <div style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: "2px", padding: "12px 18px", marginBottom: "20px" }}>
-          <p style={{ fontSize: "13px", color: "#b45309" }}>{meta.label} ini sedang menunggu review editor. Kamu bisa edit lagi kalau diminta revisi.</p>
-        </div>
-      )}
-
-      {error && (
-        <div style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.2)", borderRadius: "2px", padding: "10px 18px", marginBottom: "20px" }}>
-          <p style={{ fontSize: "13px", color: "#f87171" }}>{error}</p>
-        </div>
-      )}
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: "20px" }} className="pub-form-grid">
-        {/* LEFT */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px", opacity: disabled ? 0.7 : 1, pointerEvents: disabled ? "none" : "auto" }}>
-          <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "20px 24px" }}>
-            <label style={labelStyle}>Judul *</label>
-            <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-              placeholder={`Judul ${meta.label}...`}
-              style={{ ...inputStyle, fontSize: "20px", fontFamily: "Georgia,serif", fontWeight: 300, border: "none", borderBottom: "2px solid rgba(38,108,135,0.1)", borderRadius: "0", padding: "8px 0" }} />
-            {meta.hasContent && (
-              <div style={{ marginTop: "16px" }}>
-                <label style={labelStyle}>Ringkasan / Excerpt</label>
-                <textarea value={form.excerpt} onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))}
-                  placeholder="Ringkasan singkat untuk daftar & preview media sosial..."
-                  rows={2} style={{ ...inputStyle, resize: "none", fontStyle: "italic", color: "#3A5560" }} />
-              </div>
-            )}
-          </div>
-
-          {meta.hasContent && (
-            <div>
-              <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", overflow: "hidden" }}>
-                <div style={{ padding: "14px 20px", borderBottom: "1px solid rgba(38,108,135,0.08)", background: "rgba(38,108,135,0.02)" }}>
-                  <p style={{ fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#B8CDD2" }}>Konten Artikel *</p>
-                </div>
-                <RichTextEditor value={form.content} onChange={content => setForm(f => ({ ...f, content }))} placeholder="Mulai menulis di sini..." minHeight="450px" />
-              </div>
-              {form.content && (
-                <div style={{ display: "flex", gap: "16px", padding: "8px 16px", background: "rgba(38,108,135,0.04)" }}>
-                  {(() => {
-                    const text = form.content.replace(/<[^>]*>/g, " ").trim();
-                    const words = text.split(/\s+/).filter(Boolean).length;
-                    return (<><span style={{ fontSize: "11px", color: "#B8CDD2" }}>{words.toLocaleString("id")} kata</span><span style={{ fontSize: "11px", color: "#B8CDD2" }}>~{Math.max(1, Math.ceil(words / 200))} menit baca</span></>);
-                  })()}
-                </div>
-              )}
-            </div>
-          )}
-
-          {!meta.hasContent && (
-            <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "20px 24px" }}>
-              <label style={labelStyle}>Abstrak *</label>
-              <textarea value={form.abstract} onChange={e => setForm(f => ({ ...f, abstract: e.target.value }))}
-                placeholder="Tujuan, metodologi, temuan, dan kesimpulan..." rows={8} style={{ ...inputStyle, resize: "vertical", lineHeight: 1.85 }} />
-              <p style={{ fontSize: "11px", color: "#B8CDD2", marginTop: "6px" }}>{form.abstract.split(/\s+/).filter(Boolean).length} kata</p>
-            </div>
-          )}
-
-          {!meta.hasContent && (
-            <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "20px 24px" }}>
-              <label style={labelStyle}>Penulis (koma)</label>
-              <input value={authorsInput} onChange={e => setAuthorsInput(e.target.value)} placeholder="Ahmad Rasyid, Sari Andini..." style={inputStyle} />
-              <label style={{ ...labelStyle, marginTop: "16px" }}>Institusi / Afiliasi (koma)</label>
-              <input value={form.institutions} onChange={e => setForm(f => ({ ...f, institutions: e.target.value }))} placeholder="Universitas Brawijaya, Manara Research..." style={inputStyle} />
-              <label style={{ ...labelStyle, marginTop: "16px" }}>Kata Kunci (koma)</label>
-              <input value={keywordsInput} onChange={e => setKeywordsInput(e.target.value)} placeholder="kebijakan publik, riset..." style={inputStyle} />
-            </div>
-          )}
-
-          {meta.hasPdf && (
-            <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "20px 24px" }}>
-              <label style={labelStyle}>File PDF</label>
-              {pdfFile ? (
-                <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "rgba(38,108,135,0.05)", border: "1px solid rgba(38,108,135,0.15)", borderRadius: "2px" }}>
-                  <span style={{ fontSize: "24px" }}>📄</span>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: "13px", fontWeight: 500, color: "#0F2830" }}>{pdfFile.name}</p>
-                    <p style={{ fontSize: "11px", color: "#7A9AA5" }}>{(pdfFile.size / (1024 * 1024)).toFixed(2)} MB</p>
-                  </div>
-                  <button type="button" onClick={() => setPdfFile(null)} style={{ fontSize: "12px", color: "#f87171", background: "none", border: "none", cursor: "pointer" }}>Hapus</button>
-                </div>
-              ) : (
-                <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "120px", border: "2px dashed rgba(38,108,135,0.2)", borderRadius: "4px", cursor: "pointer", gap: "6px" }}>
-                  <span style={{ fontSize: "32px" }}>📄</span>
-                  <p style={{ fontSize: "13px", color: "#7A9AA5" }}>{isEdit ? "Upload PDF baru (opsional)" : "Klik untuk upload PDF · Max 20MB"}</p>
-                  <input type="file" accept=".pdf" onChange={e => setPdfFile(e.target.files?.[0] || null)} style={{ display: "none" }} />
-                </label>
-              )}
-            </div>
-          )}
-
-          {meta.hasAcademic && (
-            <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "20px 24px" }}>
-              <p style={{ fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "16px" }}>Info Jurnal</p>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 2fr", gap: "12px", marginBottom: "16px" }}>
-                {[{ key: "volume", label: "Volume", ph: "1" }, { key: "issue", label: "Nomor", ph: "1" }, { key: "year", label: "Tahun", ph: "2026" }, { key: "doi", label: "DOI (opsional)", ph: "10.xxxx/xxxxx" }].map(f => (
-                  <div key={f.key}>
-                    <label style={labelStyle}>{f.label}</label>
-                    <input value={(form as any)[f.key]} onChange={e => setForm(ff => ({ ...ff, [f.key]: e.target.value }))} placeholder={f.ph} style={{ ...inputStyle, padding: "8px 12px", fontSize: "13px" }} />
-                  </div>
-                ))}
-              </div>
-              <label style={labelStyle}>ISSN (opsional)</label>
-              <input value={form.issn} onChange={e => setForm(f => ({ ...f, issn: e.target.value }))} placeholder="xxxx-xxxx" style={{ ...inputStyle, maxWidth: "200px", marginBottom: "16px" }} />
-              <label style={labelStyle}>Reviewer (koma)</label>
-              <input value={reviewersInput} onChange={e => setReviewersInput(e.target.value)} placeholder="Prof. Ahmad, Dr. Sari..." style={{ ...inputStyle, marginBottom: "16px" }} />
-              <label style={labelStyle}>Daftar Referensi / Sitasi (satu per baris)</label>
-              <textarea value={citationsInput} onChange={e => setCitationsInput(e.target.value)} rows={5} style={{ ...inputStyle, resize: "vertical", fontFamily: "monospace", fontSize: "12px" }} />
-            </div>
-          )}
-        </div>
-
-        {/* RIGHT */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-          <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "18px" }}>
-            <p style={{ fontSize: "10px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "10px" }}>Cover</p>
-            {coverPreview ? (
-              <div style={{ position: "relative" }}>
-                <img src={coverPreview} alt="cover" style={{ width: "100%", aspectRatio: meta.hasPdf ? "3/4" : "16/9", objectFit: "cover", borderRadius: "2px", display: "block" }} />
-                {!disabled && (
-                  <div style={{ position: "absolute", bottom: "8px", right: "8px", display: "flex", gap: "6px" }}>
-                    <label style={{ background: "rgba(0,0,0,0.6)", color: "#fff", fontSize: "11px", padding: "4px 10px", borderRadius: "2px", cursor: "pointer" }}>
-                      Ganti
-                      <input type="file" accept="image/*" onChange={e => { const f = e.target.files?.[0]; if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); } }} style={{ display: "none" }} />
-                    </label>
-                    <button onClick={() => { setCoverFile(null); setCoverPreview(null); }} style={{ background: "rgba(248,113,113,0.8)", color: "#fff", border: "none", fontSize: "11px", padding: "4px 8px", borderRadius: "2px", cursor: "pointer" }}>×</button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", aspectRatio: meta.hasPdf ? "3/4" : "16/9", border: "2px dashed rgba(38,108,135,0.15)", borderRadius: "2px", cursor: "pointer", gap: "6px" }}>
-                <span style={{ fontSize: "22px", color: "#B8CDD2" }}>+</span>
-                <p style={{ fontSize: "11px", color: "#B8CDD2", textAlign: "center" }}>Upload cover<br /><span style={{ fontSize: "10px" }}>JPG/PNG</span></p>
-                <input type="file" accept="image/*" onChange={e => { const f = e.target.files?.[0]; if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); } }} style={{ display: "none" }} />
-              </label>
-            )}
-          </div>
-
-          <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "4px", padding: "18px", display: "flex", flexDirection: "column", gap: "12px" }}>
-            <p style={{ fontSize: "10px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#B8CDD2" }}>Pengaturan</p>
-            {type === "ARTICLE" && (
-              <div>
-                <label style={labelStyle}>Tipe Artikel</label>
-                <select value={form.articleSubtype} onChange={e => setForm(f => ({ ...f, articleSubtype: e.target.value }))} style={{ ...inputStyle, padding: "8px 12px", fontSize: "13px", appearance: "none" }}>
-                  <option value="">Pilih tipe</option>
-                  {meta.subtypes.map((s: string) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
-                </select>
-              </div>
-            )}
-            {type === "PAPER" && (
-              <div>
-                <label style={labelStyle}>Tipe Paper</label>
-                <select value={form.paperSubtype} onChange={e => setForm(f => ({ ...f, paperSubtype: e.target.value }))} style={{ ...inputStyle, padding: "8px 12px", fontSize: "13px", appearance: "none" }}>
-                  <option value="">Pilih tipe</option>
-                  {meta.subtypes.map((s: string) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
-                </select>
-              </div>
-            )}
-            <div>
-              <label style={labelStyle}>Kategori</label>
-              <select value={form.categoryId} onChange={e => setForm(f => ({ ...f, categoryId: e.target.value }))} style={{ ...inputStyle, padding: "8px 12px", fontSize: "13px", appearance: "none" }}>
-                <option value="">Tanpa Kategori</option>
-                {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-            </div>
-            <PublicationTopicsField value={selectedTopics} onChange={setSelectedTopics} disabled={disabled} />
-            <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", cursor: "pointer" }}>
-              <input type="checkbox" checked={form.isFeatured} onChange={e => setForm(f => ({ ...f, isFeatured: e.target.checked }))} style={{ width: "16px", height: "16px", accentColor: "#266c87", marginTop: "2px" }} />
-              <div>
-                <span style={{ fontSize: "13px", color: "#3A5560", display: "block" }}>Tandai sebagai unggulan</span>
-                <span style={{ fontSize: "11px", color: "#B8CDD2" }}>Tampil di posisi utama</span>
-              </div>
-            </label>
-          </div>
-
-          <div style={{ background: "rgba(38,108,135,0.04)", border: "1px solid rgba(38,108,135,0.08)", borderRadius: "4px", padding: "14px 16px" }}>
-            <p style={{ fontSize: "10px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "8px" }}>{isEdit ? "Info" : "Penulis"}</p>
-            {isEdit && pub ? (
-              <>
-                <p style={{ fontSize: "12px", color: "#7A9AA5", marginBottom: "4px" }}>Penulis: {pub.author?.name}</p>
-                <p style={{ fontSize: "12px", color: "#7A9AA5", marginBottom: "4px" }}>Dibuat: {new Date(pub.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</p>
-                {pub.publishedAt && <p style={{ fontSize: "12px", color: "#7A9AA5", marginBottom: "4px" }}>Dipublish: {new Date(pub.publishedAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</p>}
-                <p style={{ fontSize: "12px", color: "#7A9AA5", marginBottom: "8px" }}>Views: {pub.viewCount || 0}</p>
-                <div style={{ borderTop: "1px solid rgba(38,108,135,0.08)", paddingTop: "8px" }}>
-                  <p style={{ fontSize: "11px", color: "#B8CDD2", marginBottom: "2px" }}>Slug:</p>
-                  <p style={{ fontSize: "11px", fontFamily: "monospace", color: "#266c87", wordBreak: "break-all" }}>{pub.slug}</p>
-                </div>
-              </>
-            ) : (
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div style={{ width: "30px", height: "30px", borderRadius: "50%", background: "rgba(38,108,135,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", color: "#266c87", fontWeight: 500 }}>
-                  {user?.name?.charAt(0)}
-                </div>
-                <div>
-                  <p style={{ fontSize: "13px", fontWeight: 500, color: "#0F2830" }}>{user?.name}</p>
-                  <p style={{ fontSize: "11px", color: "#B8CDD2" }}>{user?.role}</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <style>{`@media (max-width: 900px) { .pub-form-grid { grid-template-columns: 1fr !important; } }`}</style>
+        <article style={{ padding: 20, border: "1px solid #c9d9df", borderRadius: 6, lineHeight: 1.6 }}>
+          <small>Halaman baca · {FORMATS.find(item => item.value === format)?.label} · {form.department}</small>
+          <h3 style={{ fontSize: 24, margin: "12px 0" }}>{form.title || "Judul publikasi"}</h3>
+          <p>{authors || (editorAttribution ? form.attribution : "Redaksi Manara Institute")} {publishedAt && `· ${publishedAt}`}</p>
+          {format === "PERSPECTIVE" && <p><strong>Argumen:</strong> {form.argumentSummary}</p>}
+          {["RESEARCH_PAPER", "WORKING_PAPER"].includes(format) && <p><strong>Abstrak:</strong> {form.abstract}</p>}
+          {format === "POLICY_BRIEF" && <><p><strong>Ringkasan eksekutif:</strong> {form.executiveSummary}</p>
+            <p><strong>Rekomendasi:</strong> {recommendations || "Belum diisi"}</p></>}
+          {format === "WORKING_PAPER" && <p>Versi {versions.find(version => version.isCurrent)?.number || 1} · PDF per versi</p>}
+          {form.content && <p>{form.content.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").slice(0, 500)}</p>}
+          {(pdf || format === "WORKING_PAPER") && <p style={{ color: "#266c87" }}>Unduh PDF</p>}
+        </article>
+      </div>}
+    </section>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+      <button type="button" disabled={busy} onClick={() => save("DRAFT")}>Simpan draf</button>
+      <button type="button" disabled={busy} onClick={() => save("REVIEW")}>Kirim untuk reviu</button>
+      {canPublish && format !== "WORKING_PAPER" && <button type="button" disabled={busy} onClick={() => save("PUBLISHED")} style={{ background: "#266c87", color: "white", border: 0, padding: "10px 18px" }}>Terbitkan</button>}
     </div>
-  );
+  </div>;
 }

@@ -84,7 +84,7 @@ const CATEGORIES = [
     color: "#8A8F5E",
     grad: "linear-gradient(145deg, #141408, #4A4E28)",
   },
-];
+].filter(category => category.type === "NEWS" || category.type === "AWARD");
 
 export default function PusatInformasiPage() {
   const [counts, setCounts] = useState<Record<string, number>>({});
@@ -132,13 +132,13 @@ export default function PusatInformasiPage() {
             <em style={{ color: "#86AFAA" }}>kamu ketahui tentang Manara.</em>
           </h1>
           <p style={{ fontSize: "17px", fontWeight: 300, color: "rgba(134,175,170,0.5)", lineHeight: 1.85, maxWidth: "540px" }}>
-            Satu tempat untuk mengikuti perkembangan, pencapaian, publikasi, dan agenda strategis Manara.
+            Ikuti berita terbaru dan pencapaian Manara dalam satu tempat.
           </p>
         </div>
         </HeroBackground>
       
 
-      {/* ── 4 KARTU KATEGORI ── */}
+      {/* ── KATEGORI PUBLIK ── */}
       <section style={{ padding: "0 0 80px", background: "none" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
 

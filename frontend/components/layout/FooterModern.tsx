@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
 import Link from "next/link";
-import { ArrowUpRight, CheckCircle2, Send } from "lucide-react";
-import { newsletterApi } from "@/lib/api";
+import { ArrowUpRight } from "lucide-react";
 import styles from "./FooterModern.module.css";
 
 const FOOTER_GROUPS = [
@@ -11,19 +9,17 @@ const FOOTER_GROUPS = [
     title: "Jelajahi",
     links: [
       { label: "Semua publikasi", href: "/publikasi" },
-      { label: "Artikel", href: "/publikasi/artikel" },
-      { label: "Manara Paper", href: "/publikasi/paper" },
+      { label: "Perspective", href: "/publikasi?jenis=perspective" },
+      { label: "Research Paper", href: "/publikasi?jenis=research-paper" },
       { label: "Manara Journal", href: "/publikasi/journal" },
-      { label: "Topik riset", href: "/#topik-riset" },
+      { label: "Topik publikasi", href: "/publikasi#topik" },
     ],
   },
   {
-    title: "Program",
+    title: "Pusat Informasi",
     links: [
-      { label: "Proyek", href: "/proyek" },
-      { label: "Riset", href: "/layanan/research" },
-      { label: "Policy brief", href: "/layanan/policy-brief" },
-      { label: "Pelatihan", href: "/layanan/training" },
+      { label: "News", href: "/pusat-informasi/news" },
+      { label: "Awards", href: "/pusat-informasi/awards" },
     ],
   },
   {
@@ -39,28 +35,6 @@ const FOOTER_GROUPS = [
 ];
 
 export default function FooterModern() {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleSubscribe = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!email.trim() || loading) return;
-    setLoading(true);
-    setError("");
-    try {
-      await newsletterApi.subscribe({ email: email.trim() });
-      setDone(true);
-      setEmail("");
-    } catch (caught) {
-      const message = (caught as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(message || "Pendaftaran belum berhasil. Coba lagi sebentar.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <footer className={styles.footer}>
       <div className={styles.footerInner}>
@@ -84,32 +58,6 @@ export default function FooterModern() {
             </div>
           ))}
 
-          <div className={styles.newsletter}>
-            <p className={styles.newsletterEyebrow}>Surat Manara</p>
-            <h2>Gagasan baru, langsung ke inbox.</h2>
-            <p>Ikuti publikasi, agenda, dan perspektif terbaru dari Manara.</p>
-            {done ? (
-              <p className={styles.success} role="status"><CheckCircle2 size={18} aria-hidden="true" /> Terima kasih, kamu sudah terdaftar.</p>
-            ) : (
-              <form onSubmit={handleSubscribe} className={styles.form}>
-                <label className="sr-only" htmlFor="footer-newsletter-email">Alamat email</label>
-                <input
-                  id="footer-newsletter-email"
-                  type="email"
-                  value={email}
-                  onChange={event => setEmail(event.target.value)}
-                  placeholder="Email kamu"
-                  autoComplete="email"
-                  required
-                />
-                <button type="submit" disabled={loading} aria-label="Daftar newsletter">
-                  <span>{loading ? "Mengirim…" : "Daftar"}</span>
-                  <Send size={16} aria-hidden="true" />
-                </button>
-                {error && <p className={styles.error} role="alert">{error}</p>}
-              </form>
-            )}
-          </div>
         </div>
 
         <div className={styles.footerBottom}>

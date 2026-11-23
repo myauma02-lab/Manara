@@ -288,10 +288,15 @@ export const publicationsApi = {
   // Admin
   adminList: (params?: {
     type?: string;
+    format?: string;
     search?: string;
     limit?: number;
     page?: number;
   }) => api.get("/publications/admin/all", { params }),
+
+  adminGet: (id: string) => api.get(`/publications/admin/${id}`),
+  createVersion: (id: string, data: FormData) => api.post(`/publications/${id}/versions`, data),
+  updateVersion: (id: string, versionId: string, data: FormData) => api.put(`/publications/${id}/versions/${versionId}`, data),
 
   create: (data: FormData) =>
     api.post("/publications", data),

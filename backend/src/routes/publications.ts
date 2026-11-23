@@ -5,15 +5,43 @@ import { authenticate, requireEditor, requirePublikasi } from "../middleware/aut
 import { uploadPublication } from "../middleware/upload";
 import { validate } from "../middleware/validate";
 import slugify from "slugify";
+import { Prisma, type PublicationFormat, type PublicationType } from "@prisma/client";
+import { inferFormat, publicationValidation, typeForFormat, uploadedCoverRatio, coverRatioValid } from "../services/publicationFormat";
 
 const router = Router();
 
+function jsonArray(value: unknown): any[] {
+  if (Array.isArray(value)) return value;
+  if (typeof value !== "string" || !value) return [];
+  const parsed = JSON.parse(value);
+  if (!Array.isArray(parsed)) throw new Error("Format daftar tidak valid");
+  return parsed;
+}
+
+function formatData(body: Record<string, any>): Record<string, any> {
+  const fields = ["department", "attribution", "argumentSummary", "dataUrl", "policyProblem", "decisionMakers", "executiveSummary", "evidence", "policyOptions", "implementationNotes", "seriesNumber", "feedbackUrl", "followUpResearchUrl"];
+  const data: Record<string, any> = {};
+  for (const key of fields) if (body[key] !== undefined) data[key] = body[key] || null;
+  for (const key of ["references", "recommendations", "attachments"]) if (body[key] !== undefined) data[key] = jsonArray(body[key]);
+  for (const key of ["imageFocusX", "imageFocusY"]) if (body[key] !== undefined) data[key] = body[key] === "" ? null : Number(body[key]);
+  return data;
+}
+
+function resolvedFormat(body: Record<string, any>): PublicationFormat {
+  if (body.format) {
+    if (!["EDITORIAL_NOTE", "RESEARCH_PAPER", "PERSPECTIVE", "POLICY_BRIEF", "WORKING_PAPER"].includes(body.format))
+      throw new Error("Format publikasi tidak tersedia");
+    return body.format as PublicationFormat;
+  }
+  return inferFormat(body.type as PublicationType, body.articleSubtype, body.paperSubtype);
+}
+
 const ALLOWED_PUBLICATION_TOPICS = new Set([
-  "Media Studies",
-  "Economic Discourse",
-  "Politic & Social Discourse",
-  "Human Ecology",
-  "Law and Public Policy",
+  "Constitutional & Institutional Law", "Legislative & Regulatory Studies", "Administrative & Governance Law", "Economic & Business Law", "Law, Society & Human Rights", "Environmental & Natural Resources Law",
+  "Political Institutions & Democracy", "Public Policy & Governance", "Political Economy", "Electoral & Political Behavior", "Civil Society & Social Movements", "Geopolitics & International Relations",
+  "Macroeconomics & Monetary Studies", "Fiscal & Public Economics", "Industrial & Structural Transformation", "Development & Inclusive Economics", "Energy & Environmental Economics", "Financial & Investment Studies",
+  // Legacy values remain accepted while editors reclassify existing work.
+  "Media Studies", "Economic Discourse", "Politic & Social Discourse", "Human Ecology", "Law and Public Policy",
 ]);
 
 function parsePublicationTopics(value: string): string[] {
@@ -73,8 +101,7 @@ router.get("/", async (req, res) => {
     const where: any = {};
 
     if (type) where.type = type;
-    if (status) where.status = status;
-    else where.status = "PUBLISHED"; // default hanya tampilkan yang published
+    where.status = "PUBLISHED";
     if (featured === "true") where.isFeatured = true;
     if (author) where.authorId = author;
 
@@ -135,11 +162,13 @@ router.get("/", async (req, res) => {
 });
 
 // ── GET /api/publications/admin/all ── (tanpa filter status)
-router.get("/admin/all", authenticate, async (req, res) => {
+router.get("/admin/all", authenticate, requirePublikasi, async (req: any, res) => {
   try {
-    const { type, search, limit = "50", page = "1" } = req.query as any;
+    const { type, format, search, limit = "50", page = "1" } = req.query as any;
     const where: any = {};
     if (type) where.type = type;
+    if (format) where.format = format;
+    if (req.user.role === "PUBLIKASI_WRITER") where.authorId = req.user.id;
     if (search) {
       where.OR = [
         { title: { contains: search, mode: "insensitive" } },
@@ -169,6 +198,80 @@ router.get("/admin/all", authenticate, async (req, res) => {
   }
 });
 
+router.get("/admin/:id", authenticate, requirePublikasi, async (req: any, res) => {
+  const pub = await prisma.publication.findUnique({ where: { id: req.params.id }, include: { versions: { orderBy: { number: "desc" } } } });
+  if (!pub || (req.user.role === "PUBLIKASI_WRITER" && pub.authorId !== req.user.id))
+    return res.status(404).json({ message: "Publikasi tidak ditemukan" });
+  return res.json({ success: true, data: pub });
+});
+
+router.post("/:id/versions", authenticate, requirePublikasi,
+  uploadPublication.fields([{ name: "cover", maxCount: 1 }, { name: "pdf", maxCount: 1 }]),
+  async (req: any, res) => {
+    try {
+      const pub = await prisma.publication.findUnique({ where: { id: req.params.id } });
+      if (!pub || pub.format !== "WORKING_PAPER") return res.status(404).json({ message: "Working Paper tidak ditemukan" });
+      if (req.user.role === "PUBLIKASI_WRITER" && pub.authorId !== req.user.id) return res.status(403).json({ message: "Akses ditolak" });
+      const files = req.files as any;
+      const ratio = await uploadedCoverRatio(files?.cover?.[0]);
+      const version = await prisma.$transaction(async tx => {
+        await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${pub.id}))`;
+        const last = await tx.publicationVersion.findFirst({ where: { publicationId: pub.id }, orderBy: { number: "desc" } });
+        return tx.publicationVersion.create({ data: {
+          publicationId: pub.id, number: (last?.number || 0) + 1,
+          versionDate: req.body.versionDate ? new Date(req.body.versionDate) : new Date(),
+          coverImage: files?.cover?.[0]?.path || null, coverRatio: ratio,
+          pdfUrl: files?.pdf?.[0]?.path || null,
+          changeSummary: req.body.changeSummary || null,
+        } });
+      });
+      return res.status(201).json({ success: true, data: version });
+    } catch (err: any) { return res.status(500).json({ message: err.message }); }
+  });
+
+router.put("/:id/versions/:versionId", authenticate, requirePublikasi,
+  uploadPublication.fields([{ name: "cover", maxCount: 1 }, { name: "pdf", maxCount: 1 }]),
+  async (req: any, res) => {
+    try {
+      const pub = await prisma.publication.findUnique({ where: { id: req.params.id } });
+      const current = await prisma.publicationVersion.findUnique({ where: { id: req.params.versionId } });
+      if (!pub || !current || current.publicationId !== pub.id || pub.format !== "WORKING_PAPER") return res.status(404).json({ message: "Versi tidak ditemukan" });
+      if (req.user.role === "PUBLIKASI_WRITER" && (pub.authorId !== req.user.id || req.body.publish === "true")) return res.status(403).json({ message: "Akses ditolak" });
+      if (current.isPublished) return res.status(409).json({ message: "Versi terbit bersifat permanen" });
+      const files = req.files as any;
+      const coverRatio = files?.cover?.[0] ? await uploadedCoverRatio(files.cover[0]) : current.coverRatio;
+      const next = {
+        coverImage: files?.cover?.[0]?.path || current.coverImage,
+        coverRatio, pdfUrl: files?.pdf?.[0]?.path || current.pdfUrl,
+        versionDate: req.body.versionDate ? new Date(req.body.versionDate) : current.versionDate,
+        changeSummary: req.body.changeSummary !== undefined ? req.body.changeSummary : current.changeSummary,
+      };
+      if (req.body.publish !== "true") {
+        const saved = await prisma.publicationVersion.update({ where: { id: current.id }, data: next });
+        return res.json({ success: true, data: saved });
+      }
+      if (!next.coverImage || !next.pdfUrl || !coverRatioValid("WORKING_PAPER", next.coverRatio))
+        return res.status(422).json({ message: "Versi perlu cover A4 dan PDF", fields: { cover: "Cover A4 wajib", pdf: "PDF wajib" } });
+      if (current.number > 1 && !String(next.changeSummary || "").trim())
+        return res.status(422).json({ message: "Ringkasan perubahan wajib untuk versi berikutnya", fields: { changeSummary: "Ringkasan perubahan wajib" } });
+      const staged = pub.draftData && typeof pub.draftData === "object" ? pub.draftData as Record<string, any> : {};
+      const proposed = { ...pub, ...staged, hasCurrentVersion: true };
+      const errors = publicationValidation(proposed.format, proposed);
+      if (Object.keys(errors).length) return res.status(422).json({ message: "Lengkapi metadata sebelum terbit", fields: errors });
+      const published = await prisma.$transaction(async tx => {
+        await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${pub.id}))`;
+        await tx.publicationVersion.updateMany({ where: { publicationId: pub.id, isCurrent: true }, data: { isCurrent: false } });
+        const version = await tx.publicationVersion.update({ where: { id: current.id }, data: { ...next, isPublished: true, isCurrent: true } });
+        await tx.publication.update({ where: { id: pub.id }, data: {
+          ...staged, status: "PUBLISHED", draftData: Prisma.DbNull,
+          publishedAt: pub.publishedAt || new Date(), coverImage: next.coverImage, pdfUrl: next.pdfUrl,
+        } });
+        return version;
+      });
+      return res.json({ success: true, data: published });
+    } catch (err: any) { return res.status(500).json({ message: err.message }); }
+  });
+
 // ── POST /api/publications/submit ── (siapa pun yang login, langsung masuk antrian REVIEW)
 router.post("/submit",
   authenticate,
@@ -188,12 +291,22 @@ router.post("/submit",
         volume, issue, year, doi, issn,
       } = req.body;
 
+      const chosenFormat = resolvedFormat(req.body);
+      if (chosenFormat === "JOURNAL") return res.status(422).json({ message: "Manara Journal masih dalam persiapan" });
+      const resolvedType = typeForFormat(chosenFormat);
+
       const slug = await makeSlug(title);
 
       const pub = await prisma.publication.create({
         data: {
-          type,
-          publicationCode: await nextPublicationCode(type, articleSubtype, paperSubtype),
+          type: resolvedType,
+          format: chosenFormat,
+          ...formatData(req.body),
+          topics: req.body.topics ? parsePublicationTopics(req.body.topics) : [],
+          coverRatio: await uploadedCoverRatio(files?.cover?.[0]),
+          publicationCode: await nextPublicationCode(resolvedType,
+            chosenFormat === "PERSPECTIVE" ? "COMMENTARY" : articleSubtype,
+            chosenFormat === "POLICY_BRIEF" ? "POLICY_BRIEF" : chosenFormat === "WORKING_PAPER" ? "WORKING_PAPER" : paperSubtype),
           slug,
           title,
           excerpt: excerpt || null,
@@ -247,12 +360,13 @@ router.get("/code/:code", async (req, res) => {
 // ── GET /api/publications/:slug ──
 router.get("/:slug", async (req, res) => {
   try {
-    const pub = await prisma.publication.findUnique({
-      where: { slug: req.params.slug },
+    const pub = await prisma.publication.findFirst({
+      where: { slug: req.params.slug, status: "PUBLISHED" },
       include: {
         author: { select: { id: true, name: true, avatar: true, } },
         category: { select: { id: true, name: true, slug: true, color: true } },
         tags: { include: { tag: { select: { id: true, name: true, slug: true } } } },
+        versions: { where: { isPublished: true }, orderBy: { number: "desc" } },
       },
     });
 
@@ -277,7 +391,6 @@ router.post("/",
     { name: "cover", maxCount: 1 },
     { name: "pdf", maxCount: 1 },
   ]),
-  body("title").notEmpty().withMessage("Judul wajib diisi"),
   body("type").isIn(["ARTICLE", "PAPER", "JOURNAL"]).withMessage("Tipe tidak valid"),
   validate,
   async (req: any, res) => {
@@ -295,22 +408,48 @@ router.post("/",
         volume, issue, year, doi, reviewers, citations, issn,
       } = req.body;
 
+      const chosenFormat = resolvedFormat(req.body);
+      if (chosenFormat === "JOURNAL") return res.status(422).json({ message: "Manara Journal masih dalam persiapan" });
+      const resolvedType = typeForFormat(chosenFormat);
+      const coverRatio = await uploadedCoverRatio(files?.cover?.[0]);
+      const parsedTopics = topics ? parsePublicationTopics(topics) : [];
+      const parsedAuthors = jsonArray(authors);
+      const parsedKeywords = jsonArray(keywords);
+      const specifics = formatData(req.body);
+      const publicationDate = req.body.publishedAt ? new Date(req.body.publishedAt) : null;
+      if (publicationDate && Number.isNaN(publicationDate.getTime()))
+        return res.status(422).json({ message: "Tanggal terbit tidak valid", fields: { publishedAt: "Periksa tanggal terbit" } });
+
       // Writer cuma boleh DRAFT atau REVIEW — nggak bisa publish/arsip sendiri,
       // meski dia kirim status lain lewat request manual.
       let status = requestedStatus || "DRAFT";
       if (isWriter && !["DRAFT", "REVIEW"].includes(status)) status = "DRAFT";
+      if (status === "PUBLISHED") {
+        const errors = publicationValidation(chosenFormat, {
+          ...req.body, ...specifics, topics: parsedTopics, authors: parsedAuthors,
+          keywords: parsedKeywords, coverImage: files?.cover?.[0]?.path,
+          pdfUrl: files?.pdf?.[0]?.path, coverRatio, hasCurrentVersion: false,
+        });
+        if (Object.keys(errors).length) return res.status(422).json({ message: "Lengkapi kolom publikasi sebelum terbit", fields: errors });
+      }
 
       // isFeatured itu keputusan editorial, Writer nggak boleh set sendiri.
       const featured = isEditorPlus ? isFeatured === "true" : false;
 
-      const slug = await makeSlug(title);
+      const safeTitle = String(title || "").trim() || "Tanpa judul";
+      const slug = await makeSlug(safeTitle);
 
       const pub = await prisma.publication.create({
         data: {
-          type,
-          publicationCode: await nextPublicationCode(type, articleSubtype, paperSubtype),
+          type: resolvedType,
+          format: chosenFormat,
+          ...specifics,
+          coverRatio,
+          publicationCode: await nextPublicationCode(resolvedType,
+            chosenFormat === "PERSPECTIVE" ? "COMMENTARY" : articleSubtype,
+            chosenFormat === "POLICY_BRIEF" ? "POLICY_BRIEF" : chosenFormat === "WORKING_PAPER" ? "WORKING_PAPER" : paperSubtype),
           slug,
-          title,
+          title: safeTitle,
           excerpt: excerpt || null,
           content: content || null,
           abstract: abstract || null,
@@ -320,12 +459,12 @@ router.post("/",
           isFeatured: featured,
           authorId: req.user.id,
           categoryId: categoryId || null,
-          publishedAt: status === "PUBLISHED" ? new Date() : null,
-          articleSubtype: articleSubtype || null,
-          paperSubtype: paperSubtype || null,
-          authors: authors ? JSON.parse(authors) : [],
-          keywords: keywords ? JSON.parse(keywords) : [],
-          topics: topics ? parsePublicationTopics(topics) : [],
+          publishedAt: publicationDate || (status === "PUBLISHED" ? new Date() : null),
+          articleSubtype: chosenFormat === "PERSPECTIVE" ? "COMMENTARY" : articleSubtype || null,
+          paperSubtype: chosenFormat === "POLICY_BRIEF" ? "POLICY_BRIEF" : chosenFormat === "WORKING_PAPER" ? "WORKING_PAPER" : paperSubtype || null,
+          authors: parsedAuthors,
+          keywords: parsedKeywords,
+          topics: parsedTopics,
           institutions: institutions ? JSON.parse(institutions) : [],
           downloadCount: 0,
           volume: volume ? parseInt(volume) : null,
@@ -335,6 +474,10 @@ router.post("/",
           reviewers: reviewers ? JSON.parse(reviewers) : [],
           citations: citations ? JSON.parse(citations) : [],
           issn: issn || null,
+          versions: chosenFormat === "WORKING_PAPER" && files?.cover?.[0] && files?.pdf?.[0] ? { create: {
+            number: 1, versionDate: req.body.versionDate ? new Date(req.body.versionDate) : new Date(),
+            coverImage: files.cover[0].path, coverRatio, pdfUrl: files.pdf[0].path,
+          } } : undefined,
         },
       });
 
@@ -374,18 +517,33 @@ router.put("/:id",
         authors, keywords, topics, institutions,
         volume, issue, year, doi, reviewers, citations, issn,
       } = req.body;
+      const publicationDate = req.body.publishedAt ? new Date(req.body.publishedAt) : null;
+      if (publicationDate && Number.isNaN(publicationDate.getTime()))
+        return res.status(422).json({ message: "Tanggal terbit tidak valid", fields: { publishedAt: "Periksa tanggal terbit" } });
 
-      const data: any = {};
+      let data: any = {};
 
       if (title && title !== existing.title) {
         data.title = title;
         data.slug = await makeSlug(title, req.params.id);
       }
+      if (publicationDate) data.publishedAt = publicationDate;
       if (excerpt !== undefined) data.excerpt = excerpt || null;
       if (content !== undefined) data.content = content || null;
       if (abstract !== undefined) data.abstract = abstract || null;
       if (files?.cover?.[0]?.path) data.coverImage = files.cover[0].path;
+      if (files?.cover?.[0]) data.coverRatio = await uploadedCoverRatio(files.cover[0]);
       if (files?.pdf?.[0]?.path) data.pdfUrl = files.pdf[0].path;
+
+      if (req.body.format !== undefined) {
+        const chosenFormat = resolvedFormat(req.body);
+        data.format = chosenFormat;
+        data.type = typeForFormat(chosenFormat);
+        if (chosenFormat === "PERSPECTIVE") data.articleSubtype = "COMMENTARY";
+        if (chosenFormat === "POLICY_BRIEF") data.paperSubtype = "POLICY_BRIEF";
+        if (chosenFormat === "WORKING_PAPER") data.paperSubtype = "WORKING_PAPER";
+      }
+      Object.assign(data, formatData(req.body));
 
       if (requestedStatus !== undefined) {
         // Writer cuma boleh transisi ke DRAFT atau REVIEW.
@@ -415,6 +573,21 @@ router.put("/:id",
       if (citations !== undefined) data.citations = JSON.parse(citations);
       if (issn !== undefined) data.issn = issn || null;
 
+      if (existing.status === "PUBLISHED" && requestedStatus === "DRAFT") {
+        const draftData = { ...(existing.draftData as Record<string, any> || {}), ...data };
+        const saved = await prisma.publication.update({ where: { id: existing.id }, data: { draftData } });
+        return res.json({ success: true, data: { ...saved, ...draftData, status: "DRAFT" } });
+      }
+      if (requestedStatus === "PUBLISHED" && existing.draftData) {
+        data = { ...(existing.draftData as Record<string, any>), ...data };
+      }
+      if (requestedStatus === "PUBLISHED") {
+        const proposed = { ...existing, ...data, hasCurrentVersion: !!(await prisma.publicationVersion.findFirst({ where: { publicationId: existing.id, isCurrent: true, isPublished: true } })) };
+        const errors = publicationValidation(proposed.format, proposed);
+        if (Object.keys(errors).length) return res.status(422).json({ message: "Lengkapi kolom publikasi sebelum terbit", fields: errors });
+        data.draftData = Prisma.DbNull;
+      }
+
       const updated = await prisma.publication.update({
         where: { id: req.params.id },
         data,
@@ -427,78 +600,6 @@ router.put("/:id",
   }
 );
 
-
-// ── PUT /api/publications/:id ── (admin)
-router.put("/:id",
-  authenticate, requireEditor,
-  uploadPublication.fields([
-    { name: "cover", maxCount: 1 },
-    { name: "pdf", maxCount: 1 },
-  ]),
-  async (req: any, res) => {
-    try {
-      const files = req.files as any;
-      const existing = await prisma.publication.findUnique({ where: { id: req.params.id } });
-      if (!existing) return res.status(404).json({ message: "Tidak ditemukan" });
-
-      const {
-        title, excerpt, content, abstract,
-        status, isFeatured, categoryId,
-        articleSubtype, paperSubtype,
-        authors, keywords, topics, institutions,
-        volume, issue, year, doi, reviewers, citations, issn,
-      } = req.body;
-
-      const data: any = {};
-
-      if (title && title !== existing.title) {
-        data.title = title;
-        data.slug = await makeSlug(title, req.params.id);
-      }
-      if (excerpt !== undefined) data.excerpt = excerpt || null;
-      if (content !== undefined) data.content = content || null;
-      if (abstract !== undefined) data.abstract = abstract || null;
-      if (files?.cover?.[0]?.path) data.coverImage = files.cover[0].path;
-      if (files?.pdf?.[0]?.path) data.pdfUrl = files.pdf[0].path;
-      if (status !== undefined) {
-        data.status = status;
-        if (status === "PUBLISHED" && !existing.publishedAt) {
-          data.publishedAt = new Date();
-        }
-      }
-      if (isFeatured !== undefined) data.isFeatured = isFeatured === "true";
-      if (categoryId !== undefined) data.categoryId = categoryId || null;
-
-      // Article fields
-      if (articleSubtype !== undefined) data.articleSubtype = articleSubtype || null;
-
-      // Paper & Journal fields
-      if (paperSubtype !== undefined) data.paperSubtype = paperSubtype || null;
-      if (authors !== undefined) data.authors = JSON.parse(authors);
-      if (keywords !== undefined) data.keywords = JSON.parse(keywords);
-      if (topics !== undefined) data.topics = parsePublicationTopics(topics);
-      if (institutions !== undefined) data.institutions = JSON.parse(institutions);
-
-      // Journal fields
-      if (volume !== undefined) data.volume = volume ? parseInt(volume) : null;
-      if (issue !== undefined) data.issue = issue ? parseInt(issue) : null;
-      if (year !== undefined) data.year = year ? parseInt(year) : null;
-      if (doi !== undefined) data.doi = doi || null;
-      if (reviewers !== undefined) data.reviewers = JSON.parse(reviewers);
-      if (citations !== undefined) data.citations = JSON.parse(citations);
-      if (issn !== undefined) data.issn = issn || null;
-
-      const updated = await prisma.publication.update({
-        where: { id: req.params.id },
-        data,
-      });
-
-      res.json({ success: true, data: updated });
-    } catch (err: any) {
-      res.status(500).json({ message: err.message });
-    }
-  }
-);
 
 // ── DELETE /api/publications/:id ── (admin)
 router.delete("/:id", authenticate, requireEditor, async (req, res) => {
@@ -515,14 +616,16 @@ router.get("/:slug/download", async (req, res) => {
   try {
     const pub = await prisma.publication.findUnique({
       where: { slug: req.params.slug },
-      select: { id: true, pdfUrl: true, title: true },
+      select: { id: true, pdfUrl: true, title: true, status: true, format: true,
+        versions: { where: { isCurrent: true, isPublished: true }, select: { pdfUrl: true } } },
     });
 
-    if (!pub) {
+    if (!pub || pub.status !== "PUBLISHED") {
       return res.status(404).json({ message: "Publikasi tidak ditemukan" });
     }
 
-    if (!pub.pdfUrl) {
+    const downloadUrl = pub.format === "WORKING_PAPER" ? pub.versions[0]?.pdfUrl || pub.pdfUrl : pub.pdfUrl;
+    if (!downloadUrl) {
       return res.status(404).json({ message: "File PDF tidak tersedia" });
     }
 
@@ -535,7 +638,7 @@ router.get("/:slug/download", async (req, res) => {
     // Return URL saja — biarkan frontend yang handle redirect
     res.json({
       success: true,
-      url: pub.pdfUrl,
+      url: downloadUrl,
       title: pub.title,
     });
   } catch (err: any) {

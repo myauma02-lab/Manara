@@ -31,29 +31,18 @@ LAYANAN MANARA:
 6. Pendaftaran Hukum — Coming Soon
 
 PUBLIKASI:
-- Artikel: Opini, esai, analisis, commentary untuk pembaca umum
-- Manara Paper: Policy paper, working paper, policy brief untuk pemerintah dan akademisi  
-- Manara Journal: Publikasi ilmiah dengan volume, nomor, dan DOI
+- Lima format aktif: Editorial Note, Research Paper, Perspective, Policy Brief, dan Working Paper
+- Manara Journal masih dalam persiapan
+- Katalog: manarainstitute.id/publikasi
 
 PUSAT INFORMASI:
 - News: Berita dan perkembangan terbaru Manara
 - Awards: Penghargaan dan pencapaian
-- Magazine: Majalah digital berkala
-- Key Agenda: Jadwal kegiatan strategis
 
 MANAPEOPLE:
 - Program rekrutmen dan onboarding terbuka
 - Untuk individu yang ingin bergabung sebagai kontributor Manara
 - Link: manarainstitute.id/manapeople
-
-INSIGHT:
-- Newsletter "Surat Manara" — mingguan, gratis, di manarainstitute.id/insight/newsletter
-- Suara Manara — video pendek di Instagram
-- Podcast — percakapan mendalam di YouTube
-
-PROYEK:
-- Manara mengelola proyek riset, kajian, dan inisiatif kebijakan aktif
-- Bisa dilihat di manarainstitute.id/proyek
 
 PANDUAN MENJAWAB:
 - Gunakan bahasa Indonesia yang ramah, hangat, namun tetap intelektual

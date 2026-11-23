@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PublicationExplorer from "./PublicationExplorer";
+import FocusAreasSection from "@/components/sections/FocusAreasSection";
 import { adaptPublication, type PublicationCardData } from "@/lib/publication-explorer";
 import { serverPublicationsApi } from "@/lib/server-api";
 import type { Metadata } from "next";
@@ -15,9 +16,9 @@ export const metadata: Metadata = {
 };
 
 async function getPublications(): Promise<PublicationCardData[]> {
-  const types = ["ARTICLE", "PAPER", "JOURNAL"];
+  const types = ["ARTICLE", "PAPER"] as const;
   const results = await Promise.all(types.map(type =>
-    serverPublicationsApi.list({ type, limit: "50" }).catch(() => [])
+    serverPublicationsApi.listAll(type).catch(() => [])
   ));
 
   return results.flatMap(items => (items || [])
@@ -34,6 +35,7 @@ export default async function PublikasiPage() {
       <Suspense fallback={<div aria-busy="true" aria-label="Memuat publikasi" />}>
         <PublicationExplorer publications={publications} />
       </Suspense>
+      <FocusAreasSection />
       <Footer />
     </main>
   );

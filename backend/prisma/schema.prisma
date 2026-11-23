@@ -388,6 +388,15 @@ enum PublicationType {
   JOURNAL
 }
 
+enum PublicationFormat {
+  EDITORIAL_NOTE
+  RESEARCH_PAPER
+  PERSPECTIVE
+  POLICY_BRIEF
+  WORKING_PAPER
+  JOURNAL
+}
+
 enum ArticleSubtype {
   OPINION
   ESSAY
@@ -410,6 +419,8 @@ enum PaperSubtype {
 model Publication {
   id   String          @id @default(cuid())
   type PublicationType
+  format PublicationFormat @default(RESEARCH_PAPER)
+  department String?
   slug String          @unique
   publicationCode String @unique
 
@@ -419,6 +430,10 @@ model Publication {
   content     String?       @db.Text
   abstract    String?       @db.Text
   coverImage  String?
+  coverRatio Float?
+  draftData Json?
+  imageFocusX Float?
+  imageFocusY Float?
   status      ContentStatus @default(DRAFT)
   isFeatured  Boolean       @default(false)
   viewCount   Int           @default(0)
@@ -442,6 +457,22 @@ model Publication {
   keywords      String[]
   topics        String[]      @default([])
   pdfUrl        String?
+  attribution String?
+  argumentSummary String? @db.Text
+  references String[] @default([])
+  dataUrl String?
+  attachments Json?
+  policyProblem String? @db.Text
+  decisionMakers String?
+  executiveSummary String? @db.Text
+  recommendations Json?
+  evidence String? @db.Text
+  policyOptions String? @db.Text
+  implementationNotes String? @db.Text
+  seriesNumber String?
+  feedbackUrl String?
+  followUpResearchUrl String?
+  versions PublicationVersion[]
   downloadCount Int           @default(0)
   institutions  String[]
 
@@ -455,6 +486,24 @@ model Publication {
   issn      String?
 
   @@map("publications")
+}
+
+model PublicationVersion {
+  id String @id @default(cuid())
+  publicationId String
+  publication Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  number Int
+  versionDate DateTime
+  coverImage String?
+  coverRatio Float?
+  pdfUrl String?
+  changeSummary String? @db.Text
+  isPublished Boolean @default(false)
+  isCurrent Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([publicationId, number])
+  @@map("publication_versions")
 }
 
 model PublicationTag {

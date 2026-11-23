@@ -8,10 +8,8 @@ import { useAuthStore } from "@/lib/store/authStore";
 const NAV: DashboardNavItem[] = [
   { href: "/dashboard/ops", label: "Ringkasan", icon: "◉", exact: true },
   { href: "/dashboard/ops/layanan", label: "Kelola Layanan", icon: "◇" },
-  { href: "/dashboard/ops/proyek", label: "Kelola Proyek", icon: "□" },
   { href: "/dashboard/ops/harga", label: "Skema Harga", icon: "◆" },
   { href: "/dashboard/ops/vendor", label: "Vendor & Mitra", icon: "△" },
-  { href: "/dashboard/ops/pusat-informasi", label: "Pusat Informasi", icon: "◈" },
 ];
 
 export default function OpsLayout({ children }: { children: React.ReactNode }) {

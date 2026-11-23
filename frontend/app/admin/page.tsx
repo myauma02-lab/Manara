@@ -5,9 +5,7 @@ import Link from "next/link";
 
 interface Stats {
   totalPubikasi: number;
-  totalArtikel: number;
-  totalPaper: number;
-  totalJournal: number;
+  formatTotals: Record<string, number>;
   totalFellows: number;
   totalSubscriber: number;
   lamaranPending: number;
@@ -15,11 +13,33 @@ interface Stats {
   loaded: boolean;
 }
 
+const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
+  EDITORIAL_NOTE: { label: "Editorial Note", color: "#266c87" },
+  RESEARCH_PAPER: { label: "Research Paper", color: "#3F6F6A" },
+  PERSPECTIVE: { label: "Perspective", color: "#266c87" },
+  POLICY_BRIEF: { label: "Policy Brief", color: "#5F8F8A" },
+  WORKING_PAPER: { label: "Working Paper", color: "#5F8F8A" },
+  JOURNAL: { label: "Manara Journal", color: "#5F8F8A" },
+};
+
+function StatCard({ value, label, sub, href, color = "#266c87", alert = false, loading }: {
+  value: string | number; label: string; sub?: string;
+  href?: string; color?: string; alert?: boolean; loading: boolean;
+}) {
+  const content = <div style={{ background: "#fff", border: `1px solid ${alert && Number(value) > 0 ? color + "40" : "rgba(38,108,135,0.1)"}`, borderRadius: "4px", padding: "20px 24px", position: "relative", transition: "all 0.2s" }}>
+    {alert && Number(value) > 0 && <div style={{ position: "absolute", top: "12px", right: "12px", width: "8px", height: "8px", borderRadius: "50%", background: color, animation: "pulse-dot 2s infinite" }} />}
+    <p style={{ fontFamily: "Georgia,serif", fontSize: "clamp(28px,3vw,40px)", fontWeight: 300, color: Number(value) > 0 ? "#0F2830" : "#B8CDD2", lineHeight: 1, marginBottom: "6px", transition: "color 0.3s" }}>{loading ? "..." : value}</p>
+    <p style={{ fontSize: "13px", fontWeight: 500, color: "#3A5560" }}>{label}</p>
+    {sub && <p style={{ fontSize: "11px", color: "#B8CDD2", marginTop: "2px" }}>{sub}</p>}
+  </div>;
+  return href ? <Link href={href} style={{ textDecoration: "none" }}>{content}</Link> : content;
+}
+
 
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats>({
-    totalPubikasi: 0, totalArtikel: 0, totalPaper: 0, totalJournal: 0,
+    totalPubikasi: 0, formatTotals: {},
     totalFellows: 0, totalSubscriber: 0, lamaranPending: 0, pesanBelumDibaca: 0,
     loaded: false,
   });
@@ -28,11 +48,9 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     Promise.all([
-      // Publikasi per type
+      // Publikasi per format
       publicationsApi.adminList({ limit: 1 }),
-      publicationsApi.adminList({ type: "ARTICLE", limit: 1 }),
-      publicationsApi.adminList({ type: "PAPER", limit: 1 }),
-      publicationsApi.adminList({ type: "JOURNAL", limit: 1 }),
+      ...["EDITORIAL_NOTE", "RESEARCH_PAPER", "PERSPECTIVE", "POLICY_BRIEF", "WORKING_PAPER"].map(format => publicationsApi.adminList({ format, limit: 1 })),
       // Recent publications
       publicationsApi.adminList({ limit: 6 }),
       // Fellows
@@ -44,16 +62,20 @@ export default function AdminDashboard() {
       // Rekrutmen
       recruitmentApi.list().catch(() => ({ data: { data: [] } })),
     ])
-      .then(([allPub, artPub, paperPub, journalPub, recentPub, fellowsRes, subsRes, recruitRes]) => {
+      .then(([allPub, editorialPub, researchPub, perspectivePub, policyPub, workingPub, recentPub, fellowsRes, subsRes, recruitRes]) => {
         // Hitung lamaran pending
         const allApps = (recruitRes.data.data || []).flatMap((r: any) => r.applications || []);
         const pending = allApps.filter((a: any) => a.status === "PENDING").length;
 
         setStats({
           totalPubikasi: allPub.data.pagination?.total || 0,
-          totalArtikel: artPub.data.pagination?.total || 0,
-          totalPaper: paperPub.data.pagination?.total || 0,
-          totalJournal: journalPub.data.pagination?.total || 0,
+          formatTotals: {
+            EDITORIAL_NOTE: editorialPub.data.pagination?.total || 0,
+            RESEARCH_PAPER: researchPub.data.pagination?.total || 0,
+            PERSPECTIVE: perspectivePub.data.pagination?.total || 0,
+            POLICY_BRIEF: policyPub.data.pagination?.total || 0,
+            WORKING_PAPER: workingPub.data.pagination?.total || 0,
+          },
           totalFellows: (fellowsRes.data.data || []).length,
           totalSubscriber: (subsRes.data.data || []).length,
           lamaranPending: pending,
@@ -65,38 +87,6 @@ export default function AdminDashboard() {
       .catch(() => setStats(s => ({ ...s, loaded: true })))
       .finally(() => setLoading(false));
   }, []);
-
-  const StatCard = ({ value, label, sub, href, color = "#266c87", alert = false }: {
-    value: string | number; label: string; sub?: string;
-    href?: string; color?: string; alert?: boolean;
-  }) => {
-    const content = (
-      <div style={{
-        background: "#fff",
-        border: `1px solid ${alert && Number(value) > 0 ? color + "40" : "rgba(38,108,135,0.1)"}`,
-        borderRadius: "4px",
-        padding: "20px 24px",
-        position: "relative",
-        transition: "all 0.2s",
-      }}>
-        {alert && Number(value) > 0 && (
-          <div style={{ position: "absolute", top: "12px", right: "12px", width: "8px", height: "8px", borderRadius: "50%", background: color, animation: "pulse-dot 2s infinite" }} />
-        )}
-        <p style={{ fontFamily: "Georgia,serif", fontSize: "clamp(28px,3vw,40px)", fontWeight: 300, color: Number(value) > 0 ? "#0F2830" : "#B8CDD2", lineHeight: 1, marginBottom: "6px", transition: "color 0.3s" }}>
-          {loading ? "..." : value}
-        </p>
-        <p style={{ fontSize: "13px", fontWeight: 500, color: "#3A5560" }}>{label}</p>
-        {sub && <p style={{ fontSize: "11px", color: "#B8CDD2", marginTop: "2px" }}>{sub}</p>}
-      </div>
-    );
-    return href ? <Link href={href} style={{ textDecoration: "none" }}>{content}</Link> : content;
-  };
-
-  const TYPE_CONFIG: Record<string, { label: string; color: string; href: string }> = {
-    ARTICLE: { label: "Artikel", color: "#266c87", href: "/publikasi/artikel" },
-    PAPER: { label: "Paper", color: "#3F6F6A", href: "/publikasi/paper" },
-    JOURNAL: { label: "Journal", color: "#5F8F8A", href: "/publikasi/journal" },
-  };
 
   return (
     <div style={{ padding: "40px", maxWidth: "1100px" }}>
@@ -119,11 +109,10 @@ export default function AdminDashboard() {
         <p style={{ fontSize: "10px", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "#B8CDD2", marginBottom: "10px" }}>
           Publikasi
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "12px" }} className="stats-grid-4">
-          <StatCard value={stats.totalPubikasi} label="Total Publikasi" sub="Semua tipe" href="/admin/publikasi" />
-          <StatCard value={stats.totalArtikel} label="Artikel" sub={`${stats.totalArtikel} diterbitkan`} href="/admin/publikasi" color="#266c87" />
-          <StatCard value={stats.totalPaper} label="Manara Paper" sub="Policy & working paper" href="/admin/publikasi" color="#3F6F6A" />
-          <StatCard value={stats.totalJournal} label="Manara Journal" sub="Jurnal ilmiah" href="/admin/publikasi" color="#5F8F8A" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(155px,1fr))", gap: "12px" }} className="stats-grid-4">
+          <StatCard value={stats.totalPubikasi} label="Total Publikasi" sub="Semua format" href="/admin/publikasi" loading={loading} />
+          {Object.entries(TYPE_CONFIG).filter(([format]) => format !== "JOURNAL").map(([format, config]) =>
+            <StatCard key={format} value={stats.formatTotals[format] || 0} label={config.label} href="/admin/publikasi" color={config.color} loading={loading} />)}
         </div>
       </div>
 
@@ -133,10 +122,10 @@ export default function AdminDashboard() {
           Komunitas & Aktivitas
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "12px" }} className="stats-grid-4">
-          <StatCard value={stats.totalFellows} label="Fellows" sub="Tenaga ahli aktif" href="/admin/fellows" color="#266c87" />
-          <StatCard value={stats.totalSubscriber} label="Subscriber" sub="Newsletter aktif" href="/admin/newsletter" color="#3F6F6A" />
-          <StatCard value={stats.lamaranPending} label="Lamaran Pending" sub="Menunggu review" href="/admin/recruitment" color="#C6A84B" alert={true} />
-          <StatCard value={stats.pesanBelumDibaca} label="Pesan Baru" sub="Kontak masuk" href="/admin/pesan" color="#f87171" alert={true} />
+          <StatCard value={stats.totalFellows} label="Fellows" sub="Tenaga ahli aktif" href="/admin/fellows" color="#266c87" loading={loading} />
+          <StatCard value={stats.totalSubscriber} label="Subscriber" sub="Newsletter aktif" href="/admin/newsletter" color="#3F6F6A" loading={loading} />
+          <StatCard value={stats.lamaranPending} label="Lamaran Pending" sub="Menunggu review" href="/admin/recruitment" color="#C6A84B" alert={true} loading={loading} />
+          <StatCard value={stats.pesanBelumDibaca} label="Pesan Baru" sub="Kontak masuk" href="/admin/pesan" color="#f87171" alert={true} loading={loading} />
         </div>
       </div>
 
@@ -169,15 +158,15 @@ export default function AdminDashboard() {
               <p style={{ fontFamily: "Georgia,serif", fontSize: "18px", fontWeight: 300, color: "#7A9AA5", marginBottom: "12px" }}>
                 Belum ada publikasi.
               </p>
-              <Link href="/admin/publikasi/new?type=ARTICLE"
+              <Link href="/admin/publikasi/new?format=PERSPECTIVE"
                 style={{ fontSize: "13px", fontWeight: 500, color: "#266c87", textDecoration: "none", border: "1px solid rgba(38,108,135,0.2)", padding: "8px 16px", borderRadius: "2px" }}>
-                Buat Artikel Pertama →
+                Buat Publikasi Pertama →
               </Link>
             </div>
           ) : (
             <div>
               {recentPubs.map(pub => {
-                const tc = TYPE_CONFIG[pub.type] || TYPE_CONFIG.ARTICLE;
+                const tc = TYPE_CONFIG[pub.format] || TYPE_CONFIG.PERSPECTIVE;
                 const typePath = pub.type === "ARTICLE" ? "artikel" : pub.type === "PAPER" ? "paper" : "journal";
                 return (
                   <div key={pub.id} style={{ display: "flex", gap: "14px", padding: "14px 20px", borderBottom: "1px solid rgba(38,108,135,0.05)", alignItems: "center" }}>
@@ -227,9 +216,9 @@ export default function AdminDashboard() {
           </p>
 
           {[
-            { icon: "✦", label: "Tulis Artikel", href: "/admin/publikasi/new?type=ARTICLE", color: "#266c87", desc: "Buat artikel baru" },
-            { icon: "◇", label: "Upload Paper", href: "/admin/publikasi/new?type=PAPER", color: "#3F6F6A", desc: "Policy atau working paper" },
-            { icon: "○", label: "Tambah Journal", href: "/admin/publikasi/new?type=JOURNAL", color: "#5F8F8A", desc: "Artikel jurnal ilmiah" },
+            { icon: "✦", label: "Buat Perspective", href: "/admin/publikasi/new?format=PERSPECTIVE", color: "#266c87", desc: "Esai argumentatif" },
+            { icon: "◇", label: "Buat Research Paper", href: "/admin/publikasi/new?format=RESEARCH_PAPER", color: "#3F6F6A", desc: "Naskah riset" },
+            { icon: "○", label: "Buat Policy Brief", href: "/admin/publikasi/new?format=POLICY_BRIEF", color: "#5F8F8A", desc: "Rekomendasi kebijakan" },
             { icon: "◉", label: "Tambah Fellow", href: "/admin/fellows/new", color: "#266c87", desc: "Tenaga ahli baru" },
             { icon: "△", label: "Edit Layanan", href: "/admin/layanan", color: "#8A8F5E", desc: "Konten halaman layanan" },
             { icon: "⚙", label: "Pengaturan", href: "/admin/settings", color: "#7A9AA5", desc: "Website & sosial media" },

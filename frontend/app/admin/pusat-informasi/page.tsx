@@ -7,8 +7,6 @@ const TYPE_CONFIG = {
   ALL:      { label: "Semua",      color: "#266c87", bg: "rgba(38,108,135,0.08)" },
   NEWS:     { label: "News",       color: "#266c87", bg: "rgba(38,108,135,0.08)" },
   AWARD:    { label: "Awards",     color: "#C6AD8A", bg: "rgba(198,173,138,0.12)" },
-  MAGAZINE: { label: "Magazine",   color: "#5F8F8A", bg: "rgba(95,143,138,0.12)" },
-  AGENDA:   { label: "Key Agenda", color: "#8A8F5E", bg: "rgba(138,143,94,0.12)" },
 };
 
 const STATUS_CONFIG = {

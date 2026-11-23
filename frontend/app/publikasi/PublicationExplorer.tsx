@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   filterPublications,
+  PUBLICATION_DEPARTMENTS,
   PUBLICATION_TOPICS,
   type PublicationCardData,
   type PublicationKind,
@@ -23,7 +24,7 @@ type KindFilter = PublicationKind | "semua";
 type SortFilter = "baru" | "unduhan";
 
 function getKind(value: string | null): KindFilter {
-  return value === "artikel" || value === "paper" || value === "journal" ? value : "semua";
+  return ["editorial-note", "research-paper", "perspective", "policy-brief", "working-paper", "journal"].includes(value || "") ? value as KindFilter : "semua";
 }
 
 function getSort(value: string | null): SortFilter {
@@ -48,6 +49,7 @@ export default function PublicationExplorer({ publications }: { publications: Pu
 
   const selectedKind = getKind(searchParams.get("jenis"));
   const selectedTopic = searchParams.get("topik") || "semua";
+  const selectedDepartment = searchParams.get("departemen") || "semua";
   const selectedSort = getSort(searchParams.get("sort"));
 
   useEffect(() => {
@@ -63,9 +65,11 @@ export default function PublicationExplorer({ publications }: { publications: Pu
 
     const isDefault = (key === "jenis" && value === "semua") ||
       (key === "topik" && value === "semua") ||
+      (key === "departemen" && value === "semua") ||
       (key === "sort" && value === "baru");
     if (isDefault || !value) params.delete(key);
     else params.set(key, value);
+    if (key === "departemen") params.delete("topik");
 
     const suffix = params.toString();
     router.replace(suffix ? `${pathname}?${suffix}` : pathname, { scroll: false });
@@ -76,18 +80,14 @@ export default function PublicationExplorer({ publications }: { publications: Pu
     return () => window.clearTimeout(timer);
   }, [query, updateFilter]);
 
-  const kindCounts = useMemo(() => ({
-    artikel: publications.filter(item => item.kind === "artikel").length,
-    paper: publications.filter(item => item.kind === "paper").length,
-    journal: publications.filter(item => item.kind === "journal").length,
-  }), [publications]);
   const topics = PUBLICATION_TOPICS;
   const filtered = useMemo(() => filterPublications(publications, {
     q: query,
     kind: selectedKind,
+    department: selectedDepartment,
     topic: selectedTopic,
     sort: selectedSort,
-  }), [publications, query, selectedKind, selectedTopic, selectedSort]);
+  }), [publications, query, selectedKind, selectedDepartment, selectedTopic, selectedSort]);
 
   const resetFilters = () => {
     setQuery("");
@@ -96,15 +96,18 @@ export default function PublicationExplorer({ publications }: { publications: Pu
 
   const kindTabs: Array<{ value: KindFilter; label: string; count?: number; preparation?: boolean }> = [
     { value: "semua", label: "Semua", count: publications.length },
-    { value: "artikel", label: "Artikel" },
-    { value: "paper", label: "Paper", count: kindCounts.paper },
-    { value: "journal", label: "Journal", preparation: kindCounts.journal === 0 },
+    { value: "editorial-note", label: "Editorial Note" },
+    { value: "research-paper", label: "Research Paper" },
+    { value: "perspective", label: "Perspective" },
+    { value: "policy-brief", label: "Policy Brief" },
+    { value: "working-paper", label: "Working Paper" },
+    { value: "journal", label: "Manara Journal", preparation: true },
   ];
 
   const emptyCopy = selectedKind === "journal"
     ? { title: "Manara Journal masih dalam persiapan", body: "Belum ada terbitan. Kami membukanya setelah proses reviu dan kebijakan editorial siap." }
-    : selectedKind === "artikel" && !query.trim() && selectedTopic === "semua"
-      ? { title: "Artikel pertama segera hadir", body: "Punya tulisan analisis? Baca ketentuan pengiriman di bagian bawah halaman." }
+    : selectedKind === "perspective" && !query.trim() && selectedTopic === "semua"
+      ? { title: "Perspective pertama segera hadir", body: "Punya tulisan analisis? Baca ketentuan pengiriman di bagian bawah halaman." }
       : { title: "Tidak ada hasil", body: "Coba kata kunci lain atau hapus filter yang aktif." };
 
   return (
@@ -165,6 +168,10 @@ export default function PublicationExplorer({ publications }: { publications: Pu
           </div>
 
           <div className={styles.topicFilters} role="group" aria-label="Topik publikasi">
+            <select aria-label="Departemen" value={selectedDepartment} onChange={event => updateFilter("departemen", event.target.value)}>
+              <option value="semua">Semua departemen</option>
+              {PUBLICATION_DEPARTMENTS.map(item => <option value={item.name} key={item.name}>{item.name}</option>)}
+            </select>
             <button
               type="button"
               aria-pressed={selectedTopic === "semua"}
@@ -192,6 +199,7 @@ export default function PublicationExplorer({ publications }: { publications: Pu
             <div className={styles.publicationGrid}>
               {filtered.map(item => (
                 <article className={styles.publicationCard} key={item.id}>
+                  {item.coverImage && <div className={styles.cardCover}><img src={item.coverImage} alt={`Sampul ${item.title}`} style={{ objectFit: item.kind === "editorial-note" ? "cover" : "contain", objectPosition: `${item.imageFocusX ?? 50}% ${item.imageFocusY ?? 50}%` }} /></div>}
                   <div className={styles.cardTop}>
                     <p className={styles.typeLabel}>{item.label}</p>
                     {item.year && <p className={styles.year}>{item.year}</p>}
@@ -223,20 +231,20 @@ export default function PublicationExplorer({ publications }: { publications: Pu
         <div className={styles.container}>
           <div className={styles.sectionHeading}>
             <p className={styles.eyebrow}>FORMAT PUBLIKASI</p>
-            <h2 id="standards-heading">Tiga format, tiga standar</h2>
+            <h2 id="standards-heading">Lima format untuk berbagi gagasan</h2>
             <p>Agar jelas apa yang Anda baca dan siapa yang meninjaunya.</p>
           </div>
           <div className={styles.formatGrid}>
             <article className={styles.formatCard}>
-              <h3>Artikel</h3>
-              <p className={styles.formatTypes}>Opini · Esai · Analisis · Commentary</p>
-              <p>Untuk pembaca umum yang ingin memahami isu tanpa jargon berlebihan.</p>
+              <h3>Editorial Note · Perspective</h3>
+              <p className={styles.formatTypes}>Catatan redaksi dan esai argumentatif</p>
+              <p>Baca gagasan dan penjelasan isu langsung di halaman publikasi.</p>
               <p className={styles.reviewNote}><strong>Reviu:</strong> editor internal.</p>
             </article>
             <article className={styles.formatCard}>
-              <h3>Manara Paper</h3>
-              <p className={styles.formatTypes}>Policy Paper · Working Paper · Policy Brief</p>
-              <p>Dokumen kebijakan dan riset untuk pemerintah, NGO, akademisi, dan lembaga.</p>
+              <h3>Research Paper · Policy Brief · Working Paper</h3>
+              <p className={styles.formatTypes}>Riset, rekomendasi kebijakan, dan naskah kerja</p>
+              <p>Naskah dan dokumen untuk pembaca, pengambil keputusan, dan peneliti.</p>
               <p className={styles.reviewNote}><strong>Reviu:</strong> tim internal dan Fellow. Bukan peer review jurnal.</p>
             </article>
             <article className={`${styles.formatCard} ${styles.journalCard}`}>

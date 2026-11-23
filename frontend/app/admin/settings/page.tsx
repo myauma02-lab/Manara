@@ -8,6 +8,10 @@ const WEBSITE_FIELDS = [
   { key: "site_tagline", label: "Tagline / Doktrin", type: "text", placeholder: "Shaping Ideas for the Public Sphere" },
   { key: "hero_headline", label: "Headline Hero Homepage", type: "text", placeholder: "Di mana gagasan menemukan cahayanya." },
   { key: "hero_subheadline", label: "Sub-headline Hero", type: "textarea", placeholder: "Ruang intelektual..." },
+  { key: "journal_title", label: "Judul Manara Journal", type: "text", placeholder: "Manara Journal" },
+  { key: "journal_description", label: "Deskripsi Manara Journal", type: "textarea", placeholder: "Dalam persiapan" },
+  { key: "journal_status", label: "Status Manara Journal", type: "text", placeholder: "Dalam Persiapan" },
+  { key: "journal_visual", label: "URL visual Manara Journal", type: "text", placeholder: "https://..." },
   { key: "contact_email", label: "Email Kontak", type: "text", placeholder: "manararesearch@gmail.com" },
   { key: "social_instagram", label: "Instagram URL", type: "text", placeholder: "https://instagram.com/manara_institute" },
   { key: "social_twitter", label: "Twitter/X URL", type: "text", placeholder: "https://x.com/manara_institute" },
@@ -100,6 +104,16 @@ export default function AdminSettingsPage() {
                   style={{ width: "100%", padding: "11px 14px", border: "1px solid rgba(38,108,135,0.15)", borderRadius: "4px", fontSize: "14px", outline: "none", color: "#1C3038", fontFamily: "inherit", background: "#fff", boxSizing: "border-box" as const }}
                 />
               </div>
+            ))}
+          </div>
+          <div style={{ background: "#fff", border: "1px solid rgba(38,108,135,0.1)", borderRadius: "8px", padding: "24px", display: "flex", flexDirection: "column", gap: "14px" }}>
+            <h2 style={{ fontSize: "18px", margin: 0 }}>Manara Journal</h2>
+            <p style={{ margin: 0, color: "#627985" }}>Tampilkan halaman persiapan tanpa membuka alur penerbitan jurnal.</p>
+            {WEBSITE_FIELDS.filter(field => field.key.startsWith("journal_")).map(field => (
+              <label key={field.key} style={{ display: "block" }}>{field.label}
+                {field.type === "textarea" ? <textarea value={settings[field.key] || ""} onChange={event => setSettings(previous => ({ ...previous, [field.key]: event.target.value }))} rows={3} style={{ display: "block", width: "100%", padding: "11px 14px", border: "1px solid #c9d9df", borderRadius: 4 }} />
+                  : <input value={settings[field.key] || ""} onChange={event => setSettings(previous => ({ ...previous, [field.key]: event.target.value }))} placeholder={field.placeholder} style={{ display: "block", width: "100%", padding: "11px 14px", border: "1px solid #c9d9df", borderRadius: 4 }} />}
+              </label>
             ))}
           </div>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -199,15 +213,11 @@ function HeroImageCard({
   onUpdate: (url: string) => void;
 }) {
   const [uploading, setUploading] = useState(false);
-  const [preview, setPreview] = useState(currentUrl);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
+  const preview = localPreview ?? currentUrl;
   const [error, setError] = useState("");
   const [removing, setRemoving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Sync preview kalau props berubah
-  useEffect(() => {
-    setPreview(currentUrl);
-  }, [currentUrl]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -228,19 +238,19 @@ function HeroImageCard({
 
     // Preview lokal langsung
     const localPreview = URL.createObjectURL(file);
-    setPreview(localPreview);
+    setLocalPreview(localPreview);
 
     try {
       const res = await settingsApi.uploadHeroImage(settingKey, file);
       const uploadedUrl = res.data.data?.url;
       if (uploadedUrl) {
-        setPreview(uploadedUrl);
+        setLocalPreview(uploadedUrl);
         onUpdate(uploadedUrl);
         URL.revokeObjectURL(localPreview);
       }
     } catch (err: any) {
       setError(err.response?.data?.message || "Gagal upload. Coba lagi.");
-      setPreview(currentUrl); // revert
+      setLocalPreview(null); // revert
     } finally {
       setUploading(false);
       // Reset input
@@ -253,7 +263,7 @@ function HeroImageCard({
     setRemoving(true);
     try {
       await settingsApi.deleteKey(settingKey);
-      setPreview("");
+      setLocalPreview("");
       onUpdate("");
     } catch {
       setError("Gagal menghapus ilustrasi");

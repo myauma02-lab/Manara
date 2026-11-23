@@ -44,6 +44,19 @@ export const serverPublicationsApi = {
     const qs = params ? "?" + new URLSearchParams(params).toString() : "";
     return serverFetch<any[]>(`/publications${qs}`);
   },
+
+  listAll: async (type: "ARTICLE" | "PAPER" | "JOURNAL") => {
+    const items: any[] = [];
+    for (let page = 1; page <= 100; page++) {
+      const result = await serverFetchPayload<{ data: any[]; pagination?: { pages: number } }>(
+        `/publications?${new URLSearchParams({ type, page: String(page), limit: "50" })}`
+      );
+      if (!result?.data?.length) break;
+      items.push(...result.data);
+      if (page >= (result.pagination?.pages || 1)) break;
+    }
+    return items;
+  },
 };
 
 // ── Projects ──────────────────────────────────────────

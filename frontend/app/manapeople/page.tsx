@@ -154,7 +154,6 @@ function WaitlistMode() {
               {[
                 { label: "Instagram", href: "https://instagram.com/manara.id" },
                 { label: "Baca Artikel", href: "/publikasi/artikel" },
-                { label: "Newsletter", href: "/insight/newsletter" },
               ].map(l => (
                 <a key={l.label} href={l.href}
                   style={{ fontSize: "13px", fontWeight: 500, color: ACCENT, border: `1px solid ${ACCENT}30`, padding: "7px 16px", borderRadius: "4px", textDecoration: "none" }}>

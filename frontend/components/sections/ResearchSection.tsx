@@ -2,16 +2,18 @@ import { serverPublicationsApi } from "@/lib/server-api";
 import Link from "next/link";
 
 export default async function ResearchSection() {
-  const [paperData, journalData] = await Promise.all([
-    serverPublicationsApi.list({ type: "PAPER", limit: "3" }),
-    serverPublicationsApi.list({ type: "JOURNAL", limit: "2" }),
+  const [paperData, articleData] = await Promise.all([
+    serverPublicationsApi.list({ type: "PAPER", limit: "4" }),
+    serverPublicationsApi.list({ type: "ARTICLE", limit: "4" }),
   ]);
-  const papers = [...(paperData || []), ...(journalData || [])].slice(0, 4);
+  const papers = [...(paperData || []), ...(articleData || [])]
+    .sort((a, b) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime())
+    .slice(0, 4);
   const isEmpty = papers.length === 0;
 
   const TYPE_STYLE: Record<string, { color: string; label: string }> = {
     PAPER: { color: "#3F6F6A", label: "Paper" },
-    JOURNAL: { color: "#5F8F8A", label: "Journal" },
+    ARTICLE: { color: "#5F8F8A", label: "Perspective" },
   };
 
   return (
@@ -22,7 +24,7 @@ export default async function ResearchSection() {
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "48px", flexWrap: "wrap", gap: "16px" }}>
           <div>
             <p style={{ fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#266c87", marginBottom: "12px" }}>
-              Riset & Wawasan
+              Publikasi
             </p>
             <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(32px,5vw,56px)", fontWeight: 500, color: "var(--color-ink)", letterSpacing: "-0.035em", lineHeight: 1.04 }}>
               Gagasan yang ditopang<br />
@@ -30,11 +32,11 @@ export default async function ResearchSection() {
             </h2>
           </div>
           <div style={{ display: "flex", gap: "12px" }}>
-            <Link href="/publikasi/paper" style={{ fontSize: "13px", fontWeight: 500, color: "#3F6F6A", textDecoration: "none" }}>
-              Paper →
+            <Link href="/publikasi?jenis=research-paper" style={{ fontSize: "13px", fontWeight: 500, color: "#3F6F6A", textDecoration: "none" }}>
+              Research Paper →
             </Link>
-            <Link href="/publikasi/journal" style={{ fontSize: "13px", fontWeight: 500, color: "#5F8F8A", textDecoration: "none" }}>
-              Journal →
+            <Link href="/publikasi?jenis=working-paper" style={{ fontSize: "13px", fontWeight: 500, color: "#5F8F8A", textDecoration: "none" }}>
+              Working Paper →
             </Link>
           </div>
         </div>
@@ -57,9 +59,7 @@ export default async function ResearchSection() {
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {papers.map(p => {
               const ts = TYPE_STYLE[p.type] || TYPE_STYLE.PAPER;
-              const href = p.type === "JOURNAL"
-                ? `/publikasi/journal/${p.slug}`
-                : `/publikasi/paper/${p.slug}`;
+              const href = p.type === "ARTICLE" ? `/publikasi/artikel/${p.slug}` : `/publikasi/paper/${p.slug}`;
               return (
                 <Link key={p.id} href={href} style={{ textDecoration: "none" }}>
                   <div style={{

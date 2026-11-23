@@ -7,7 +7,6 @@ import { useAuthStore } from "@/lib/store/authStore";
 
 const ALLOWED_ROLES = ["SUPERADMIN", "SEKJEN", "PUBLIKASI_ADMIN", "PUBLIKASI_EDITOR", "PUBLIKASI_WRITER"];
 const EDITORIAL_ROLES = ["SUPERADMIN", "SEKJEN", "PUBLIKASI_ADMIN", "PUBLIKASI_EDITOR"];
-const ADMIN_ROLES = ["SUPERADMIN", "SEKJEN", "PUBLIKASI_ADMIN"];
 
 const ROLE_LABEL: Record<string, string> = {
   SUPERADMIN: "Super Admin",
@@ -19,12 +18,9 @@ const ROLE_LABEL: Record<string, string> = {
 
 function getNav(role?: string): DashboardNavItem[] {
   return [
-    { href: "/dashboard/publikasi", label: "Ringkasan", icon: "◉", exact: true },
-    { href: "/dashboard/publikasi/artikel", label: "Artikel", icon: "✎" },
-    { href: "/dashboard/publikasi/paper", label: "Manara Paper", icon: "◈" },
-    { href: "/dashboard/publikasi/jurnal", label: "Manara Journal", icon: "❖" },
+    { href: "/dashboard/publikasi", label: "Semua Publikasi", icon: "◉", exact: true },
+    { href: "/dashboard/publikasi/new", label: "Buat Publikasi", icon: "✎" },
     ...(EDITORIAL_ROLES.includes(role || "") ? [{ href: "/dashboard/publikasi/newsletter", label: "Newsletter", icon: "✉" }] : []),
-    ...(ADMIN_ROLES.includes(role || "") ? [{ href: "/dashboard/publikasi/seo", label: "SEO", icon: "◎" }] : []),
   ];
 }
 

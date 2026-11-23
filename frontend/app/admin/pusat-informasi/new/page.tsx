@@ -13,14 +13,12 @@ const RichTextEditor = dynamic(
 const TYPE_CONFIG = {
   NEWS:     { label: "News",       color: "#266c87" },
   AWARD:    { label: "Awards",     color: "#C6AD8A" },
-  MAGAZINE: { label: "Magazine",   color: "#5F8F8A" },
-  AGENDA:   { label: "Key Agenda", color: "#8A8F5E" },
 };
 
 export default function NewInfoItemPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialType = searchParams.get("type") || "NEWS";
+  const initialType = searchParams.get("type") === "AWARD" ? "AWARD" : "NEWS";
 
   const [saving, setSaving] = useState(false);
   const [coverFile, setCoverFile] = useState<File | null>(null);

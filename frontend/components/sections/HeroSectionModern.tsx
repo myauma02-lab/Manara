@@ -30,7 +30,7 @@ export default async function HeroSectionModern() {
       <section className={styles.hero} aria-labelledby="home-heading">
         <div className={styles.glow} aria-hidden="true" />
         <div className={styles.heroContent}>
-          <p className={styles.eyebrow}><span aria-hidden="true" /> Kolektif intelektual · Jawa Timur</p>
+          <p className={styles.eyebrow}><span aria-hidden="true" /> Lembaga Kajian Kebijakan – Anak Muda Indonesia</p>
           <p className={styles.brandLine}>Shaping Ideas for the Public Sphere</p>
           <h1 id="home-heading">
             Di mana gagasan<br />
@@ -41,7 +41,7 @@ export default async function HeroSectionModern() {
           </p>
           <div className={styles.actions}>
             <Link href="/publikasi" className="ui-button ui-button-primary">Jelajahi publikasi <ArrowRight size={17} aria-hidden="true" /></Link>
-            <Link href="#topik-riset" className="ui-button ui-button-secondary">Lihat fokus riset</Link>
+            <Link href="/publikasi#topik" className="ui-button ui-button-secondary">Lihat bidang kajian</Link>
           </div>
 
           <div className={styles.metrics} aria-label="Ringkasan Manara">
@@ -55,7 +55,7 @@ export default async function HeroSectionModern() {
           </div>
         </div>
 
-        <a href="#topik-riset" className={styles.scrollCue} aria-label="Lanjut ke fokus riset">
+        <a href="/publikasi#topik" className={styles.scrollCue} aria-label="Lanjut ke topik publikasi">
           <span>Jelajahi Manara</span><ArrowDown size={16} aria-hidden="true" />
         </a>
       </section>

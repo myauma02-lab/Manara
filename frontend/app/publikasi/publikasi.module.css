@@ -249,6 +249,9 @@
   margin-bottom: 12px;
 }
 
+.cardCover { height: 250px; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; background: #eef3f4; }
+.cardCover img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
 .typeLabel {
   margin: 0;
   color: var(--pub-accent);

@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowRight, ChevronDown, Menu, Search, X } from "lucide-react";
-import { PUBLICATION_TOPICS } from "@/lib/publication-explorer";
 import styles from "./NavbarModern.module.css";
 
 type NavChild = { label: string; href: string; description?: string };
@@ -18,42 +17,21 @@ const NAV: NavGroup[] = [
     roots: ["/publikasi"],
     children: [
       { label: "Semua publikasi", href: "/publikasi", description: "Cari semua karya Manara" },
-      { label: "Artikel", href: "/publikasi/artikel", description: "Opini, esai, analisis, dan commentary" },
-      { label: "Manara Paper", href: "/publikasi/paper", description: "Paper dan dokumen kebijakan" },
-      { label: "Manara Journal", href: "/publikasi/journal", description: "Jurnal dan tulisan ilmiah" },
+      { label: "Editorial Note", href: "/publikasi?jenis=editorial-note" },
+      { label: "Research Paper", href: "/publikasi?jenis=research-paper" },
+      { label: "Perspective", href: "/publikasi?jenis=perspective" },
+      { label: "Policy Brief", href: "/publikasi?jenis=policy-brief" },
+      { label: "Working Paper", href: "/publikasi?jenis=working-paper" },
+      { label: "Manara Journal", href: "/publikasi/journal", description: "Dalam persiapan" },
     ],
   },
   {
-    label: "Topik riset",
-    href: "/publikasi",
-    roots: [],
-    children: PUBLICATION_TOPICS.map(topic => ({
-      label: topic,
-      href: "/publikasi?topik=" + encodeURIComponent(topic),
-      description: "Jelajahi karya tentang " + topic,
-    })),
-  },
-  {
-    label: "Program",
-    href: "/proyek",
-    roots: ["/proyek", "/layanan"],
+    label: "Pusat Informasi",
+    href: "/pusat-informasi",
+    roots: ["/pusat-informasi"],
     children: [
-      { label: "Proyek", href: "/proyek", description: "Riset dan inisiatif Manara" },
-      { label: "Layanan riset", href: "/layanan/research", description: "Kolaborasi berbasis riset" },
-      { label: "Policy brief", href: "/layanan/policy-brief", description: "Ringkasan untuk pembuat kebijakan" },
-      { label: "Pelatihan", href: "/layanan/training", description: "Program belajar dan pengembangan kapasitas" },
-    ],
-  },
-  {
-    label: "Wawasan",
-    href: "/insight",
-    roots: ["/insight", "/pusat-informasi"],
-    children: [
-      { label: "Berita", href: "/pusat-informasi/news", description: "Kabar dan aktivitas Manara" },
-      { label: "Agenda", href: "/pusat-informasi/agenda", description: "Diskusi dan kegiatan mendatang" },
-      { label: "Newsletter", href: "/insight/newsletter", description: "Surat Manara di inbox-mu" },
-      { label: "Podcast", href: "/insight/podcast", description: "Percakapan dan gagasan panjang" },
-      { label: "Suara Manara", href: "/insight/suara-manara", description: "Perspektif singkat dalam format video" },
+      { label: "News", href: "/pusat-informasi/news", description: "Kabar Manara" },
+      { label: "Awards", href: "/pusat-informasi/awards", description: "Penghargaan dan pencapaian" },
     ],
   },
   {
@@ -88,9 +66,12 @@ export default function NavbarModern() {
   }, []);
 
   useEffect(() => {
-    setOpenMenu(null);
-    setMobileOpen(false);
-    setMobileExpanded(null);
+    const frame = window.requestAnimationFrame(() => {
+      setOpenMenu(null);
+      setMobileOpen(false);
+      setMobileExpanded(null);
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, [pathname]);
 
   useEffect(() => {

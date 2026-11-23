@@ -364,12 +364,6 @@ export default function ServicePage({ data }: { data: ServicePageData }) {
     <Link href="/manapeople" style={{ border: "1px solid rgba(38,108,135,0.3)", color: "rgba(134,175,170,0.6)", padding: "14px 32px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", borderRadius: "2px", textDecoration: "none", background: "transparent" }}>
       Bergabung Dulu
     </Link>
-    {/* Tambah ini khusus untuk service Research */}
-    {data.slug === "research" && (
-      <Link href="/proyek" style={{ border: "1px solid rgba(38,108,135,0.3)", color: "rgba(134,175,170,0.6)", padding: "14px 32px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", borderRadius: "2px", textDecoration: "none" }}>
-        Lihat Proyek →
-      </Link>
-    )}
   </div>
       </section>
 

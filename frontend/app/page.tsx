@@ -3,11 +3,8 @@ import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/sections/HeroSection";
 import FeaturedArticlesSection from "@/components/sections/FeaturedArticlesSection";
 import ResearchSection from "@/components/sections/ResearchSection";
-import ProjectsSection from "@/components/sections/ProjectsSection";
 import FoundersSection from "@/components/sections/FoundersSection";
-import NewsletterSection from "@/components/sections/NewsletterSection";
 import ContactSection from "@/components/sections/ContactSection";
-import FocusAreasSection from "@/components/sections/FocusAreasSection";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -27,12 +24,9 @@ export default function HomePage() {
     <main>
       <Navbar />
       <HeroSection />
-      <FocusAreasSection />
       <FeaturedArticlesSection />
       <ResearchSection />
-      <ProjectsSection />
       <FoundersSection />
-      <NewsletterSection />
       <ContactSection />
       <Footer />
     </main>

@@ -1,38 +1,31 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { PUBLICATION_TOPICS } from "@/lib/publication-explorer";
+import { PUBLICATION_DEPARTMENTS } from "@/lib/publication-explorer";
 import styles from "./FocusAreasSection.module.css";
 
-const DESCRIPTIONS: Record<(typeof PUBLICATION_TOPICS)[number], string> = {
-  "Media Studies": "Membaca media, platform, dan arus informasi yang membentuk percakapan publik.",
-  "Economic Discourse": "Menelaah gagasan, kebijakan, dan perubahan yang membentuk kehidupan ekonomi.",
-  "Politic & Social Discourse": "Mengikuti dinamika politik dan sosial serta dampaknya bagi masyarakat.",
-  "Human Ecology": "Menghubungkan kehidupan manusia, lingkungan, dan ruang yang kita tinggali.",
-  "Law and Public Policy": "Mengkaji hukum dan kebijakan publik dari aturan hingga dampaknya.",
-};
+const DESCRIPTIONS = [
+  "Hukum sebagai instrumen pengaturan masyarakat, institusi, dan transformasi sosial ekonomi.",
+  "Kekuasaan, institusi politik, relasi negara dan masyarakat, serta tata kelola.",
+  "Dinamika ekonomi, pembangunan, kesejahteraan, dan desain kebijakan ekonomi.",
+];
 
 export default function FocusAreasSection() {
-  return (
-    <section className={styles.section} id="topik-riset" aria-labelledby="focus-heading">
-      <div className={styles.container}>
-        <div className={styles.heading}>
-          <div>
-            <p className="site-eyebrow">Fokus kajian</p>
-            <h2 id="focus-heading" className="site-display">Lima lensa untuk membaca perubahan.</h2>
-          </div>
-          <p>Temukan gagasan Manara berdasarkan isu yang dekat dengan kehidupan publik.</p>
-        </div>
-        <div className={styles.grid}>
-          {PUBLICATION_TOPICS.map((topic, index) => (
-            <Link className={styles.card} href={"/publikasi?topik=" + encodeURIComponent(topic)} key={topic}>
-              <span className={styles.number}>{String(index + 1).padStart(2, "0")}</span>
-              <h3>{topic}</h3>
-              <p>{DESCRIPTIONS[topic]}</p>
-              <span className={styles.explore}>Jelajahi topik <ArrowUpRight size={16} aria-hidden="true" /></span>
-            </Link>
-          ))}
-        </div>
+  return <section className={styles.section} id="topik" aria-labelledby="focus-heading">
+    <div className={styles.container}>
+      <div className={styles.heading}><div><p className="site-eyebrow">Topik publikasi</p>
+        <h2 id="focus-heading" className="site-display">Bidang kajian Manara.</h2></div>
+        <p>Jelajahi publikasi berdasarkan departemen dan topik riset.</p></div>
+      <div className={styles.grid}>
+        {PUBLICATION_DEPARTMENTS.map((department, index) =>
+          <article className={styles.card} key={department.name}>
+            <span className={styles.number}>{String(index + 1).padStart(2, "0")}</span>
+            <h3>{department.name}</h3><p>{DESCRIPTIONS[index]}</p>
+            <ul style={{ paddingLeft: 18, lineHeight: 1.7 }}>{department.topics.map(topic =>
+              <li key={topic}><Link href={`/publikasi?topik=${encodeURIComponent(topic)}`}>{topic}</Link></li>)}</ul>
+            <Link className={styles.explore} href={`/publikasi?departemen=${encodeURIComponent(department.name)}`}>
+              Jelajahi departemen <ArrowUpRight size={16} aria-hidden="true" /></Link>
+          </article>)}
       </div>
-    </section>
-  );
+    </div>
+  </section>;
 }
