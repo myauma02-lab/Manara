@@ -110,11 +110,7 @@ export default function NavbarModern() {
       <header ref={headerRef} className={headerClass}>
         <nav className={styles.navbar} aria-label="Navigasi utama">
           <Link href="/" className={styles.brand} aria-label="Manara Institute, beranda">
-            <Image src="/favicon.png" alt="" width={34} height={34} priority className={styles.brandMark} />
-            <span className={styles.brandText}>
-              <strong>Manara</strong>
-              <small>Institute</small>
-            </span>
+            <Image src="/manara-logo-header.png" alt="" width={190} height={55} priority className={styles.brandMark} />
           </Link>
 
           <div className={styles.desktopNav}>
