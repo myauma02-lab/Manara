@@ -45,7 +45,8 @@ export function publicationValidation(format: PublicationFormat, data: Record<st
   }
   if (format === "PERSPECTIVE") {
     if (!authors.length) errors.authors = "Penulis wajib diisi";
-    if (!String(data.argumentSummary || "").trim()) errors.argumentSummary = "Ringkasan argumen wajib diisi";
+    if (!String(data.excerpt || "").trim()) errors.excerpt = "Ringkasan Perspective wajib diisi";
+    else if (String(data.excerpt).trim().split(/\s+/).length > 250) errors.excerpt = "Ringkasan maksimal 250 kata";
     if (!String(data.content || "").trim()) errors.content = "Isi esai wajib diisi";
   }
   if (format === "RESEARCH_PAPER" || format === "WORKING_PAPER") {

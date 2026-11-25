@@ -16,6 +16,7 @@ export interface PublicationCardData {
   year?: number;
   publishedAt?: string;
   title: string;
+  excerpt?: string;
   author: string;
   coverImage?: string;
   imageFocusX?: number;
@@ -32,6 +33,7 @@ type PublicationApiItem = {
   department?: string | null;
   slug?: string;
   title?: string;
+  excerpt?: string | null;
   coverImage?: string | null;
   imageFocusX?: number | null;
   imageFocusY?: number | null;
@@ -72,6 +74,7 @@ export function adaptPublication(item: PublicationApiItem): PublicationCardData 
     year,
     publishedAt,
     title: item.title,
+    excerpt: item.excerpt || undefined,
     author: uniqueStrings(item.authors?.length ? item.authors : [item.author?.name]).join(", "),
     coverImage: item.coverImage || undefined,
     imageFocusX: item.imageFocusX ?? undefined,

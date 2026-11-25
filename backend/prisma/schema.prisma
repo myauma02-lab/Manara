@@ -454,10 +454,12 @@ model Publication {
   // Field PAPER & JOURNAL (shared)
   paperSubtype  PaperSubtype?
   authors       String[]
+  authorAffiliation String? @db.Text
   keywords      String[]
   topics        String[]      @default([])
   pdfUrl        String?
   attribution String?
+  imageCredit String? @db.Text
   argumentSummary String? @db.Text
   references String[] @default([])
   dataUrl String?

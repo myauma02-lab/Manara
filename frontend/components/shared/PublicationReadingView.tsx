@@ -50,12 +50,15 @@ export default async function PublicationReadingView({ slug, kind }: { slug: str
         {format === "EDITORIAL_NOTE" ? <p className={styles.byline}>{pub.attribution || "Redaksi Manara Institute"} · {date}</p> : <p className={styles.byline}>
           {pub.author?.avatar && (!pub.authors?.length || pub.authors.includes(pub.author.name)) && <img src={pub.author.avatar} alt="" width="28" height="28" style={{ borderRadius: "50%", objectFit: "cover", verticalAlign: "middle", marginRight: 8 }} />}
           {authors} {date && `· ${date}`}</p>}
-        {format === "PERSPECTIVE" && pub.argumentSummary && <p className={styles.lead}>{pub.argumentSummary}</p>}
+        {format === "PERSPECTIVE" && pub.authorAffiliation && <p className={styles.authorAffiliation}>{pub.authorAffiliation}</p>}
+        {format === "PERSPECTIVE" && pub.excerpt && <p className={styles.lead}>{pub.excerpt}</p>}
+        {format === "PERSPECTIVE" && pub.topics?.length > 0 && <p className={styles.perspectiveMeta}>{pub.topics.join(" · ")}</p>}
         {format === "RESEARCH_PAPER" && pub.abstract && <p className={styles.lead}>{pub.abstract}</p>}
       </div>
       {["PERSPECTIVE", "RESEARCH_PAPER"].includes(format) && cover && <img className={styles.cover} src={cover} alt={`Sampul ${pub.title}`} />}
     </div>
     {!["PERSPECTIVE", "RESEARCH_PAPER"].includes(format) && cover && <img className={styles.smallCover} src={cover} alt={`Sampul ${pub.title}`} />}
+    {format === "PERSPECTIVE" && pub.imageCredit && <p className={styles.imageCredit}>{pub.imageCredit}</p>}
     {format === "WORKING_PAPER" && <><p className={styles.lead}>Versi {latest?.number || 1} · {latest?.versionDate ? new Date(latest.versionDate).toLocaleDateString("id-ID") : date}</p><p className={styles.lead}>{pub.abstract}</p></>}
     {format === "POLICY_BRIEF" && <><section><h2>Ringkasan eksekutif</h2><p>{pub.executiveSummary}</p></section>
       {recommendations.length > 0 && <section><h2>Rekomendasi utama</h2><ol>{recommendations.map((item, index) => <li key={index}><strong>{item.action}</strong><span> · Pelaksana: {item.actor}</span></li>)}</ol></section>}
@@ -66,7 +69,7 @@ export default async function PublicationReadingView({ slug, kind }: { slug: str
       {pub.implementationNotes && <section><h2>Catatan implementasi</h2><p>{pub.implementationNotes}</p></section>}</>}
     {format === "RESEARCH_PAPER" && pub.abstract && !cover && <section><h2>Abstrak</h2><p>{pub.abstract}</p></section>}
     {pdf && <PublicationDownloadLink slug={pub.slug} href={pdf} style={{ display: "inline-block", margin: "24px 0", background: "#266c87", color: "white", padding: "13px 22px", textDecoration: "none", borderRadius: 4 }}>
-      {format === "POLICY_BRIEF" ? "Unduh brief" : format === "WORKING_PAPER" ? "Unduh versi terkini" : "Unduh PDF"}
+      {format === "PERSPECTIVE" ? "Unduh Perspective" : format === "POLICY_BRIEF" ? "Unduh brief" : format === "WORKING_PAPER" ? "Unduh versi terkini" : "Unduh PDF"}
     </PublicationDownloadLink>}
     {html && <section className={styles.content}><h2>{format === "RESEARCH_PAPER" ? "Baca naskah" : format === "EDITORIAL_NOTE" ? "Catatan redaksi" : "Isi tulisan"}</h2><div dangerouslySetInnerHTML={{ __html: html }} /></section>}
     {format === "EDITORIAL_NOTE" && pub.dataUrl && <p><a href={pub.dataUrl}>Baca publikasi terkait</a></p>}

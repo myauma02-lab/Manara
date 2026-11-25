@@ -282,6 +282,16 @@
   font-size: 14px;
 }
 
+.perspectiveExcerpt { margin: 0 0 16px; color: var(--pub-body); font-size: 15px; line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.perspectiveCard { padding: 0; border: 0; border-radius: 0; background: transparent; }
+.perspectiveCard:hover { border-color: transparent; box-shadow: none; }
+.perspectiveCard .cardCover { height: auto; aspect-ratio: 1.55; margin-bottom: 16px; background: #eef3f4; }
+.perspectiveCard .cardCover img { object-fit: cover !important; }
+.perspectiveCard .cardTop { margin-bottom: 6px; }
+.perspectiveCard .typeLabel { color: var(--pub-body); font-size: 15px; letter-spacing: 0; text-transform: none; font-weight: 400; }
+.perspectiveCard .cardTitle { font-family: var(--font-sans); font-size: 21px; font-weight: 650; line-height: 1.35; }
+.perspectiveCard .author { margin-top: 12px; font-size: 15px; }
+
 .cardTopics {
   margin: 0 0 18px;
   color: var(--pub-muted);

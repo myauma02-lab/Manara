@@ -19,7 +19,7 @@ function jsonArray(value: unknown): any[] {
 }
 
 function formatData(body: Record<string, any>): Record<string, any> {
-  const fields = ["department", "attribution", "argumentSummary", "dataUrl", "policyProblem", "decisionMakers", "executiveSummary", "evidence", "policyOptions", "implementationNotes", "seriesNumber", "feedbackUrl", "followUpResearchUrl"];
+  const fields = ["department", "attribution", "imageCredit", "authorAffiliation", "argumentSummary", "dataUrl", "policyProblem", "decisionMakers", "executiveSummary", "evidence", "policyOptions", "implementationNotes", "seriesNumber", "feedbackUrl", "followUpResearchUrl"];
   const data: Record<string, any> = {};
   for (const key of fields) if (body[key] !== undefined) data[key] = body[key] || null;
   for (const key of ["references", "recommendations", "attachments"]) if (body[key] !== undefined) data[key] = jsonArray(body[key]);
@@ -292,6 +292,8 @@ router.post("/submit",
       } = req.body;
 
       const chosenFormat = resolvedFormat(req.body);
+      if (chosenFormat === "PERSPECTIVE" && excerpt && String(excerpt).trim().split(/\s+/).length > 250)
+        return res.status(422).json({ message: "Ringkasan Perspective maksimal 250 kata", fields: { excerpt: "Ringkasan maksimal 250 kata" } });
       if (chosenFormat === "JOURNAL") return res.status(422).json({ message: "Manara Journal masih dalam persiapan" });
       const resolvedType = typeForFormat(chosenFormat);
 
@@ -409,6 +411,8 @@ router.post("/",
       } = req.body;
 
       const chosenFormat = resolvedFormat(req.body);
+      if (chosenFormat === "PERSPECTIVE" && excerpt && String(excerpt).trim().split(/\s+/).length > 250)
+        return res.status(422).json({ message: "Ringkasan Perspective maksimal 250 kata", fields: { excerpt: "Ringkasan maksimal 250 kata" } });
       if (chosenFormat === "JOURNAL") return res.status(422).json({ message: "Manara Journal masih dalam persiapan" });
       const resolvedType = typeForFormat(chosenFormat);
       const coverRatio = await uploadedCoverRatio(files?.cover?.[0]);
@@ -529,6 +533,8 @@ router.put("/:id",
       }
       if (publicationDate) data.publishedAt = publicationDate;
       if (excerpt !== undefined) data.excerpt = excerpt || null;
+      if (req.body.format === "PERSPECTIVE" && req.body.excerpt && String(req.body.excerpt).trim().split(/\s+/).length > 250)
+        return res.status(422).json({ message: "Ringkasan Perspective maksimal 250 kata", fields: { excerpt: "Ringkasan maksimal 250 kata" } });
       if (content !== undefined) data.content = content || null;
       if (abstract !== undefined) data.abstract = abstract || null;
       if (files?.cover?.[0]?.path) data.coverImage = files.cover[0].path;

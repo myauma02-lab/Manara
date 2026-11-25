@@ -198,7 +198,7 @@ export default function PublicationExplorer({ publications }: { publications: Pu
           {filtered.length > 0 ? (
             <div className={styles.publicationGrid}>
               {filtered.map(item => (
-                <article className={styles.publicationCard} key={item.id}>
+                <article className={`${styles.publicationCard} ${item.kind === "perspective" ? styles.perspectiveCard : ""}`} key={item.id}>
                   {item.coverImage && <div className={styles.cardCover}><img src={item.coverImage} alt={`Sampul ${item.title}`} style={{ objectFit: item.kind === "editorial-note" ? "cover" : "contain", objectPosition: `${item.imageFocusX ?? 50}% ${item.imageFocusY ?? 50}%` }} /></div>}
                   <div className={styles.cardTop}>
                     <p className={styles.typeLabel}>{item.label}</p>
@@ -206,6 +206,7 @@ export default function PublicationExplorer({ publications }: { publications: Pu
                   </div>
                   <h2 className={styles.cardTitle}>{item.title}</h2>
                   {item.author && <p className={styles.author}>{item.author}</p>}
+                  {item.kind === "perspective" && item.excerpt && <p className={styles.perspectiveExcerpt}>{item.excerpt}</p>}
                   {item.topics.length > 0 && <p className={styles.cardTopics}>{item.topics.join(" · ")}</p>}
                   <div className={styles.cardFooter}>
                     <Link href={item.href} className={styles.readLink}>Baca selengkapnya <span aria-hidden="true">→</span></Link>

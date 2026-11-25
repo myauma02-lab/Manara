@@ -23,7 +23,7 @@ const FORMATS: { value: Format; label: string; hint: string }[] = [
   { value: "WORKING_PAPER", label: "Working Paper", hint: "Naskah berversi, cover A4 dan PDF per versi" },
 ];
 const TYPE: Record<Format, PubType> = { EDITORIAL_NOTE: "ARTICLE", RESEARCH_PAPER: "PAPER", PERSPECTIVE: "ARTICLE", POLICY_BRIEF: "PAPER", WORKING_PAPER: "PAPER", JOURNAL: "JOURNAL" };
-const FIELDS = ["title", "excerpt", "department", "attribution", "argumentSummary", "abstract", "content", "policyProblem", "decisionMakers", "executiveSummary", "evidence", "policyOptions", "implementationNotes", "seriesNumber", "feedbackUrl", "followUpResearchUrl", "dataUrl"] as const;
+const FIELDS = ["title", "excerpt", "department", "attribution", "imageCredit", "authorAffiliation", "argumentSummary", "abstract", "content", "policyProblem", "decisionMakers", "executiveSummary", "evidence", "policyOptions", "implementationNotes", "seriesNumber", "feedbackUrl", "followUpResearchUrl", "dataUrl"] as const;
 type Field = typeof FIELDS[number];
 const INPUT: React.CSSProperties = { width: "100%", boxSizing: "border-box", padding: "11px 13px", border: "1px solid #c9d9df", borderRadius: 5, color: "#173642", background: "white", font: "inherit" };
 const PANEL: React.CSSProperties = { background: "#fff", border: "1px solid #dce6e8", borderRadius: 8, padding: "clamp(16px,3vw,28px)", marginBottom: 18 };
@@ -200,7 +200,8 @@ export default function PublicationForm({ type, id, basePath, initialFormat }: {
         <select value={format} onChange={e => setFormat(e.target.value as Format)} style={INPUT}>
           {FORMATS.map(option => <option value={option.value} key={option.value}>{option.label} — {option.hint}</option>)}
         </select></label>
-      {input("title", "Judul")}{input("excerpt", "Ringkasan kartu", true)}
+      {input("title", "Judul")}{input("excerpt", format === "PERSPECTIVE" ? "Ringkasan Perspective · maksimal 250 kata" : "Ringkasan kartu", true)}
+      {format === "PERSPECTIVE" && <small style={{ display: "block", marginTop: -12, marginBottom: 18, color: form.excerpt.trim() && form.excerpt.trim().split(/\s+/).length > 250 ? "#bd3030" : "#667d86" }}>{form.excerpt.trim() ? form.excerpt.trim().split(/\s+/).length : 0}/250 kata</small>}
       <label style={{ display: "block", marginBottom: 18 }}>Tanggal terbit
         <input type="date" value={publishedAt} onChange={event => setPublishedAt(event.target.value)} style={INPUT} />
         <small style={{ display: "block", color: "#667d86" }}>Kosongkan untuk memakai tanggal terbit otomatis.</small>
@@ -227,7 +228,8 @@ export default function PublicationForm({ type, id, basePath, initialFormat }: {
       {format !== "EDITORIAL_NOTE" && format !== "POLICY_BRIEF" && <label style={{ display: "block", marginBottom: 18 }}>Penulis
         <input value={authors} onChange={e => setAuthors(e.target.value)} style={INPUT} placeholder="Pisahkan dengan koma" />
         {errors.authors && <small style={{ color: "#bd3030" }}>{errors.authors}</small>}</label>}
-      {format === "PERSPECTIVE" && input("argumentSummary", "Ringkasan argumen", true)}
+      {format === "PERSPECTIVE" && input("argumentSummary", "Catatan argumen internal · opsional", true)}
+      {format === "PERSPECTIVE" && input("authorAffiliation", "Afiliasi / peran penulis · opsional", true)}
       {["RESEARCH_PAPER", "WORKING_PAPER"].includes(format) && input("abstract", "Abstrak", true)}
       {format === "RESEARCH_PAPER" && <><label>Kata kunci<input value={keywords} onChange={e => setKeywords(e.target.value)} style={INPUT} placeholder="Pisahkan dengan koma" /></label>{errors.keywords && <small style={{ color: "#bd3030" }}>{errors.keywords}</small>}</>}
       {format === "RESEARCH_PAPER" && <><label>Sitasi · satu per baris<textarea value={citations} onChange={event => setCitations(event.target.value)} rows={4} style={INPUT} /></label>
@@ -251,7 +253,8 @@ export default function PublicationForm({ type, id, basePath, initialFormat }: {
         <label>Titik fokus horizontal · {imageFocusX}%<input type="range" min="0" max="100" value={imageFocusX} onChange={event => setImageFocusX(Number(event.target.value))} style={{ display: "block", width: "100%" }} /></label>
         <label>Titik fokus vertikal · {imageFocusY}%<input type="range" min="0" max="100" value={imageFocusY} onChange={event => setImageFocusY(Number(event.target.value))} style={{ display: "block", width: "100%" }} /></label>
       </div>}
-      {["RESEARCH_PAPER", "POLICY_BRIEF"].includes(format) && <label style={{ display: "block", marginTop: 18 }}>PDF terpisah dari cover web<input type="file" accept="application/pdf" onChange={e => setPdf(e.target.files?.[0] || null)} style={INPUT} /></label>}
+      {format === "PERSPECTIVE" && <label style={{ display: "block", marginTop: 18 }}>Kredit gambar · opsional<input value={form.imageCredit} onChange={e => change("imageCredit", e.target.value)} style={INPUT} placeholder="Contoh: Foto oleh Nama di Unsplash" /></label>}
+      {["RESEARCH_PAPER", "POLICY_BRIEF", "PERSPECTIVE"].includes(format) && <label style={{ display: "block", marginTop: 18 }}>PDF untuk diunduh<input type="file" accept="application/pdf" onChange={e => setPdf(e.target.files?.[0] || null)} style={INPUT} /></label>}
     </section>
     {format === "WORKING_PAPER" && <section style={PANEL}><h2>Versi Working Paper</h2>
       {!id && <p>Simpan draf terlebih dahulu, lalu tambahkan versi.</p>}
