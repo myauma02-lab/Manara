@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import { financeApi } from "@/lib/api";
+import ImageCropInput from "@/components/admin/ImageCropInput";
 
 const EXPENSE_CATEGORIES = [
   "Operasional", "SDM", "Marketing", "Teknologi",
@@ -341,11 +342,16 @@ function AddExpenseModal({ onClose, onSuccess }: { onClose: () => void; onSucces
                 <button type="button" onClick={() => setFile(null)} style={{ background: "none", border: "none", color: "#f87171", cursor: "pointer" }}>×</button>
               </div>
             ) : (
-              <label style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "64px", border: "2px dashed rgba(248,113,113,0.2)", borderRadius: "6px", cursor: "pointer", gap: "8px" }}>
-                <span style={{ fontSize: "18px" }}>📎</span>
-                <p style={{ fontSize: "13px", color: "#7A9AA5" }}>Upload bukti · JPG/PNG/PDF</p>
-                <input type="file" accept="image/*,.pdf" onChange={e => setFile(e.target.files?.[0] || null)} style={{ display: "none" }} />
-              </label>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                <label style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "64px", border: "2px dashed rgba(248,113,113,0.2)", borderRadius: "6px", cursor: "pointer", gap: "8px", padding: 8 }}>
+                  <span style={{ fontSize: "18px" }}>🖼</span><p style={{ fontSize: "13px", color: "#7A9AA5" }}>Pilih gambar & sesuaikan</p>
+                  <ImageCropInput allowRatioSelection onCropped={setFile} inputStyle={{ display: "none" }} />
+                </label>
+                <label style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "64px", border: "2px dashed rgba(248,113,113,0.2)", borderRadius: "6px", cursor: "pointer", gap: "8px", padding: 8 }}>
+                  <span style={{ fontSize: "18px" }}>📄</span><p style={{ fontSize: "13px", color: "#7A9AA5" }}>Pilih PDF</p>
+                  <input type="file" accept="application/pdf,.pdf" onChange={e => setFile(e.target.files?.[0] || null)} style={{ display: "none" }} />
+                </label>
+              </div>
             )}
           </div>
           {/* Preview */}

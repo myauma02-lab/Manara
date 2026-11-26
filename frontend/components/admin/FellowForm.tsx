@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { fellowsApi } from "@/lib/api";
 import Link from "next/link";
+import ImageCropInput from "@/components/admin/ImageCropInput";
 
 interface Props {
   initialData?: any;
@@ -33,9 +34,7 @@ export default function FellowForm({ initialData, isEdit = false }: Props) {
     website: initialData?.socialLinks?.website || "",
   });
 
-  const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handlePhoto = (file: File) => {
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
   };
@@ -226,7 +225,7 @@ export default function FellowForm({ initialData, isEdit = false }: Props) {
                   <div style={{ position: "absolute", bottom: "8px", left: "8px", right: "8px", display: "flex", gap: "6px" }}>
                     <label style={{ flex: 1, textAlign: "center", background: "rgba(15,40,48,0.75)", color: "#fff", fontSize: "11px", padding: "6px 10px", borderRadius: "2px", cursor: "pointer" }}>
                       Ganti Foto
-                      <input type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} />
+                      <ImageCropInput aspectRatio={1} onCropped={handlePhoto} inputStyle={{ display: "none" }} />
                     </label>
                     <button type="button" onClick={() => { setPhotoFile(null); setPhotoPreview(null); }}
                       style={{ background: "rgba(248,113,113,0.8)", color: "#fff", border: "none", fontSize: "11px", padding: "6px 10px", borderRadius: "2px", cursor: "pointer" }}>
@@ -241,7 +240,7 @@ export default function FellowForm({ initialData, isEdit = false }: Props) {
                     Upload foto<br />
                     <span style={{ fontSize: "10px" }}>JPG/PNG · Square · Max 5MB</span>
                   </p>
-                  <input type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} />
+                  <ImageCropInput aspectRatio={1} onCropped={handlePhoto} inputStyle={{ display: "none" }} />
                 </label>
               )}
               <p style={{ fontSize: "11px", color: "#B8CDD2", marginTop: "8px", textAlign: "center" }}>

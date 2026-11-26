@@ -1,4 +1,5 @@
 "use client";
+import ImageCropInput from "@/components/admin/ImageCropInput";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { infoApi } from "@/lib/api";
@@ -313,7 +314,7 @@ export default function NewInfoItemPage() {
                 <div style={{ position: "absolute", bottom: "8px", right: "8px", display: "flex", gap: "5px" }}>
                   <label style={{ background: "rgba(0,0,0,0.6)", color: "#fff", fontSize: "10px", padding: "4px 8px", borderRadius: "2px", cursor: "pointer" }}>
                     Ganti
-                    <input type="file" accept="image/*" onChange={e => { const f = e.target.files?.[0]; if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); } }} style={{ display: "none" }} />
+                    <ImageCropInput aspectRatio={form.type === "MAGAZINE" ? 3 / 4 : 16 / 9} onCropped={f => { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); }} inputStyle={{ display: "none" }} />
                   </label>
                   <button type="button" onClick={() => { setCoverFile(null); setCoverPreview(null); }}
                     style={{ background: "rgba(248,113,113,0.8)", color: "#fff", border: "none", fontSize: "10px", padding: "4px 6px", borderRadius: "2px", cursor: "pointer" }}>×</button>
@@ -326,7 +327,7 @@ export default function NewInfoItemPage() {
                   Upload cover<br />
                   <span style={{ fontSize: "10px" }}>{form.type === "MAGAZINE" ? "3:4" : "16:9"}</span>
                 </p>
-                <input type="file" accept="image/*" onChange={e => { const f = e.target.files?.[0]; if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); } }} style={{ display: "none" }} />
+                <ImageCropInput aspectRatio={form.type === "MAGAZINE" ? 3 / 4 : 16 / 9} onCropped={f => { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); }} inputStyle={{ display: "none" }} />
               </label>
             )}
           </div>

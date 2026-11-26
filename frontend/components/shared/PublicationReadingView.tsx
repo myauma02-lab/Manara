@@ -44,7 +44,7 @@ export default async function PublicationReadingView({ slug, kind }: { slug: str
   const attachments = Array.isArray(pub.attachments) ? pub.attachments as string[] : [];
   return <main><Navbar /><article className={styles.container}>
     <nav className={styles.breadcrumb} aria-label="Breadcrumb"><Link href="/publikasi">Publikasi</Link><span>→</span><span>{LABELS[format] || "Publikasi"}</span></nav>
-    <div className={`${styles.header} ${["PERSPECTIVE", "RESEARCH_PAPER"].includes(format) && cover ? styles.split : ""}`}>
+    <div className={`${styles.header} ${["PERSPECTIVE", "RESEARCH_PAPER"].includes(format) && cover ? styles.split : ""} ${format === "PERSPECTIVE" && cover ? styles.perspectiveHeader : ""}`}>
       <div><p className={styles.eyebrow}>{LABELS[format]} {pub.department ? `· ${pub.department}` : ""}</p>
         <h1>{pub.title}</h1><PublicationIdentity code={pub.publicationCode} canonicalPath={canonicalPath} />
         {format === "EDITORIAL_NOTE" ? <p className={styles.byline}>{pub.attribution || "Redaksi Manara Institute"} · {date}</p> : <p className={styles.byline}>

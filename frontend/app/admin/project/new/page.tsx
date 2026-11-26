@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { projectsApi } from "@/lib/api";
 import Link from "next/link";
+import ImageCropInput from "@/components/admin/ImageCropInput";
 
 const STATUS_OPTIONS = ["UPCOMING", "ACTIVE", "COMPLETED", "ARCHIVED"];
 
@@ -250,7 +251,7 @@ export default function NewProjectPage() {
                   <div style={{ position: "absolute", bottom: "8px", right: "8px", display: "flex", gap: "6px" }}>
                     <label style={{ background: "rgba(0,0,0,0.6)", color: "#fff", fontSize: "11px", padding: "4px 10px", borderRadius: "2px", cursor: "pointer" }}>
                       Ganti
-                      <input type="file" accept="image/*" onChange={e => { const f = e.target.files?.[0]; if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); } }} style={{ display: "none" }} />
+                      <ImageCropInput aspectRatio={16 / 9} onCropped={f => { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); }} inputStyle={{ display: "none" }} />
                     </label>
                     <button type="button" onClick={() => { setCoverFile(null); setCoverPreview(null); }}
                       style={{ background: "rgba(248,113,113,0.8)", color: "#fff", border: "none", fontSize: "11px", padding: "4px 8px", borderRadius: "2px", cursor: "pointer" }}>×</button>
@@ -260,7 +261,7 @@ export default function NewProjectPage() {
                 <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", aspectRatio: "16/9", border: "2px dashed rgba(38,108,135,0.15)", borderRadius: "2px", cursor: "pointer", gap: "6px" }}>
                   <span style={{ fontSize: "24px", color: "#B8CDD2" }}>+</span>
                   <p style={{ fontSize: "11px", color: "#B8CDD2", textAlign: "center" }}>Upload cover<br /><span style={{ fontSize: "10px" }}>16:9 · JPG/PNG</span></p>
-                  <input type="file" accept="image/*" onChange={e => { const f = e.target.files?.[0]; if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); } }} style={{ display: "none" }} />
+                  <ImageCropInput aspectRatio={16 / 9} onCropped={f => { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); }} inputStyle={{ display: "none" }} />
                 </label>
               )}
             </div>

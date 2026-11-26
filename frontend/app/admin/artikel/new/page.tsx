@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import WordCount from "@/components/admin/WordCount";
 import ArticlePreview from "@/components/admin/ArticlePreview";
 import { useAuthStore } from "@/lib/store/authStore";
+import ImageCropInput from "@/components/admin/ImageCropInput";
 
 // Dynamic import supaya tidak crash di server
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
@@ -93,9 +94,7 @@ export default function NewArtikelPage() {
     setShowRestorePrompt(false);
   };
 
-  const handleCover = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleCover = (file: File) => {
     setCoverFile(file);
     setCoverPreview(URL.createObjectURL(file));
   };
@@ -255,7 +254,7 @@ export default function NewArtikelPage() {
               <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", aspectRatio: "16/9", border: "2px dashed rgba(38,108,135,0.15)", borderRadius: "2px", cursor: "pointer", gap: "8px" }}>
                 <span style={{ fontSize: "28px", color: "#B8CDD2" }}>↑</span>
                 <p style={{ fontSize: "12px", color: "#B8CDD2", textAlign: "center" }}>Upload cover<br /><span style={{ fontSize: "10px" }}>JPG/PNG · 16:9 · Max 5MB</span></p>
-                <input type="file" accept="image/*" onChange={handleCover} style={{ display: "none" }} />
+                <ImageCropInput aspectRatio={16 / 9} onCropped={handleCover} inputStyle={{ display: "none" }} />
               </label>
             )}
           </div>

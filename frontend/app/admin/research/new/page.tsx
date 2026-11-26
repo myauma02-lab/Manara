@@ -1,4 +1,5 @@
 "use client";
+import ImageCropInput from "@/components/admin/ImageCropInput";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -24,9 +25,7 @@ export default function NewResearchPage() {
     status: "DRAFT",
   });
 
-  const handleCover = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleCover = (file: File) => {
     setCoverFile(file);
     setCoverPreview(URL.createObjectURL(file));
   };
@@ -236,7 +235,7 @@ export default function NewResearchPage() {
                 <span style={{ fontSize: "24px", color: "#B8CDD2" }}>+</span>
                 <p style={{ fontSize: "12px", color: "#B8CDD2", textAlign: "center" }}>Upload cover</p>
                 <p style={{ fontSize: "10px", color: "#B8CDD2" }}>JPG/PNG</p>
-                <input type="file" accept="image/*" onChange={handleCover} style={{ display: "none" }} />
+                <ImageCropInput aspectRatio={3 / 4} onCropped={handleCover} inputStyle={{ display: "none" }} />
               </label>
             )}
           </div>

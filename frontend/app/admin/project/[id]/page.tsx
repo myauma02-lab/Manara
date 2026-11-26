@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { projectsApi } from "@/lib/api";
 import Link from "next/link";
+import ImageCropInput from "@/components/admin/ImageCropInput";
 
 export default function EditProjectPage() {
   const { id } = useParams();
@@ -43,9 +44,7 @@ export default function EditProjectPage() {
     }).finally(() => setLoading(false));
   }, [id]);
 
-  const handleCover = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleCover = (file: File) => {
     setCoverFile(file);
     setCoverPreview(URL.createObjectURL(file));
   };
@@ -146,14 +145,14 @@ export default function EditProjectPage() {
                   <img src={coverPreview} alt="cover" style={{ width: "100%", aspectRatio: "16/9", objectFit: "cover", borderRadius: "2px" }} />
                   <label style={{ position: "absolute", bottom: "8px", right: "8px", background: "rgba(0,0,0,0.6)", color: "#fff", fontSize: "11px", padding: "4px 10px", borderRadius: "2px", cursor: "pointer" }}>
                     Ganti
-                    <input type="file" accept="image/*" onChange={handleCover} style={{ display: "none" }} />
+                    <ImageCropInput aspectRatio={16 / 9} onCropped={handleCover} inputStyle={{ display: "none" }} />
                   </label>
                 </div>
               ) : (
                 <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", aspectRatio: "16/9", border: "2px dashed rgba(38,108,135,0.15)", borderRadius: "2px", cursor: "pointer", gap: "8px" }}>
                   <span style={{ fontSize: "24px", color: "#B8CDD2" }}>+</span>
                   <p style={{ fontSize: "12px", color: "#B8CDD2" }}>Upload cover</p>
-                  <input type="file" accept="image/*" onChange={handleCover} style={{ display: "none" }} />
+                  <ImageCropInput aspectRatio={16 / 9} onCropped={handleCover} inputStyle={{ display: "none" }} />
                 </label>
               )}
             </div>

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { foundersApi } from "@/lib/api";
 import Link from "next/link";
+import ImageCropInput from "@/components/admin/ImageCropInput";
 
 export default function NewFounderPage() {
   const router = useRouter();
@@ -16,9 +17,7 @@ export default function NewFounderPage() {
     order: "1",
   });
 
-  const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handlePhoto = (file: File) => {
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
   };
@@ -104,7 +103,7 @@ export default function NewFounderPage() {
               <span style={{ fontSize: "32px", color: "#B8CDD2" }}>↑</span>
               <p style={{ fontSize: "13px", color: "#B8CDD2" }}>Klik untuk upload foto</p>
               <p style={{ fontSize: "11px", color: "#B8CDD2" }}>JPG, PNG · Max 5MB</p>
-              <input type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} />
+              <ImageCropInput aspectRatio={4 / 5} onCropped={handlePhoto} inputStyle={{ display: "none" }} />
             </label>
           )}
           <p style={{ fontSize: "11px", color: "#B8CDD2", marginTop: "12px" }}>

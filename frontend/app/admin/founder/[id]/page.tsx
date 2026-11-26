@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { foundersApi } from "@/lib/api";
 import Link from "next/link";
+import ImageCropInput from "@/components/admin/ImageCropInput";
 
 export default function EditFounderPage() {
   const { id } = useParams();
@@ -45,9 +46,7 @@ export default function EditFounderPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handlePhoto = (file: File) => {
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
   };
@@ -139,7 +138,7 @@ export default function EditFounderPage() {
                 </p>
                 <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "12px", fontWeight: 500, color: "#266c87", cursor: "pointer", border: "1px solid rgba(38,108,135,0.2)", padding: "7px 14px", borderRadius: "2px" }}>
                   Ganti Foto
-                  <input type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} />
+                  <ImageCropInput aspectRatio={4 / 5} onCropped={handlePhoto} inputStyle={{ display: "none" }} />
                 </label>
                 {photoFile && (
                   <button
@@ -157,7 +156,7 @@ export default function EditFounderPage() {
               <span style={{ fontSize: "28px", color: "#B8CDD2" }}>↑</span>
               <p style={{ fontSize: "13px", color: "#B8CDD2" }}>Upload foto founder</p>
               <p style={{ fontSize: "11px", color: "#B8CDD2" }}>JPG/PNG · Max 5MB</p>
-              <input type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} />
+              <ImageCropInput aspectRatio={4 / 5} onCropped={handlePhoto} inputStyle={{ display: "none" }} />
             </label>
           )}
         </div>

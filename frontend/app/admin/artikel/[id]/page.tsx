@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import WordCount from "@/components/admin/WordCount";
 import ArticlePreview from "@/components/admin/ArticlePreview";
 import { useAuthStore } from "@/lib/store/authStore";
+import ImageCropInput from "@/components/admin/ImageCropInput";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -71,9 +72,7 @@ export default function EditArtikelPage() {
     return () => clearTimeout(timer);
   }, [form.title, form.content, form.excerpt, loading]);
 
-  const handleCover = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleCover = (file: File) => {
     setCoverFile(file);
     setCoverPreview(URL.createObjectURL(file));
   };
@@ -175,14 +174,14 @@ export default function EditArtikelPage() {
                 <img src={coverPreview} alt="cover" style={{ width: "100%", aspectRatio: "16/9", objectFit: "cover", borderRadius: "2px", display: "block" }} />
                 <label style={{ position: "absolute", bottom: "8px", right: "8px", background: "rgba(0,0,0,0.6)", color: "#fff", fontSize: "11px", padding: "4px 10px", borderRadius: "2px", cursor: "pointer" }}>
                   Ganti
-                  <input type="file" accept="image/*" onChange={handleCover} style={{ display: "none" }} />
+                  <ImageCropInput aspectRatio={16 / 9} onCropped={handleCover} inputStyle={{ display: "none" }} />
                 </label>
               </div>
             ) : (
               <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", aspectRatio: "16/9", border: "2px dashed rgba(38,108,135,0.15)", borderRadius: "2px", cursor: "pointer", gap: "8px" }}>
                 <span style={{ fontSize: "24px", color: "#B8CDD2" }}>↑</span>
                 <p style={{ fontSize: "12px", color: "#B8CDD2" }}>Upload cover</p>
-                <input type="file" accept="image/*" onChange={handleCover} style={{ display: "none" }} />
+                <ImageCropInput aspectRatio={16 / 9} onCropped={handleCover} inputStyle={{ display: "none" }} />
               </label>
             )}
           </div>

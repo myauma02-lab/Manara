@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import ImageCropInput from "@/components/admin/ImageCropInput";
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 interface MediaFile {
   id: string; filename: string; url: string;
@@ -18,6 +19,7 @@ export default function AdminMediaPage() {
   const [dragOver, setDragOver] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const cropInputRef = useRef<HTMLInputElement>(null);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("manara_token") : "";
   const headers = { Authorization: `Bearer ${token}` };
@@ -38,11 +40,11 @@ export default function AdminMediaPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const handleUpload = async (fileList: FileList | null) => {
-    if (!fileList || fileList.length === 0) return;
+  const handleUpload = async (files: File[]) => {
+    if (!files.length) return;
     setUploading(true);
     try {
-      for (const file of Array.from(fileList)) {
+      for (const file of files) {
         const fd = new FormData();
         fd.append("file", file);
         fd.append("folder", folder || "library");
@@ -95,12 +97,7 @@ await fetch(`${API_URL}/media/upload`, {
         {/* Upload button */}
         <label style={{ background: "#266c87", color: "#fff", padding: "12px 24px", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", borderRadius: "2px", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "8px" }}>
           {uploading ? "Mengupload..." : "↑ Upload File"}
-          <input
-            type="file" accept="image/*" multiple
-            onChange={e => handleUpload(e.target.files)}
-            style={{ display: "none" }}
-            disabled={uploading}
-          />
+          <ImageCropInput multiple allowRatioSelection onCropped={() => {}} onBatchCropped={handleUpload} inputRef={cropInputRef} disabled={uploading} inputStyle={{ display: "none" }} />
         </label>
       </div>
 
@@ -118,7 +115,7 @@ await fetch(`${API_URL}/media/upload`, {
       <div
         onDragOver={e => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
-        onDrop={e => { e.preventDefault(); setDragOver(false); handleUpload(e.dataTransfer.files); }}
+        onDrop={e => { e.preventDefault(); setDragOver(false); if (cropInputRef.current && e.dataTransfer.files.length) { const transfer = new DataTransfer(); Array.from(e.dataTransfer.files).forEach(file => transfer.items.add(file)); cropInputRef.current.files = transfer.files; cropInputRef.current.dispatchEvent(new Event("change", { bubbles: true })); } }}
         style={{
           border: `2px dashed ${dragOver ? "#266c87" : "rgba(38,108,135,0.15)"}`,
           borderRadius: "4px", padding: "24px",

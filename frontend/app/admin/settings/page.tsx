@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { settingsApi } from "@/lib/api";
 import { HERO_BG_KEYS, HERO_BG_LABELS, type HeroBgKey } from "@/lib/hero-settings";
+import ImageCropInput from "@/components/admin/ImageCropInput";
 
 const WEBSITE_FIELDS = [
   { key: "site_title", label: "Nama Website", type: "text", placeholder: "Manara" },
@@ -219,9 +220,7 @@ function HeroImageCard({
   const [removing, setRemoving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileChange = async (file: File) => {
 
     // Validasi client-side
     if (file.size > 5 * 1024 * 1024) {
@@ -347,14 +346,7 @@ function HeroImageCard({
           }}>
             <span style={{ fontSize: "14px" }}>↑</span>
             {preview ? "Ganti Gambar" : "Upload Ilustrasi"}
-            <input
-              ref={inputRef}
-              type="file"
-              accept="image/jpeg,image/jpg,image/png,image/webp"
-              onChange={handleFileChange}
-              disabled={uploading}
-              style={{ display: "none" }}
-            />
+            <ImageCropInput aspectRatio={16 / 9} allowRatioSelection onCropped={handleFileChange} inputRef={inputRef} disabled={uploading} inputStyle={{ display: "none" }} />
           </label>
 
           {/* Remove button */}

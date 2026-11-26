@@ -8,6 +8,7 @@ import { publicationsApi } from "@/lib/api";
 import { PUBLICATION_DEPARTMENTS } from "@/lib/publication-explorer";
 import { useAuthStore } from "@/lib/store/authStore";
 import PublicationIdentity from "@/components/shared/PublicationIdentity";
+import ImageCropInput from "@/components/admin/ImageCropInput";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { ssr: false });
 type Format = "EDITORIAL_NOTE" | "RESEARCH_PAPER" | "PERSPECTIVE" | "POLICY_BRIEF" | "WORKING_PAPER" | "JOURNAL";
@@ -18,7 +19,7 @@ type VersionEdit = { date?: string; summary?: string; cover?: File | null; pdf?:
 const FORMATS: { value: Format; label: string; hint: string }[] = [
   { value: "EDITORIAL_NOTE", label: "Editorial Note", hint: "Catatan redaksi; gambar opsional" },
   { value: "RESEARCH_PAPER", label: "Research Paper", hint: "Naskah HTML atau PDF, cover A4" },
-  { value: "PERSPECTIVE", label: "Perspective", hint: "Esai dengan cover 4:5" },
+  { value: "PERSPECTIVE", label: "Perspective", hint: "Esai dengan cover lanskap 3:2" },
   { value: "POLICY_BRIEF", label: "Policy Brief", hint: "Rekomendasi kebijakan, cover A4" },
   { value: "WORKING_PAPER", label: "Working Paper", hint: "Naskah berversi, cover A4 dan PDF per versi" },
 ];
@@ -115,10 +116,14 @@ export default function PublicationForm({ type, id, basePath, initialFormat }: {
     try {
       if (cover && status === "PUBLISHED") {
         const ratio = await ratioOf(cover);
-        const expected = format === "PERSPECTIVE" ? 0.8 : 1 / Math.sqrt(2);
+        const expected = format === "PERSPECTIVE" ? 3 / 2 : 1 / Math.sqrt(2);
         if (format !== "EDITORIAL_NOTE" && format !== "WORKING_PAPER" && Math.abs(ratio - expected) > 0.015) {
-          setErrors({ cover: `Proporsi cover harus ${format === "PERSPECTIVE" ? "4:5" : "A4 potret"}` }); return;
+          setErrors({ cover: `Proporsi cover harus ${format === "PERSPECTIVE" ? "3:2 (lanskap)" : "A4 potret"}` }); return;
         }
+      }
+      const hasHtml = form.content.replace(/<[^>]*>/g, " ").trim().length > 0;
+      if (format === "PERSPECTIVE" && status === "PUBLISHED" && !hasHtml && !pdf && !pub?.pdfUrl) {
+        setErrors({ content: "Isi naskah HTML atau PDF harus tersedia" }); return;
       }
       const fd = new FormData();
       fd.append("type", TYPE[format]); fd.append("format", format); fd.append("status", status);
@@ -188,7 +193,7 @@ export default function PublicationForm({ type, id, basePath, initialFormat }: {
     <p>Halaman persiapan jurnal dapat diatur melalui pengaturan website.</p>
     {pub?.status === "PUBLISHED" && pub.publicationCode && <Link href={`/P/${pub.publicationCode}`}>Lihat terbitan lama</Link>}
   </div>;
-  const coverHint = format === "PERSPECTIVE" ? "4:5 · contoh 1080 × 1350 px" : format === "EDITORIAL_NOTE" ? "Opsional · rasio bebas" : "A4 potret · contoh 1400 × 1980 px";
+  const coverHint = format === "PERSPECTIVE" ? "3:2 lanskap · contoh 1500 × 1000 px" : format === "EDITORIAL_NOTE" ? "Opsional · rasio bebas" : "A4 potret · contoh 1400 × 1980 px";
   return <div style={{ padding: "clamp(16px,4vw,40px)", maxWidth: 1040, margin: "auto", color: "#173642" }}>
     <Link href={basePath} style={{ color: "#266c87" }}>← Kembali ke publikasi</Link>
     <h1 style={{ fontSize: "clamp(26px,4vw,40px)", margin: "16px 0 6px" }}>{id ? "Edit publikasi" : "Publikasi baru"}</h1>
@@ -241,12 +246,14 @@ export default function PublicationForm({ type, id, basePath, initialFormat }: {
         {errors.recommendations && <small style={{ color: "#bd3030" }}>{errors.recommendations}</small>}
         {input("evidence", "Dasar bukti", true)}{input("policyOptions", "Opsi kebijakan", true)}{input("implementationNotes", "Catatan implementasi", true)}</>}
       {format === "WORKING_PAPER" && <>{input("seriesNumber", "Nomor seri · opsional")}{input("feedbackUrl", "Kanal masukan · URL")}{input("followUpResearchUrl", "Research Paper lanjutan · URL")}</>}
-      {["EDITORIAL_NOTE", "PERSPECTIVE", "RESEARCH_PAPER"].includes(format) && <div style={{ marginTop: 18 }}><label>Isi naskah HTML</label>
-        <RichTextEditor value={form.content} onChange={value => change("content", value)} minHeight="300px" />{errors.content && <small style={{ color: "#bd3030" }}>{errors.content}</small>}</div>}
+      {["EDITORIAL_NOTE", "PERSPECTIVE", "RESEARCH_PAPER"].includes(format) && <div style={{ marginTop: 18 }}><label>{format === "PERSPECTIVE" ? "Isi naskah HTML · opsional jika PDF tersedia" : "Isi naskah HTML"}</label>
+        <RichTextEditor value={form.content} onChange={value => change("content", value)} minHeight="300px" />{errors.content && <small style={{ color: "#bd3030" }}>{errors.content}</small>}{format === "PERSPECTIVE" && <small style={{ display: "block", color: "#667d86" }}>Untuk menerbitkan Perspective, isi naskah HTML atau unggah PDF di bagian Media.</small>}</div>}
       {format === "PERSPECTIVE" && <label style={{ display: "block", marginTop: 18 }}>Referensi · satu per baris<textarea rows={4} value={references} onChange={e => setReferences(e.target.value)} style={INPUT} /></label>}
     </section>
     <section style={PANEL}><h2>Media</h2><p>{coverHint}</p>
-      {format !== "WORKING_PAPER" && <><label>Cover web<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e => { const file = e.target.files?.[0] || null; setCover(file); setLocalCoverUrl(file ? URL.createObjectURL(file) : ""); }} style={INPUT} /></label>
+      {format !== "WORKING_PAPER" && <><label>Cover web
+        <ImageCropInput aspectRatio={format === "PERSPECTIVE" ? 3 / 2 : format === "EDITORIAL_NOTE" ? undefined : 1 / Math.sqrt(2)} allowRatioSelection={format === "EDITORIAL_NOTE"} onCropped={file => { setCover(file); setLocalCoverUrl(URL.createObjectURL(file)); }} inputStyle={INPUT} />
+        <small style={{ display: "block", color: "#667d86" }}>Gambar dipotong otomatis sesuai rasio format. Kamu bisa menggeser, memperbesar, dan mengatur crop sebelum mengunggah.</small></label>
         {(localCoverUrl || coverUrl) && <img src={localCoverUrl || coverUrl} alt="Pratinjau cover" style={{ display: "block", maxWidth: 240, maxHeight: 300, objectFit: "contain", marginTop: 12 }} />}
         {errors.cover && <small style={{ color: "#bd3030" }}>{errors.cover}</small>}</>}
       {format === "EDITORIAL_NOTE" && <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 16, marginTop: 16 }}>
@@ -259,7 +266,7 @@ export default function PublicationForm({ type, id, basePath, initialFormat }: {
     {format === "WORKING_PAPER" && <section style={PANEL}><h2>Versi Working Paper</h2>
       {!id && <p>Simpan draf terlebih dahulu, lalu tambahkan versi.</p>}
       {id && <><label>Tanggal versi<input type="date" value={versionDate} onChange={e => setVersionDate(e.target.value)} style={INPUT} /></label>
-        <label>Cover A4<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e => setVersionCover(e.target.files?.[0] || null)} style={INPUT} /></label>
+        <label>Cover A4<ImageCropInput aspectRatio={1 / Math.sqrt(2)} onCropped={setVersionCover} inputStyle={INPUT} /></label>
         <label>PDF versi<input type="file" accept="application/pdf" onChange={e => setVersionPdf(e.target.files?.[0] || null)} style={INPUT} /></label>
         {errors.cover && <small style={{ display: "block", color: "#bd3030" }}>{errors.cover}</small>}
         {errors.pdf && <small style={{ display: "block", color: "#bd3030" }}>{errors.pdf}</small>}
@@ -271,7 +278,7 @@ export default function PublicationForm({ type, id, basePath, initialFormat }: {
           {version.changeSummary && <p>{version.changeSummary}</p>}
           {!version.isPublished && <div style={{ display: "grid", gap: 10, marginTop: 12, padding: 14, border: "1px solid #dce6e8", borderRadius: 6 }}>
             <label>Tanggal versi<input type="date" value={versionEdits[version.id]?.date ?? version.versionDate.slice(0, 10)} onChange={event => changeVersion(version.id, { date: event.target.value })} style={INPUT} /></label>
-            <label>Cover A4 {version.coverImage ? "· sudah ada" : "· belum ada"}<input type="file" accept="image/jpeg,image/png,image/webp" onChange={event => changeVersion(version.id, { cover: event.target.files?.[0] || null })} style={INPUT} /></label>
+            <label>Cover A4 {version.coverImage ? "· sudah ada" : "· belum ada"}<ImageCropInput aspectRatio={1 / Math.sqrt(2)} onCropped={file => changeVersion(version.id, { cover: file })} inputStyle={INPUT} /></label>
             <label>PDF {version.pdfUrl ? "· sudah ada" : "· belum ada"}<input type="file" accept="application/pdf" onChange={event => changeVersion(version.id, { pdf: event.target.files?.[0] || null })} style={INPUT} /></label>
             <label>Ringkasan perubahan<textarea value={versionEdits[version.id]?.summary ?? version.changeSummary ?? ""} onChange={event => changeVersion(version.id, { summary: event.target.value })} rows={2} style={INPUT} /></label>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}><button type="button" disabled={busy} onClick={() => saveVersion(version.id)}>Simpan draf versi</button>

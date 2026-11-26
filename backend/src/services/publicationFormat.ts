@@ -28,7 +28,7 @@ export async function uploadedCoverRatio(file?: Express.Multer.File): Promise<nu
 
 export function coverRatioValid(format: PublicationFormat, ratio?: number | null): boolean {
   if (ratio == null) return false;
-  const target = format === "PERSPECTIVE" ? 4 / 5 : 1 / Math.sqrt(2);
+  const target = format === "PERSPECTIVE" ? 3 / 2 : 1 / Math.sqrt(2);
   return Math.abs(ratio - target) <= 0.015;
 }
 
@@ -47,7 +47,8 @@ export function publicationValidation(format: PublicationFormat, data: Record<st
     if (!authors.length) errors.authors = "Penulis wajib diisi";
     if (!String(data.excerpt || "").trim()) errors.excerpt = "Ringkasan Perspective wajib diisi";
     else if (String(data.excerpt).trim().split(/\s+/).length > 250) errors.excerpt = "Ringkasan maksimal 250 kata";
-    if (!String(data.content || "").trim()) errors.content = "Isi esai wajib diisi";
+    const hasHtml = String(data.content || "").replace(/<[^>]*>/g, " ").trim().length > 0;
+    if (!hasHtml && !String(data.pdfUrl || "").trim()) errors.content = "Isi naskah HTML atau PDF harus tersedia";
   }
   if (format === "RESEARCH_PAPER" || format === "WORKING_PAPER") {
     if (!authors.length) errors.authors = "Penulis wajib diisi";
@@ -68,7 +69,7 @@ export function publicationValidation(format: PublicationFormat, data: Record<st
     errors.versions = "Terbitkan versi dengan cover dan PDF terlebih dahulu";
   if (["RESEARCH_PAPER", "PERSPECTIVE", "POLICY_BRIEF"].includes(format)) {
     if (!data.coverImage) errors.cover = "Cover wajib diisi";
-    else if (!coverRatioValid(format, data.coverRatio)) errors.cover = format === "PERSPECTIVE" ? "Cover harus berproporsi 4:5" : "Cover harus berproporsi A4 potret";
+    else if (!coverRatioValid(format, data.coverRatio)) errors.cover = format === "PERSPECTIVE" ? "Cover harus berproporsi 3:2" : "Cover harus berproporsi A4 potret";
   }
   return errors;
 }
